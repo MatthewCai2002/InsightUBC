@@ -1,4 +1,11 @@
-import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, InsightResult} from "./IInsightFacade";
+import {
+	IInsightFacade,
+	InsightDataset,
+	InsightDatasetKind,
+	InsightError,
+	InsightResult,
+	NotFoundError
+} from "./IInsightFacade";
 import * as fs from "fs-extra";
 import JSZip from "jszip";
 
@@ -86,7 +93,27 @@ export default class InsightFacade implements IInsightFacade {
 
 
 	public async removeDataset(id: string): Promise<string> {
-		return Promise.reject("Not implemented.");
+		// Validate the dataset ID
+		if (!id.trim() || id.includes("_")) {
+			return Promise.reject(new InsightError("Invalid dataset ID."));
+		}
+
+		// Check if the dataset exists
+		if (!this.datasets[id]) {
+			return Promise.reject(new NotFoundError("Dataset not found."));
+		}
+
+		try {
+			// Remove the dataset from the internal dictionary
+			delete this.datasets[id];
+			// Attempt to delete the dataset file from the disk
+			const datasetPath = `${this.dataDir}/${id}.json`;
+			await fs.remove(datasetPath);
+
+			return Promise.resolve(id);
+		} catch (error) {
+			return Promise.reject(new InsightError(`Failed to remove dataset ${id}: ${error}`));
+		}
 	}
 
 	public async performQuery(query: any): Promise<InsightResult[]> {
@@ -115,13 +142,20 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	private isValidQuery(query: any): boolean {
-		// Implement query validation logic based on your spec
-		return true; // Placeholder
+		// Example: Check if the query has WHERE and OPTIONS sections
+		if (!query || !query.WHERE || !query.OPTIONS) {
+			return false;
+		}
+		// Add more specific validations based on your query format
+		return true;
 	}
 
 	private extractDatasetId(query: any): string | null {
-		// Extract and return the dataset ID from the query
-		return "datasetId"; // Placeholder
+		// Example: Assuming dataset ID is specified in the OPTIONS section
+		if (query && query.OPTIONS && query.OPTIONS.datasetId) {
+			return query.OPTIONS.datasetId;
+		}
+		return null;
 	}
 
 	private async loadDataset(datasetId: string): Promise<any> {
@@ -148,6 +182,8 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public async listDatasets(): Promise<InsightDataset[]> {
-		return Promise.reject("Not implemented.");
+		// Convert the datasets dictionary to an array of InsightDataset objects
+		const datasetList: InsightDataset[] = Object.values(this.datasets);
+		return Promise.resolve(datasetList);
 	}
 }
