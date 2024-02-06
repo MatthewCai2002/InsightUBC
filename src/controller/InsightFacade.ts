@@ -18,7 +18,6 @@ export default class InsightFacade implements IInsightFacade {
 
 	constructor() {
 		console.log("InsightFacade::init()");
-		fs.ensureDirSync(this.dataDir);
 	}
 
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
@@ -56,6 +55,7 @@ export default class InsightFacade implements IInsightFacade {
 		const sections: CourseSection[] = [];
 
 		// Iterate over each file in the zip
+		// WHAT DOES THIS DO??
 		await Promise.all(Object.keys(zip.files).map(async (fileName) => {
 			if (fileName.endsWith(".json")) {
 				const fileContent = await zip.file(fileName)!.async("string");
