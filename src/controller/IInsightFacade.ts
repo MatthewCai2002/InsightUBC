@@ -4,6 +4,8 @@
  * You should not change this interface at all or the test suite will not work.
  */
 
+import JSZip from "jszip";
+
 export enum InsightDatasetKind {
 	Sections = "sections",
 	Rooms = "rooms",
@@ -112,4 +114,6 @@ export interface IInsightFacade {
 	 * The promise should fulfill an array of currently added InsightDatasets, and will only fulfill.
 	 */
 	listDatasets(): Promise<InsightDataset[]>;
+
+	processCoursesDataset(id: string, zip: JSZip): Promise<string[]>;
 }

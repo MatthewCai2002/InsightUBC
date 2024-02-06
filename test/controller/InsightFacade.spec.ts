@@ -1,9 +1,12 @@
 import {IInsightFacade, InsightDatasetKind, InsightError} from "../../src/controller/IInsightFacade";
 import InsightFacade from "../../src/controller/InsightFacade";
+import processCoursesDataset from "../../src/controller/InsightFacade";
 
 import {assert, expect, use} from "chai";
 import chaiAsPromised from "chai-as-promised";
 import {clearDisk, getContentFromArchives, readFileQueries} from "../TestUtil";
+import {before} from "mocha";
+import JSZip from "jszip";
 
 use(chaiAsPromised);
 
@@ -22,7 +25,7 @@ describe("InsightFacade", function () {
 
 	before(async function () {
 		// This block runs once and loads the datasets.
-		sections = await getContentFromArchives("pair.zip");
+		sections = await getContentFromArchives("courses_valid.zip");
 
 		// Just in case there is anything hanging around from a previous run of the test suite
 		await clearDisk();
@@ -113,6 +116,41 @@ describe("InsightFacade", function () {
 			const result = facade.addDataset("1", sections, InsightDatasetKind.Rooms);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+	});
+
+	describe("ProcessDataset", function () {
+		beforeEach(function () {
+			// This section resets the insightFacade instance
+			// This runs before each test
+			facade = new InsightFacade();
+		});
+
+		afterEach(async function () {
+			// This section resets the data directory (removing any cached data)
+			// This runs after each test, which should make each test independent of the previous one
+			await clearDisk();
+		});
+
+		// it("Accept with 1 invalid course", async function () {
+		// 	sections = await getContentFromArchives("courses_1_invalid.zip");
+		// 	const zip = new JSZip();
+		// 	const decodedContent = Buffer.from(sections, "base64");
+		// 	const unzippedContent = await zip.loadAsync(decodedContent, {base64: true});
+		//
+		// 	const res = await facade.processCoursesDataset("1", unzippedContent);
+		// 	return expect(res).to.deep.equal(['{"result":[],"rank":0}']);
+		// });
+
+		it("Accept with 1 valid course", async function () {
+			sections = await getContentFromArchives("courses_valid.zip");
+
+			const zip = new JSZip();
+			const decodedContent = Buffer.from(sections, "base64");
+			const unzippedContent = await zip.loadAsync(decodedContent, {base64: true});
+
+			const res = await facade.processCoursesDataset("1", unzippedContent);
+			return expect(res).to.deep.equal(['{"result":[],"rank":0}']);
 		});
 	});
 

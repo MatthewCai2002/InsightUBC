@@ -13,12 +13,11 @@ interface CourseSection {
 	[key: string]: any; // Define more specific type based on spec requirements
 }
 export default class InsightFacade implements IInsightFacade {
+	private validFields: string[] = ["id", "Course", "Title", "Professor", "Subject",
+		"Year", "Avg", "Pass", "Fail", "Audit"];
+
 	private datasets: {[id: string]: InsightDataset} = {};
 	private readonly dataDir = "./data";
-
-	constructor() {
-		console.log("InsightFacade::init()");
-	}
 
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		if (!id.trim() || id.includes("_")) {
@@ -36,78 +35,109 @@ export default class InsightFacade implements IInsightFacade {
 			const decodedContent = Buffer.from(content, "base64");
 			const unzippedContent = await zip.loadAsync(decodedContent, {base64: true});
 
-
-			// 	await file.async("text").then(((otherContent) => {
-			// 		console.log("file:", relativePath);
-			// 		console.log("content:", otherContent);
-			// 	}));
-			// });
 			// process dataset
-			switch (kind) {
-				case InsightDatasetKind.Sections:
-					dataset = await this.processCoursesDataset(id, unzippedContent);
-					break;
-				default:
-					return Promise.reject(new InsightError("Unsupported dataset kind."));
-			}
+			// switch (kind) {
+			// 	case InsightDatasetKind.Sections:
+			// 		dataset = await this.processCoursesDataset(id, unzippedContent);
+			// 		break;
+			// 	default:
+			// 		return Promise.reject(new InsightError("Unsupported dataset kind."));
+			// }
 
-			this.datasets[id] = dataset;
-			await fs.writeJson(`${this.dataDir}/${id}.json`, dataset);
+			// this.datasets[id] = dataset;
+			// await fs.writeJson(`${this.dataDir}/${id}.json`, dataset);
 			return Promise.resolve(Object.keys(this.datasets));
 		} catch (error) {
 			return Promise.reject(new InsightError(`Failed to add dataset: ${error}`));
 		}
 	}
 
-	private async processCoursesDataset(id: string, zip: JSZip): Promise<InsightDataset> {
+	public async processCoursesDataset(id: string, zip: JSZip): Promise<string[]> {
 		let numRows = 0;
 		const sections: CourseSection[] = [];
+		const res: string[] = [];
+		const promises: Array<Promise<string>> = [];
 
+		// for each JSON file, read it's content
+		// and push it onto an array of promises
 		zip.forEach((relativePath, file) => {
-			const jsonString = file.async("text").then((fileContent) => {
-				const json = JSON.parse(fileContent);
-				console.log("File: ", relativePath);
-				console.log((json));
-			}).catch((error) => {
-				console.log(error);
+			const jsonPromise = file.async("text");
+			promises.push(jsonPromise);
+		});
+
+		// resolve all promises to get an array of JSON strings, 1 per file
+		let jsonStrings = await Promise.all(promises);
+
+		try {
+			// for each file (course)
+			for (let i = 1; i < jsonStrings.length; i++) {
+				// parse into JSON object
+				let str = jsonStrings[i];
+				let course = JSON.parse(str);
+
+				// validate course
+				// TODO: need to keep track of how many valid courses we have
+				// if all courses in zip file are invalid then the dataset is invalid
+				//
+				if (!this.isValidCourse(course)) {
+					console.log("valid course");
+				}
+
+
+				// TODO: convert JSON object into section class
+				// TODO:
+				// console.log(parsedStr);
+				// console.log(parsedStr.rank);
+			}
+		} catch (e) {
+			// if not a JSON file then throw error
+			throw new InsightError("unsupported file type");
+		}
+
+		return res;
+
+		// // Convert sections to a format suitable for querying
+		// const dataset: InsightDataset = {
+		// 	id,
+		// 	kind: InsightDatasetKind.Sections,
+		// 	numRows
+		// };
+		//
+		// // Optionally, process sections array further if needed
+		// // Save the processed dataset to disk or keep it in memory as required
+		//
+		// return dataset;
+	}
+
+	// INPUT: a valid parsed JSON object
+	// DOES: checks the "result" entry of the object and for each item:
+	// checks to see if it has all the keys needed to query a section
+	// immediately returns false if "result" section is empty
+	// OUTPUT: returns false if it is an invalid section
+	//		   returns true for a valid section
+	private isValidCourse(course: any): boolean {
+		// sections are contained within results
+		const results: any[] = course.result;
+
+		// handle empty sections
+		if (results.length < 1) {
+			return false;
+		}
+
+		// TODO: creawte validate section function which returns whether a section is valid
+		// then we check if all sections of a course ar valid or not
+		// if all are not valid then course isn't valid
+		// for each section
+		results.forEach((section) => {
+			// check if all valid fields are in the section
+			this.validFields.forEach((field: string) => {
+				if (!(field  in section)) {
+					return false;
+				}
 			});
 		});
 
-		// Iterate over each file in the zip
-		// WHAT DOES THIS DO??
-		// await Promise.all(Object.keys(zip.files).map(async (fileName) => {
-		// 	if (fileName.endsWith(".json")) {
-		// 		const fileContent = await zip.file(fileName)!.async("string");
-		// 		const jsonContent = JSON.parse(fileContent);
-		//
-		// 		// Assuming jsonContent is an array of course sections
-		// 		jsonContent.forEach((section: CourseSection) => {
-		// 			// Validate section based on spec
-		// 			if (this.isValidSection(section)) {
-		// 				sections.push(section);
-		// 				numRows++;
-		// 			}
-		// 		});
-		// 	}
-		// }));
-
-		// Convert sections to a format suitable for querying
-		const dataset: InsightDataset = {
-			id,
-			kind: InsightDatasetKind.Sections,
-			numRows
-		};
-
-		// Optionally, process sections array further if needed
-		// Save the processed dataset to disk or keep it in memory as required
-
-		return dataset;
-	}
-
-	private isValidSection(section: CourseSection): boolean {
-		// Implement validation logic based on spec
-		// Check required fields, data types, etc.
-		return true; // Placeholder implementation
+		return true;
 	}
 
 
