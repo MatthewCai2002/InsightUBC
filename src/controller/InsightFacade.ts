@@ -18,7 +18,6 @@ export default class InsightFacade implements IInsightFacade {
 
 	constructor() {
 		console.log("InsightFacade::init()");
-		fs.ensureDirSync(this.dataDir);
 	}
 
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
