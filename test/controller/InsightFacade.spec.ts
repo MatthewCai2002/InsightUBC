@@ -46,6 +46,74 @@ describe("InsightFacade", function () {
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
+
+		it("Reject with empty ID, valid section", function () {
+			const result = facade.addDataset("", sections, InsightDatasetKind.Sections);
+
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("Reject with invalid ID, invalid section", async function () {
+			sections = await getContentFromArchives("courses_invalid.zip");
+			const result = facade.addDataset(" ", sections, InsightDatasetKind.Sections);
+
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("Reject with invalid ID, valid section", function () {
+			const result = facade.addDataset(" ", sections, InsightDatasetKind.Sections);
+
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("Reject with valid ID, invalid section", async function () {
+			sections = await getContentFromArchives("courses_invalid.zip");
+			const result = facade.addDataset("1", sections, InsightDatasetKind.Sections);
+
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("Accept with valid ID, valid section", function () {
+			const result = facade.addDataset("1", sections, InsightDatasetKind.Sections);
+
+			return expect(result).to.eventually.have.members(["1"]);
+		});
+
+		it("Reject with same ID, same section", async function () {
+			await facade.addDataset("1", sections, InsightDatasetKind.Sections);
+
+			const result = facade.addDataset("1", sections, InsightDatasetKind.Sections);
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("Reject with same ID, different section", async function () {
+			await facade.addDataset("1", sections, InsightDatasetKind.Sections);
+			sections = await getContentFromArchives("courses_test2.zip");
+
+			const result = facade.addDataset("1", sections, InsightDatasetKind.Sections);
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("Accept with different ID, same section", async function () {
+			await facade.addDataset("1", sections, InsightDatasetKind.Sections);
+
+			const result = facade.addDataset("2", sections, InsightDatasetKind.Sections);
+			return expect(result).to.eventually.have.members(["1", "2"]);
+		});
+
+		it("Accept with different ID, different section", async function () {
+			await facade.addDataset("1", sections, InsightDatasetKind.Sections);
+			sections = await getContentFromArchives("courses_test2.zip");
+
+			const result = facade.addDataset("2", sections, InsightDatasetKind.Sections);
+			return expect(result).to.eventually.have.members(["1", "2"]);
+		});
+
+		it("Reject with invalid Kind", function () {
+			const result = facade.addDataset("1", sections, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
 	});
 
 	/*

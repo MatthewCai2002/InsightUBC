@@ -29,11 +29,20 @@ export default class InsightFacade implements IInsightFacade {
 		}
 
 		try {
-			const zip = new JSZip();
-			const decodedContent = Buffer.from(content, "base64");
-			const unzippedContent = await zip.loadAsync(decodedContent);
 			let dataset: InsightDataset;
 
+			// unzip dataset
+			const zip = new JSZip();
+			const decodedContent = Buffer.from(content, "base64");
+			const unzippedContent = await zip.loadAsync(decodedContent, {base64: true});
+
+
+			// 	await file.async("text").then(((otherContent) => {
+			// 		console.log("file:", relativePath);
+			// 		console.log("content:", otherContent);
+			// 	}));
+			// });
+			// process dataset
 			switch (kind) {
 				case InsightDatasetKind.Sections:
 					dataset = await this.processCoursesDataset(id, unzippedContent);
@@ -54,23 +63,33 @@ export default class InsightFacade implements IInsightFacade {
 		let numRows = 0;
 		const sections: CourseSection[] = [];
 
+		zip.forEach((relativePath, file) => {
+			const jsonString = file.async("text").then((fileContent) => {
+				const json = JSON.parse(fileContent);
+				console.log("File: ", relativePath);
+				console.log((json));
+			}).catch((error) => {
+				console.log(error);
+			});
+		});
+
 		// Iterate over each file in the zip
 		// WHAT DOES THIS DO??
-		await Promise.all(Object.keys(zip.files).map(async (fileName) => {
-			if (fileName.endsWith(".json")) {
-				const fileContent = await zip.file(fileName)!.async("string");
-				const jsonContent = JSON.parse(fileContent);
-
-				// Assuming jsonContent is an array of course sections
-				jsonContent.forEach((section: CourseSection) => {
-					// Validate section based on spec
-					if (this.isValidSection(section)) {
-						sections.push(section);
-						numRows++;
-					}
-				});
-			}
-		}));
+		// await Promise.all(Object.keys(zip.files).map(async (fileName) => {
+		// 	if (fileName.endsWith(".json")) {
+		// 		const fileContent = await zip.file(fileName)!.async("string");
+		// 		const jsonContent = JSON.parse(fileContent);
+		//
+		// 		// Assuming jsonContent is an array of course sections
+		// 		jsonContent.forEach((section: CourseSection) => {
+		// 			// Validate section based on spec
+		// 			if (this.isValidSection(section)) {
+		// 				sections.push(section);
+		// 				numRows++;
+		// 			}
+		// 		});
+		// 	}
+		// }));
 
 		// Convert sections to a format suitable for querying
 		const dataset: InsightDataset = {
