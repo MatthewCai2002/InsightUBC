@@ -64,19 +64,8 @@ export default class InsightFacade implements IInsightFacade {
 		// resolve all promises to get an array of JSON strings, 1 per file
 		let jsonStrings = await Promise.all(promises);
 
-		// validate dataset
-		let validCourses: boolean[] = [];
-
-		// go through each course and validate it
-		for (let i = 1; i < jsonStrings.length; i++) {
-			let str = jsonStrings[i];
-			let course = JSON.parse(str);
-			let validCourse = this.isValidCourse(course);
-			validCourses.push(validCourse);
-		}
-
-		// if every course is invalid then dataset is invalid
-		if (validCourses.every((course) => !course)) {
+		// validate Dataset
+		if (!this.isValidDataset(jsonStrings)) {
 			throw new InsightError("Invalid Dataset");
 		}
 
@@ -86,6 +75,7 @@ export default class InsightFacade implements IInsightFacade {
 				// parse into JSON object
 				let str = jsonStrings[i];
 				let course = JSON.parse(str);
+
 
 				// TODO: convert JSON object into section class
 				// TODO:
@@ -114,13 +104,33 @@ export default class InsightFacade implements IInsightFacade {
 		// return dataset;
 	}
 
+	// validate dataset
+	public isValidDataset(jsonStrings: string[]): boolean {
+		let validCourses: boolean[] = [];
+
+		// go through each course and validate it
+		for (let i = 1; i < jsonStrings.length; i++) {
+			let str = jsonStrings[i];
+			let course = JSON.parse(str);
+			let validCourse = this.isValidCourse(course);
+			validCourses.push(validCourse);
+		}
+
+		// if every course is invalid then dataset is invalid
+		if (validCourses.every((course) => !course)) {
+			return false;
+		}
+
+		return true;
+	}
+
 	// INPUT: a valid parsed JSON object
 	// DOES: checks the "result" entry of the object and for each item:
 	// checks to see if it has all the keys needed to query a section
 	// immediately returns false if "result" section is empty
 	// OUTPUT: returns false if it is an invalid section
 	//		   returns true for a valid section
-	private isValidCourse(course: any): boolean {
+	public isValidCourse(course: any): boolean {
 		// sections are contained within results
 		let validSections: boolean[] = [];
 		const results: any[] = course.result;
@@ -148,7 +158,7 @@ export default class InsightFacade implements IInsightFacade {
 
 	// validate a single section
 	// checks to see if a section has all validFields
-	private isValidSection(section: any): boolean {
+	public isValidSection(section: any): boolean {
 		this.validFields.forEach((field: string) => {
 			if (!(field in section)) {
 				return false;
