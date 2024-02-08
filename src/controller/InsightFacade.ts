@@ -8,32 +8,33 @@ import {
 } from "./IInsightFacade";
 import * as fs from "fs-extra";
 import JSZip from "jszip";
+import Section from "./section";
 
-interface CourseSection {
-	[key: string]: any; // Define more specific type based on spec requirements
-}
 export default class InsightFacade implements IInsightFacade {
-	private datasets: {[id: string]: InsightDataset} = {};
-	private readonly dataDir = "./data";
+	private validFields: string[] = ["id", "Course", "Title", "Professor", "Subject",
+		"Year", "Avg", "Pass", "Fail", "Audit"];
 
-	constructor() {
-		console.log("InsightFacade::init()");
-	}
+
+	private datasets: {[id: string]: InsightDataset} = {};
+	private readonly dataDir = "./data/";
 
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		if (!id.trim() || id.includes("_")) {
-			return Promise.reject(new InsightError("Invalid dataset ID."));
+			return Promise.reject(new InsightError("Invalid dataset ID"));
 		}
 		if (this.datasets[id]) {
-			return Promise.reject(new InsightError("Dataset with the same ID already exists."));
+			return Promise.reject(new InsightError("Dataset with the same ID already exists"));
 		}
 
 		try {
-			const zip = new JSZip();
-			const decodedContent = Buffer.from(content, "base64");
-			const unzippedContent = await zip.loadAsync(decodedContent);
 			let dataset: InsightDataset;
 
+			// unzip dataset
+			const zip = new JSZip();
+			const decodedContent = Buffer.from(content, "base64");
+			const unzippedContent = await zip.loadAsync(decodedContent, {base64: true});
+
+			// process dataset
 			switch (kind) {
 				case InsightDatasetKind.Sections:
 					dataset = await this.processCoursesDataset(id, unzippedContent);
@@ -42,8 +43,11 @@ export default class InsightFacade implements IInsightFacade {
 					return Promise.reject(new InsightError("Unsupported dataset kind."));
 			}
 
+			// add dataset to dataset dict
 			this.datasets[id] = dataset;
-			await fs.writeJson(`${this.dataDir}/${id}.json`, dataset);
+
+			// return array of all added datasets
+			console.log(Object.keys(this.datasets));
 			return Promise.resolve(Object.keys(this.datasets));
 		} catch (error) {
 			return Promise.reject(new InsightError(`Failed to add dataset: ${error}`));
@@ -51,43 +55,187 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	private async processCoursesDataset(id: string, zip: JSZip): Promise<InsightDataset> {
-		let numRows = 0;
-		const sections: CourseSection[] = [];
+		const promises: Array<Promise<string>> = [];
 
-		// Iterate over each file in the zip
-		await Promise.all(Object.keys(zip.files).map(async (fileName) => {
-			if (fileName.endsWith(".json")) {
-				const fileContent = await zip.file(fileName)!.async("string");
-				const jsonContent = JSON.parse(fileContent);
+		// for each course file, read its contents
+		// and push it onto an array of promises
+		zip.forEach((relativePath, file) => {
+			const jsonPromise = file.async("text");
+			promises.push(jsonPromise);
+		});
 
-				// Assuming jsonContent is an array of course sections
-				jsonContent.forEach((section: CourseSection) => {
-					// Validate section based on spec
-					if (this.isValidSection(section)) {
-						sections.push(section);
-						numRows++;
-					}
-				});
+		// resolve all promises to get an array of course JSON strings
+		let jsonStrings = await Promise.all(promises);
+
+		// validate Dataset
+		if (!this.isValidDataset(jsonStrings)) {
+			// console.log("invalid dataset");
+			throw new InsightError("Invalid Dataset");
+		}
+		// console.log("valid dataset");
+
+		let datasetObj: any = {};
+		// setup dataset JSON obj to write later
+
+		// for each course
+		for (let str of jsonStrings) {
+			// parse course into JSON object
+
+			// if string is empty then skip it
+			if(!str) {
+				continue;
 			}
-		}));
 
-		// Convert sections to a format suitable for querying
+			let course: any = {};
+
+			try {
+				course = JSON.parse(str);
+			} catch (e) {
+				// if not a JSON file then throw error
+				throw new InsightError("unsupported file type");
+			}
+
+			// convert all sections of a course to TS classes
+			let sections = this.createSections(course);
+
+			// add sections to dataset JSON object to be written later
+			this.updateDatasetObj(datasetObj, sections);
+		}
+
+		// write datasetOBJ to json file in ./src/controller/data/ dir
+		this.writeDataset(datasetObj, id);
+
+		// create InsightDataset obj and fill in proper values
 		const dataset: InsightDataset = {
 			id,
 			kind: InsightDatasetKind.Sections,
-			numRows
+			numRows: Object.keys(datasetObj).length
 		};
-
-		// Optionally, process sections array further if needed
-		// Save the processed dataset to disk or keep it in memory as required
 
 		return dataset;
 	}
 
-	private isValidSection(section: CourseSection): boolean {
-		// Implement validation logic based on spec
-		// Check required fields, data types, etc.
-		return true; // Placeholder implementation
+	// writes a dataset to a JSON file
+	private writeDataset(datasetObj: any, id: string) {
+		// check if data directory exists
+		fs.promises.stat(this.dataDir)
+			.then((stats) => {
+				// if the data directory exists then write to it
+				if (stats.isDirectory()) {
+					const datasetJSONString = JSON.stringify(datasetObj, null, 2);
+					fs.writeFile(this.dataDir + id + ".json", datasetJSONString, "utf-8", (err) => {
+						if (err) {
+							console.error("Error writing to file:", err);
+						} else {
+							console.log("File has been written successfully.");
+						}
+					});
+				} else {
+					console.log(`'${this.dataDir}' is not a directory.`);
+				}
+			}).catch((err) => {
+			// make data dir if it doesn't exist
+				fs.promises.mkdir(this.dataDir)
+					.then(() => {
+						console.log(`Directory '${this.dataDir}' created successfully.`);
+					})
+					.catch((e) => {
+						console.error("Error creating directory:", e);
+					});
+				console.log(`Directory '${this.dataDir}' does not exist.`);
+			});
+	}
+
+// adds sections to a dataset JSON obj
+	private updateDatasetObj(datasetObj: any, sections: Section[]): void {
+		for (let section of sections) {
+			datasetObj[section.uuid] = section;
+		}
+	}
+
+	// INPUT: course JSON object
+	// DOES: goes through each section and turns it into a section TS class
+	// 		 then puts section into array of sections for the course
+	// OUTPUT: returns the array of sections for a course
+	private createSections(course: any): Section[] {
+		let sections: Section[] = [];
+
+		for (let section of course.result) {
+			let sectionObject = new Section(section);
+			sections.push(sectionObject);
+		}
+
+		return sections;
+	}
+
+	// validates dataset
+	private isValidDataset(jsonStrings: string[]): boolean {
+		let validCourses: boolean[] = [];
+
+		// go through each course and validate it
+		for (let str of jsonStrings) {
+
+			// if string is empty then skip it
+			if(!str) {
+				continue;
+			}
+
+			let course = JSON.parse(str);
+			let validCourse = this.isValidCourse(course);
+			validCourses.push(validCourse);
+		}
+
+		// if every course is invalid then dataset is invalid
+		if (validCourses.every((course) => !course)) {
+			console.log("invalid dataset");
+			return false;
+		}
+
+		return true;
+	}
+
+	// INPUT: a course JSON object
+	// DOES: checks the "result" entry of the object and for each item:
+	// checks to see if it has all the keys needed to query a section
+	// immediately returns false if "result" section is empty
+	// OUTPUT: returns false if it is an invalid section
+	//		   returns true for a valid section
+	private isValidCourse(course: any): boolean {
+		// sections are contained within results
+		let validSections: boolean[] = [];
+		const results: any[] = course.result;
+
+		// handle empty sections
+		if (results.length < 1) {
+			return false;
+		}
+
+		// check if all sections of a course are valid or not
+		// for each section check if it's valid
+		results.forEach((section: any) => {
+			let validSection = this.isValidSection(section);
+			validSections.push(validSection);
+		});
+
+		// if all sections of a course are invalid then course is invalid
+		if (validSections.every((valid) => !valid)) {
+			return false;
+		}
+
+		return true;
+
+	}
+
+	// validate a single section
+	// checks to see if a section has all validFields
+	private isValidSection(section: any): boolean {
+		this.validFields.forEach((field: string) => {
+			if (!(field in section)) {
+				return false;
+			}
+		});
+
+		return true;
 	}
 
 
