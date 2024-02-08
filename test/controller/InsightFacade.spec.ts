@@ -31,9 +31,15 @@ describe("InsightFacade", function () {
 	});
 
 	describe("AddDataset", function () {
-		beforeEach(function () {
-			// This section resets the insightFacade instance
-			// This runs before each test
+		before(async function () {
+			// This block runs once and loads the datasets.
+			sections = await getContentFromArchives("courses_test.zip");
+
+			// Just in case there is anything hanging around from a previous run of the test suite
+			await clearDisk();
+		});
+
+		beforeEach(async function () {
 			facade = new InsightFacade();
 		});
 
