@@ -114,12 +114,4 @@ export interface IInsightFacade {
 	 * The promise should fulfill an array of currently added InsightDatasets, and will only fulfill.
 	 */
 	listDatasets(): Promise<InsightDataset[]>;
-
-	processCoursesDataset(id: string, zip: JSZip): Promise<InsightDataset>;
-
-	isValidCourse(course: any): boolean;
-
-	isValidSection(section: any): boolean;
-
-	isValidDataset(jsonStrings: string[]): boolean;
 }

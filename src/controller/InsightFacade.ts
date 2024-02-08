@@ -53,8 +53,7 @@ export default class InsightFacade implements IInsightFacade {
 		}
 	}
 
-	public async processCoursesDataset(id: string, zip: JSZip): Promise<InsightDataset> {
-		let res: string[] = [];
+	private async processCoursesDataset(id: string, zip: JSZip): Promise<InsightDataset> {
 		const promises: Array<Promise<string>> = [];
 
 		// for each course file, read its contents
@@ -78,9 +77,14 @@ export default class InsightFacade implements IInsightFacade {
 		// setup dataset JSON obj to write later
 
 		// for each course
-		for (let i = 1; i < jsonStrings.length; i++) {
+		for (let str of jsonStrings) {
 			// parse course into JSON object
-			let str = jsonStrings[i];
+
+			// if string is empty then skip it
+			if(!str) {
+				continue;
+			}
+
 			let course: any = {};
 
 			try {
@@ -97,21 +101,8 @@ export default class InsightFacade implements IInsightFacade {
 			this.updateDatasetObj(datasetObj, sections);
 		}
 
-		// let str = jsonStrings[1];
-		// let course = JSON.parse(str);
-		// console.log(Object.keys(datasetObj).length === course.result.length);
-		// console.log(Object.keys(datasetObj).length);
-		// console.log(course.result.length);
-
 		// write datasetOBJ to json file in ./src/controller/data/ dir
-		const datasetJSONString = JSON.stringify(datasetObj, null, 2);
-		fs.writeFile(this.dataDir + id + ".json", datasetJSONString, "utf-8", (err) => {
-			if (err) {
-				console.error("Error writing to file:", err);
-			} else {
-				console.log("File has been written successfully.");
-			}
-		});
+		this.writeDataset(datasetObj, id);
 
 		// create InsightDataset obj and fill in proper values
 		const dataset: InsightDataset = {
@@ -123,8 +114,39 @@ export default class InsightFacade implements IInsightFacade {
 		return dataset;
 	}
 
-	// adds sections to a dataset JSON obj
-	public updateDatasetObj(datasetObj: any, sections: Section[]): void {
+	// writes a dataset to a JSON file
+	private writeDataset(datasetObj: any, id: string) {
+		// check if data directory exists
+		fs.promises.stat(this.dataDir)
+			.then((stats) => {
+				// if the data directory exists then write to it
+				if (stats.isDirectory()) {
+					const datasetJSONString = JSON.stringify(datasetObj, null, 2);
+					fs.writeFile(this.dataDir + id + ".json", datasetJSONString, "utf-8", (err) => {
+						if (err) {
+							console.error("Error writing to file:", err);
+						} else {
+							console.log("File has been written successfully.");
+						}
+					});
+				} else {
+					console.log(`'${this.dataDir}' is not a directory.`);
+				}
+			}).catch((err) => {
+			// make data dir if it doesn't exist
+				fs.promises.mkdir(this.dataDir)
+					.then(() => {
+						console.log(`Directory '${this.dataDir}' created successfully.`);
+					})
+					.catch((e) => {
+						console.error("Error creating directory:", e);
+					});
+				console.log(`Directory '${this.dataDir}' does not exist.`);
+			});
+	}
+
+// adds sections to a dataset JSON obj
+	private updateDatasetObj(datasetObj: any, sections: Section[]): void {
 		for (let section of sections) {
 			datasetObj[section.uuid] = section;
 		}
@@ -134,7 +156,7 @@ export default class InsightFacade implements IInsightFacade {
 	// DOES: goes through each section and turns it into a section TS class
 	// 		 then puts section into array of sections for the course
 	// OUTPUT: returns the array of sections for a course
-	public createSections(course: any): Section[] {
+	private createSections(course: any): Section[] {
 		let sections: Section[] = [];
 
 		for (let section of course.result) {
@@ -146,12 +168,17 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	// validates dataset
-	public isValidDataset(jsonStrings: string[]): boolean {
+	private isValidDataset(jsonStrings: string[]): boolean {
 		let validCourses: boolean[] = [];
 
 		// go through each course and validate it
-		for (let i = 1; i < jsonStrings.length; i++) {
-			let str = jsonStrings[i];
+		for (let str of jsonStrings) {
+
+			// if string is empty then skip it
+			if(!str) {
+				continue;
+			}
+
 			let course = JSON.parse(str);
 			let validCourse = this.isValidCourse(course);
 			validCourses.push(validCourse);
@@ -159,6 +186,7 @@ export default class InsightFacade implements IInsightFacade {
 
 		// if every course is invalid then dataset is invalid
 		if (validCourses.every((course) => !course)) {
+			console.log("invalid dataset");
 			return false;
 		}
 
@@ -171,7 +199,7 @@ export default class InsightFacade implements IInsightFacade {
 	// immediately returns false if "result" section is empty
 	// OUTPUT: returns false if it is an invalid section
 	//		   returns true for a valid section
-	public isValidCourse(course: any): boolean {
+	private isValidCourse(course: any): boolean {
 		// sections are contained within results
 		let validSections: boolean[] = [];
 		const results: any[] = course.result;
@@ -199,7 +227,7 @@ export default class InsightFacade implements IInsightFacade {
 
 	// validate a single section
 	// checks to see if a section has all validFields
-	public isValidSection(section: any): boolean {
+	private isValidSection(section: any): boolean {
 		this.validFields.forEach((field: string) => {
 			if (!(field in section)) {
 				return false;
