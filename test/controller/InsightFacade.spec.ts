@@ -17,18 +17,14 @@ export interface ITestQuery {
 
 describe("InsightFacade", function () {
 	let facade: IInsightFacade;
-
 	// Declare datasets used in tests. You should add more datasets like this!
 	let sections: string;
-
 	before(async function () {
 		// This block runs once and loads the datasets.
 		sections = await getContentFromArchives("pair.zip");
-
 		// Just in case there is anything hanging around from a previous run of the test suite
 		await clearDisk();
 	});
-
 	describe("AddDataset", function () {
 		beforeEach(function () {
 			// This section resets the insightFacade instance
@@ -54,8 +50,6 @@ describe("InsightFacade", function () {
 	 * You can and should still make tests the normal way, this is just a convenient tool for a majority of queries.
 	 */
 	describe("List Dataset", function () {
-		let facade: InsightFacade;
-		let sections: string;
 		before(async function () {
 			sections = await getContentFromArchives("pair.zip");
 		});
@@ -63,11 +57,10 @@ describe("InsightFacade", function () {
 			await clearDisk();
 			facade = new InsightFacade();
 		});
-		it("should return an empty array when no datasets have been added", async function ()
-		{
+		it("should return an empty array when no datasets have been added", async function () {
 			try {
 				const result = await facade.listDatasets();
-				expect(result).to.be.an('array').that.is.empty;
+				expect(result).to.be.an("array").that.is.empty;
 			} catch (error) {
 				expect.fail("Should not have thrown any error");
 			}
@@ -76,16 +69,16 @@ describe("InsightFacade", function () {
 			const expectedRows = 64612;
 			try {
 				await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
-				//trying to add the dataset
+				// trying to add the dataset
 				const result = await facade.listDatasets();
-				//set the result to the listDataset
+				// set the result to the listDataset
 				expect(result).to.deep.equal([
 					{id: "ubc",
 						kind: InsightDatasetKind.Sections,
 						numRows: expectedRows}
 				]);
-				//expect the result to be include the validID in the dataset. Needs to be one more becasue we added another
-				//row, since we start with 64612
+				// expect the result to be include the validID in the dataset. Needs to be one more becasue we added another
+				// row, since we start with 64612
 			} catch (error) {
 				expect.fail("Should not have thrown any error");
 			}
@@ -104,14 +97,14 @@ describe("InsightFacade", function () {
 				// List datasets and verify
 				const result = await facade.listDatasets();
 				expect(result).to.deep.equal([
-					{ id: "ubc2", kind: InsightDatasetKind.Sections, numRows: expectedRowsUbc2 }
+					{id: "ubc2", kind: InsightDatasetKind.Sections, numRows: expectedRowsUbc2}
 				]);
 			} catch (error) {
 				expect.fail("Should not have thrown any error");
 			}
 		});
 		it("should list multiple datasets correctly", async function () {
-			const expectedRow1 = 64612; //from the UBC course page
+			const expectedRow1 = 64612; // from the UBC course page
 			const expectedRow2 = 64612;
 			try {
 				await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
@@ -120,7 +113,7 @@ describe("InsightFacade", function () {
 				expect(result).to.deep.equal([
 					{id: "ubc", kind: InsightDatasetKind.Sections, numRows: expectedRow1},
 					{id: "ubc2", kind: InsightDatasetKind.Sections, numRows: expectedRow2}
-					//would need to be incremented by 1 becasue we added one more
+					// would need to be incremented by 1 becasue we added one more
 				]);
 			} catch (error) {
 				expect.fail("Should not have thrown any error");
@@ -128,9 +121,6 @@ describe("InsightFacade", function () {
 		});
 	});
 	describe("remove Dataset", function () {
-		let facade: InsightFacade;
-		let sections: string;
-		let invalidContent: string = "invalidContent"; // Not a base64 string of a zip file.
 		before(async function () {
 			sections = await getContentFromArchives("pair.zip");
 		});
@@ -181,7 +171,7 @@ describe("InsightFacade", function () {
 				expect(error).to.be.instanceOf(InsightError);
 			}
 		});
-		//all of the removeDatasets were made using the first addDataset and keeping the same template
+		// all of the removeDatasets were made using the first addDataset and keeping the same template
 	});
 	describe("PerformQuery", function () {
 		before(async function () {

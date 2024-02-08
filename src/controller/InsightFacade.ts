@@ -176,7 +176,7 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public async listDatasets(): Promise<InsightDataset[]> {
-		//made with chatgpt
+		// made with chatgpt
 		// and an object with kind and numRows as the value
 		const datasetList: InsightDataset[] = Object.keys(this.datasets).map((id) => {
 			const dataset = this.datasets[id];
