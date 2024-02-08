@@ -1,4 +1,4 @@
-import {IInsightFacade, InsightDatasetKind, InsightError} from "../../src/controller/IInsightFacade";
+import {IInsightFacade, InsightDatasetKind, InsightError, NotFoundError} from "../../src/controller/IInsightFacade";
 import InsightFacade from "../../src/controller/InsightFacade";
 
 import {assert, expect, use} from "chai";
@@ -10,26 +10,25 @@ import JSZip from "jszip";
 use(chaiAsPromised);
 
 export interface ITestQuery {
-	title: string;
-	input: unknown;
-	errorExpected: boolean;
-	expected: any;
+	title: string; // title of the test case
+	input: unknown; // the query under test
+	errorExpected: boolean; // if the query is expected to throw an error
+	expectedErrorClass: string;
+	expected: any; // the expected result
 }
 
 describe("InsightFacade", function () {
 	let facade: IInsightFacade;
-
 	// Declare datasets used in tests. You should add more datasets like this!
 	let sections: string;
-
 	before(async function () {
 		// This block runs once and loads the datasets.
-		sections = await getContentFromArchives("courses_test.zip");
+
+		sections = await getContentFromArchives("pair.zip");
 
 		// Just in case there is anything hanging around from a previous run of the test suite
 		await clearDisk();
 	});
-
 	describe("AddDataset", function () {
 		before(async function () {
 			// This block runs once and loads the datasets.
@@ -147,6 +146,130 @@ describe("InsightFacade", function () {
 	 * This test suite dynamically generates tests from the JSON files in test/resources/queries.
 	 * You can and should still make tests the normal way, this is just a convenient tool for a majority of queries.
 	 */
+	describe("List Dataset", function () {
+		before(async function () {
+			sections = await getContentFromArchives("pair.zip");
+		});
+		beforeEach(async function () {
+			await clearDisk();
+			facade = new InsightFacade();
+		});
+		it("should return an empty array when no datasets have been added", async function () {
+			try {
+				const result = await facade.listDatasets();
+				expect(result).to.be.an("array").that.is.empty;
+			} catch (error) {
+				expect.fail("Should not have thrown any error");
+			}
+		});
+		it("should list datasets correctly when one dataset has been added", async function () {
+			const expectedRows = 64612;
+			try {
+				await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+				// trying to add the dataset
+				const result = await facade.listDatasets();
+				// set the result to the listDataset
+				expect(result).to.deep.equal([
+					{id: "ubc",
+						kind: InsightDatasetKind.Sections,
+						numRows: expectedRows}
+				]);
+				// expect the result to be include the validID in the dataset. Needs to be one more becasue we added another
+				// row, since we start with 64612
+			} catch (error) {
+				expect.fail("Should not have thrown any error");
+			}
+		});
+		it("should list datasets correctly after removing a dataset", async function () {
+			const expectedRowsUbc = 64612;
+			const expectedRowsUbc2 = 64612;
+			try {
+				// Add two datasets
+				await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+				await facade.addDataset("ubc2", sections, InsightDatasetKind.Sections);
+
+				// Remove one dataset
+				await facade.removeDataset("ubc");
+
+				// List datasets and verify
+				const result = await facade.listDatasets();
+				expect(result).to.deep.equal([
+					{id: "ubc2", kind: InsightDatasetKind.Sections, numRows: expectedRowsUbc2}
+				]);
+			} catch (error) {
+				expect.fail("Should not have thrown any error");
+			}
+		});
+		it("should list multiple datasets correctly", async function () {
+			const expectedRow1 = 64612; // from the UBC course page
+			const expectedRow2 = 64612;
+			try {
+				await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+				await facade.addDataset("ubc2", sections, InsightDatasetKind.Sections);
+				const result = await facade.listDatasets();
+				expect(result).to.deep.equal([
+					{id: "ubc", kind: InsightDatasetKind.Sections, numRows: expectedRow1},
+					{id: "ubc2", kind: InsightDatasetKind.Sections, numRows: expectedRow2}
+					// would need to be incremented by 1 becasue we added one more
+				]);
+			} catch (error) {
+				expect.fail("Should not have thrown any error");
+			}
+		});
+	});
+	describe("remove Dataset", function () {
+		before(async function () {
+			sections = await getContentFromArchives("pair.zip");
+		});
+		beforeEach(async function () {
+			await clearDisk();
+			facade = new InsightFacade();
+		});
+		it("should remove a dataset that exists", async function () {
+			try {
+				await facade.addDataset("validId", sections, InsightDatasetKind.Sections);
+				const result = await facade.removeDataset("validId");
+				expect(result).to.equal("validId");
+			} catch (error) {
+				expect.fail("Should not have thrown any error");
+			}
+		});
+		// Test Case: Removing Non-existent Dataset
+		it("should reject removing a dataset that does not exist", async function () {
+			try {
+				await facade.removeDataset("nonExistentId");
+				expect.fail("Should have thrown NotFoundError");
+			} catch (error) {
+				expect(error).to.be.instanceOf(NotFoundError);
+			}
+		});
+		it("should reject removing a dataset with an ID of only whitespace", async function () {
+			try {
+				await facade.removeDataset("    ");
+				expect.fail("Should have thrown InsightError");
+			} catch (error) {
+				expect(error).to.be.instanceOf(InsightError);
+			}
+		});
+		it("should reject removing a dataset with an ID containing an underscore", async function () {
+			try {
+				await facade.removeDataset("invalid_id");
+				expect.fail("Should have thrown InsightError");
+			} catch (error) {
+				expect(error).to.be.instanceOf(InsightError);
+			}
+		});
+		//
+		it("should reject removing a dataset with an empty string ID", async function () {
+			try {
+				await facade.removeDataset("");
+				expect.fail("Should have thrown InsightError");
+			} catch (error) {
+				expect(error).to.be.instanceOf(InsightError);
+			}
+		});
+		// all of the removeDatasets were made using the first addDataset and keeping the same template
+	});
 	describe("PerformQuery", function () {
 		before(async function () {
 			facade = new InsightFacade();
