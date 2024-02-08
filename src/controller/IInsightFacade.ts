@@ -115,7 +115,7 @@ export interface IInsightFacade {
 	 */
 	listDatasets(): Promise<InsightDataset[]>;
 
-	processCoursesDataset(id: string, zip: JSZip): Promise<string[]>;
+	processCoursesDataset(id: string, zip: JSZip): Promise<InsightDataset>;
 
 	isValidCourse(course: any): boolean;
 

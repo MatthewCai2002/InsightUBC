@@ -1,15 +1,15 @@
 
 export default class Section {
-	private uuid: string;
-	private id: string ;
-	private title: string;
-	private instructor: string;
-	private department: string;
-	private year: number;
-	private avg: number;
-	private pass: number;
-	private fail: number;
-	private audit: number;
+	public readonly uuid: string;
+	public readonly id: string ;
+	public readonly title: string;
+	public readonly instructor: string;
+	public readonly department: string;
+	public readonly year: number;
+	public readonly avg: number;
+	public readonly pass: number;
+	public readonly fail: number;
+	public readonly audit: number;
 
 	constructor(sectionJSON: any) {
 		this.uuid = sectionJSON.id;

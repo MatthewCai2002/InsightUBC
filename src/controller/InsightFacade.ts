@@ -8,20 +8,21 @@ import {
 } from "./IInsightFacade";
 import * as fs from "fs-extra";
 import JSZip from "jszip";
+import Section from "./section";
 
 export default class InsightFacade implements IInsightFacade {
 	private validFields: string[] = ["id", "Course", "Title", "Professor", "Subject",
 		"Year", "Avg", "Pass", "Fail", "Audit"];
 
 	private datasets: {[id: string]: InsightDataset} = {};
-	private readonly dataDir = "./data";
+	private readonly dataDir = "./data/";
 
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		if (!id.trim() || id.includes("_")) {
-			return Promise.reject(new InsightError("Invalid dataset ID."));
+			return Promise.reject(new InsightError("Invalid dataset ID"));
 		}
 		if (this.datasets[id]) {
-			return Promise.reject(new InsightError("Dataset with the same ID already exists."));
+			return Promise.reject(new InsightError("Dataset with the same ID already exists"));
 		}
 
 		try {
@@ -33,78 +34,118 @@ export default class InsightFacade implements IInsightFacade {
 			const unzippedContent = await zip.loadAsync(decodedContent, {base64: true});
 
 			// process dataset
-			// switch (kind) {
-			// 	case InsightDatasetKind.Sections:
-			// 		dataset = await this.processCoursesDataset(id, unzippedContent);
-			// 		break;
-			// 	default:
-			// 		return Promise.reject(new InsightError("Unsupported dataset kind."));
-			// }
+			switch (kind) {
+				case InsightDatasetKind.Sections:
+					dataset = await this.processCoursesDataset(id, unzippedContent);
+					break;
+				default:
+					return Promise.reject(new InsightError("Unsupported dataset kind."));
+			}
 
-			// this.datasets[id] = dataset;
-			// await fs.writeJson(`${this.dataDir}/${id}.json`, dataset);
+			// add dataset to dataset dict
+			this.datasets[id] = dataset;
+
+			// return array of all added datasets
+			console.log(Object.keys(this.datasets));
 			return Promise.resolve(Object.keys(this.datasets));
 		} catch (error) {
 			return Promise.reject(new InsightError(`Failed to add dataset: ${error}`));
 		}
 	}
 
-	public async processCoursesDataset(id: string, zip: JSZip): Promise<string[]> {
-		let numRows = 0;
-		const res: string[] = [];
+	public async processCoursesDataset(id: string, zip: JSZip): Promise<InsightDataset> {
+		let res: string[] = [];
 		const promises: Array<Promise<string>> = [];
 
-		// for each JSON file, read it's content
+		// for each course file, read its contents
 		// and push it onto an array of promises
 		zip.forEach((relativePath, file) => {
 			const jsonPromise = file.async("text");
 			promises.push(jsonPromise);
 		});
 
-		// resolve all promises to get an array of JSON strings, 1 per file
+		// resolve all promises to get an array of course JSON strings
 		let jsonStrings = await Promise.all(promises);
 
 		// validate Dataset
 		if (!this.isValidDataset(jsonStrings)) {
+			// console.log("invalid dataset");
 			throw new InsightError("Invalid Dataset");
 		}
+		// console.log("valid dataset");
 
-		try {
-			// for each file (course)
-			for (let i = 1; i < jsonStrings.length; i++) {
-				// parse into JSON object
-				let str = jsonStrings[i];
-				let course = JSON.parse(str);
+		let datasetObj: any = {};
+		// setup dataset JSON obj to write later
 
+		// for each course
+		for (let i = 1; i < jsonStrings.length; i++) {
+			// parse course into JSON object
+			let str = jsonStrings[i];
+			let course: any = {};
 
-				// TODO: convert JSON object into section class
-				// TODO:
-
-
-				// console.log(parsedStr);
-				// console.log(parsedStr.rank);
+			try {
+				course = JSON.parse(str);
+			} catch (e) {
+				// if not a JSON file then throw error
+				throw new InsightError("unsupported file type");
 			}
-		} catch (e) {
-			// if not a JSON file then throw error
-			throw new InsightError("unsupported file type");
+
+			// convert all sections of a course to TS classes
+			let sections = this.createSections(course);
+
+			// add sections to dataset JSON object to be written later
+			this.updateDatasetObj(datasetObj, sections);
 		}
 
-		return res;
+		// let str = jsonStrings[1];
+		// let course = JSON.parse(str);
+		// console.log(Object.keys(datasetObj).length === course.result.length);
+		// console.log(Object.keys(datasetObj).length);
+		// console.log(course.result.length);
 
-		// // Convert sections to a format suitable for querying
-		// const dataset: InsightDataset = {
-		// 	id,
-		// 	kind: InsightDatasetKind.Sections,
-		// 	numRows
-		// };
-		//
-		// // Optionally, process sections array further if needed
-		// // Save the processed dataset to disk or keep it in memory as required
-		//
-		// return dataset;
+		// write datasetOBJ to json file in ./src/controller/data/ dir
+		const datasetJSONString = JSON.stringify(datasetObj, null, 2);
+		fs.writeFile(this.dataDir + id + ".json", datasetJSONString, "utf-8", (err) => {
+			if (err) {
+				console.error("Error writing to file:", err);
+			} else {
+				console.log("File has been written successfully.");
+			}
+		});
+
+		// create InsightDataset obj and fill in proper values
+		const dataset: InsightDataset = {
+			id,
+			kind: InsightDatasetKind.Sections,
+			numRows: Object.keys(datasetObj).length
+		};
+
+		return dataset;
 	}
 
-	// validate dataset
+	// adds sections to a dataset JSON obj
+	public updateDatasetObj(datasetObj: any, sections: Section[]): void {
+		for (let section of sections) {
+			datasetObj[section.uuid] = section;
+		}
+	}
+
+	// INPUT: course JSON object
+	// DOES: goes through each section and turns it into a section TS class
+	// 		 then puts section into array of sections for the course
+	// OUTPUT: returns the array of sections for a course
+	public createSections(course: any): Section[] {
+		let sections: Section[] = [];
+
+		for (let section of course.result) {
+			let sectionObject = new Section(section);
+			sections.push(sectionObject);
+		}
+
+		return sections;
+	}
+
+	// validates dataset
 	public isValidDataset(jsonStrings: string[]): boolean {
 		let validCourses: boolean[] = [];
 
@@ -124,7 +165,7 @@ export default class InsightFacade implements IInsightFacade {
 		return true;
 	}
 
-	// INPUT: a valid parsed JSON object
+	// INPUT: a course JSON object
 	// DOES: checks the "result" entry of the object and for each item:
 	// checks to see if it has all the keys needed to query a section
 	// immediately returns false if "result" section is empty
@@ -140,14 +181,14 @@ export default class InsightFacade implements IInsightFacade {
 			return false;
 		}
 
-		// then we check if all sections of a course ar valid or not
-		// if all are not valid then course isn't valid
+		// check if all sections of a course are valid or not
 		// for each section check if it's valid
 		results.forEach((section: any) => {
 			let validSection = this.isValidSection(section);
 			validSections.push(validSection);
 		});
 
+		// if all sections of a course are invalid then course is invalid
 		if (validSections.every((valid) => !valid)) {
 			return false;
 		}
