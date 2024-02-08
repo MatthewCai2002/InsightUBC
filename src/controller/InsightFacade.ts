@@ -18,7 +18,6 @@ export default class InsightFacade implements IInsightFacade {
 
 	constructor() {
 		console.log("InsightFacade::init()");
-		fs.ensureDirSync(this.dataDir);
 	}
 
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
@@ -121,22 +120,17 @@ export default class InsightFacade implements IInsightFacade {
 		if (!this.isValidQuery(query)) {
 			return Promise.reject(new InsightError("Query is not valid."));
 		}
-
 		// Step 2: Determine the dataset ID to query
 		const datasetId = this.extractDatasetId(query);
 		if (!datasetId || !this.datasets[datasetId]) {
 			return Promise.reject(new InsightError("Dataset ID is not found or not loaded."));
 		}
-
 		// Load the dataset from disk or memory as needed
 		const dataset = await this.loadDataset(datasetId);
-
 		// Step 3: Parse the query to an intermediate representation (e.g., AST)
 		const parsedQuery = this.parseQuery(query);
-
 		// Step 4: Execute the query against the dataset
 		const results = this.executeQuery(dataset, parsedQuery);
-
 		// Step 5: Return the results
 		return Promise.resolve(results);
 	}
@@ -182,8 +176,17 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public async listDatasets(): Promise<InsightDataset[]> {
-		// Convert the datasets dictionary to an array of InsightDataset objects
-		const datasetList: InsightDataset[] = Object.values(this.datasets);
+		//made with chatgpt
+		// and an object with kind and numRows as the value
+		const datasetList: InsightDataset[] = Object.keys(this.datasets).map((id) => {
+			const dataset = this.datasets[id];
+			return {
+				id: id, // Dataset ID from the dictionary key
+				kind: dataset.kind, // Assuming the kind is directly stored in the dataset object
+				numRows: dataset.numRows
+			};
+		});
 		return Promise.resolve(datasetList);
 	}
+
 }
