@@ -1,6 +1,5 @@
 import {IInsightFacade, InsightDatasetKind, InsightError} from "../../src/controller/IInsightFacade";
 import InsightFacade from "../../src/controller/InsightFacade";
-import processCoursesDataset from "../../src/controller/InsightFacade";
 
 import {assert, expect, use} from "chai";
 import chaiAsPromised from "chai-as-promised";
