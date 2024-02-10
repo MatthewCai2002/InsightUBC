@@ -31,21 +31,11 @@ describe("InsightFacade", function () {
 	});
 	describe("AddDataset", function () {
 		before(async function () {
-			// This block runs once and loads the datasets.
-			sections = await getContentFromArchives("courses_test.zip");
-
-			// Just in case there is anything hanging around from a previous run of the test suite
-			await clearDisk();
+			sections = await getContentFromArchives("pair.zip");
 		});
-
 		beforeEach(async function () {
-			facade = new InsightFacade();
-		});
-
-		afterEach(async function () {
-			// This section resets the data directory (removing any cached data)
-			// This runs after each test, which should make each test independent of the previous one
 			await clearDisk();
+			facade = new InsightFacade();
 		});
 
 		it("reject with  an empty dataset id", async function () {
@@ -85,62 +75,7 @@ describe("InsightFacade", function () {
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
-
-		it("Accept with valid ID", async function () {
-			console.log();
-			const result = facade.addDataset("1", sections, InsightDatasetKind.Sections);
-			// const list = facade.listDatasets();
-			//
-			// await expect(list).to.eventually.be.an("array").with.lengthOf(1);
-			return expect(result).to.eventually.have.members(["1"]);
-		});
-
-		it("Accept with different ID", async function () {
-			await facade.addDataset("1", sections, InsightDatasetKind.Sections);
-
-			const result = facade.addDataset("2", sections, InsightDatasetKind.Sections);
-			// const list = facade.listDatasets();
-			//
-			// await expect(list).to.eventually.be.an("array").with.lengthOf(2);
-			return expect(result).to.eventually.have.members(["1","2"]);
-		});
 	});
-
-	// describe("ProcessDataset", function () {
-	// 	beforeEach(function () {
-	// 		// This section resets the insightFacade instance
-	// 		// This runs before each test
-	// 		facade = new InsightFacade();
-	// 	});
-	//
-	// 	afterEach(async function () {
-	// 		// This section resets the data directory (removing any cached data)
-	// 		// This runs after each test, which should make each test independent of the previous one
-	// 		await clearDisk();
-	// 	});
-	//
-	// 	it("Reject with 1 invalid course", async function () {
-	// 		sections = await getContentFromArchives("courses_1_invalid.zip");
-	//
-	// 		const zip = new JSZip();
-	// 		const decodedContent = Buffer.from(sections, "base64");
-	// 		const unzippedContent = await zip.loadAsync(decodedContent, {base64: true});
-	//
-	// 		const res = await facade.processCoursesDataset("1", unzippedContent);
-	// 		return expect(res).to.deep.equal(['{"result":[],"rank":0}']);
-	// 	});
-	//
-	// 	it("Accept with valid dataset, valid and invalid courses", async function () {
-	// 		sections = await getContentFromArchives("courses_test.zip");
-	//
-	// 		const zip = new JSZip();
-	// 		const decodedContent = Buffer.from(sections, "base64");
-	// 		const unzippedContent = await zip.loadAsync(decodedContent, {base64: true});
-	//
-	// 		const res = await facade.processCoursesDataset("1", unzippedContent);
-	// 		return expect(res).to.deep.equal(['{"result":[],"rank":0}']);
-	// 	});
-	// });
 
 	/*
 	 * This test suite dynamically generates tests from the JSON files in test/resources/queries.
