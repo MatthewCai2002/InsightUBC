@@ -135,6 +135,7 @@ export default class InsightFacade implements IInsightFacade {
 				}
 			}).catch((err) => {
 			// make data dir if it doesn't exist
+				console.log(`Directory '${this.dataDir}' does not exist.`);
 				fs.promises.mkdir(this.dataDir)
 					.then(() => {
 						console.log(`Directory '${this.dataDir}' created successfully.`);
@@ -142,7 +143,6 @@ export default class InsightFacade implements IInsightFacade {
 					.catch((e) => {
 						console.error("Error creating directory:", e);
 					});
-				console.log(`Directory '${this.dataDir}' does not exist.`);
 			});
 	}
 
