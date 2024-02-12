@@ -265,26 +265,6 @@ export default class InsightFacade implements IInsightFacade {
 
 	public async performQuery(query: any): Promise<InsightResult[]> {
 		// takes in an already parsed JSON object
-		// TODO: validate Query recursively.
-		//		 1. check if the query follows EBNF
-		//			- all queries need to have a WHERE clause
-		//			a. (ie: query has a WHERE clause, and looks like WHERE: {EQ: ubc.id is 1}} or something)
-		//			b. need to check if current keyword is an EBNF keyword
-		//			c. need to check if current word is being used correctly
-		//				- ie: IS: {ubc.id: 1} is how you use the IS keyword
-		//				      but IS: [{ubc.id: 1}, {ubc.id: 2}] isn't.
-		//				- this part will have to be done recursively
-		//					-> curr word is only valid of all children are valid
-		//					-> need to check if chlidren are valid
-		//					-> keep recursing until a leaf node (a clause with no nested clauses)
-		//					-> return up the call stack until curr.
-		//					-> if curr and all its children are valid then curr is valid
-		//		 2. check if the query references 1 DB.
-		//		 	a. (ie: ubc.id is 1 is fine but ubc.id is ubc2.id isn't)
-		//			b. maybe we could have a dictionary with all the DBs seen so far and length should be < 2
-		//				- then as we recurse through the query we can just check the length of this each time
-		//		 3. cannot check for the 5000 result limit initially, so check it as we find results.
-		//			a. put results into an array and at the end of performQuery if arr.length > 5000 then return invalid
 
 		// TODO: determine the dataset to query using ID
 		//		1. dataset JSON files in./data/ are named with their ID
@@ -310,62 +290,73 @@ export default class InsightFacade implements IInsightFacade {
 		//				^^^ this part might not be right and might be handled by the test suite actually
 		//			a. should call handleWhere, handleOptions etc
 		// Step 1: Validate the query
-		if (!this.isValidQuery(query)) {
-			return Promise.reject(new InsightError("Query is not valid."));
-		}
-		// Step 2: Determine the dataset ID to query
-		const datasetId = this.extractDatasetId(query);
-		if (!datasetId || !this.datasets[datasetId]) {
-			return Promise.reject(new InsightError("Dataset ID is not found or not loaded."));
-		}
-		// Load the dataset from disk or memory as needed
-		const dataset = await this.loadDataset(datasetId);
-		// Step 3: Parse the query to an intermediate representation (e.g., AST)
-		const parsedQuery = this.parseQuery(query);
-		// Step 4: Execute the query against the dataset
-		const results = this.executeQuery(dataset, parsedQuery);
-		// Step 5: Return the results
-		return Promise.resolve(results);
+		console.log(query);
+		const valid = this.validateQuery(query);
+
+		// // Step 2: Determine the dataset ID to query
+		// const datasetId = this.extractDatasetId(query);
+		// if (!datasetId || !this.datasets[datasetId]) {
+		// 	return Promise.reject(new InsightError("Dataset ID is not found or not loaded."));
+		// }
+		// // Load the dataset from disk or memory as needed
+		// const dataset = await this.loadDataset(datasetId);
+		// // Step 3: Parse the query to an intermediate representation (e.g., AST)
+		// const parsedQuery = this.parseQuery(query);
+		// // Step 4: Execute the query against the dataset
+		// // Step 5: Return the results
+		return [];
 	}
 
-	private isValidQuery(query: any): boolean {
-		// Example: Check if the query has WHERE and OPTIONS sections
-		if (!query || !query.WHERE || !query.OPTIONS) {
-			return false;
+	// receives a query as a JS object then recursively checks each field to see if it follows EBNF
+	private validateQuery(query: any): boolean {
+		// dict for db references
+		let dbRefDict = {};
+		// check for WHERE
+		if (!("WHERE"  in query)) {
+			throw new InsightError("No WHERE clause");
 		}
-		// Add more specific validations based on your query format
+
+		const validWhere = this.validateWhere(query.WHERE, dbRefDict);
+		const validOpt = this.validateOptions(query.OPTIONS, dbRefDict);
+
+		if (validWhere && validOpt && Object.keys(dbRefDict).length < 2) {
+			return true;
+		}
+		return false;
+		// TODO: validate Query recursively.
+		//		 1. check if the query follows EBNF
+		//			- all queries need to have a WHERE clause
+		//			a. (ie: query has a WHERE clause, and looks like WHERE: {EQ: ubc.id is 1}} or something)
+		//				- as we check through where and options we must check for db references
+		//			b. need to check if current keyword is an EBNF keyword
+		//			c. need to check if current word is being used correctly
+		//				- ie: IS: {ubc.id: 1} is how you use the IS keyword
+		//				      but IS: [{ubc.id: 1}, {ubc.id: 2}] isn't.
+		//				- this part will have to be done recursively
+		//					-> curr word is only valid of all children are valid
+		//					-> need to check if chlidren are valid
+		//					-> keep recursing until a leaf node (a clause with no nested clauses)
+		//					-> return up the call stack until curr.
+		//					-> if curr and all its children are valid then curr is valid
+		//		 2. check if the query references 1 DB.
+		//		 	a. (ie: ubc.id is 1 is fine but ubc.id is ubc2.id isn't)
+		//			b. maybe we could have a dictionary with all the DBs seen so far and length should be < 2
+		//				- then as we recurse through the query we can just check the length of this each time
+		//		 3. cannot check for the 5000 result limit initially, so check it as we find results.
+		//			a. put results into an array and at the end of performQuery if arr.length > 5000 then return invalid
+	}
+
+	private validateWhere(currQuery: any, dbRefDict: any): boolean {
+		// check if current keyword is a EBNF keyword
+		// if we can, parse any string into the dataset ID using str split
+		// check keyword usage (done recursively)
+		// if all children are being used correctly then this is being used correctly
+
 		return true;
 	}
 
-	private extractDatasetId(query: any): string | null {
-		// Example: Assuming dataset ID is specified in the OPTIONS section
-		if (query && query.OPTIONS && query.OPTIONS.datasetId) {
-			return query.OPTIONS.datasetId;
-		}
-		return null;
-	}
-
-	private async loadDataset(datasetId: string): Promise<any> {
-		// Load and return the dataset from disk or memory
-		// This assumes datasets are stored as JSON files in a `dataDir` directory
-		try {
-			const datasetPath = `${this.dataDir}/${datasetId}.json`;
-			return await fs.readJson(datasetPath);
-		} catch (error) {
-			throw new InsightError(`Failed to load dataset ${datasetId}: ${error}`);
-		}
-	}
-
-	private parseQuery(query: any): any {
-		// Convert the query to an intermediate form, such as an Abstract Syntax Tree (AST)
-		// This is highly dependent on your query format and requirements
-		return {}; // Placeholder
-	}
-
-	private executeQuery(dataset: any, parsedQuery: any): InsightResult[] {
-		// Execute the parsed query against the dataset
-		// You'll need to implement the logic for filtering data based on the query
-		return []; // Placeholder
+	private validateOptions(whereQuery: any, dbRefDict: any): boolean {
+		return true;
 	}
 
 	public async listDatasets(): Promise<InsightDataset[]> {
