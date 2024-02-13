@@ -264,12 +264,53 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public async performQuery(query: any): Promise<InsightResult[]> {
-		// takes in an already parsed JSON object
 
 		// TODO: determine the dataset to query using ID
 		//		1. dataset JSON files in./data/ are named with their ID
 		//			a. can iterate through all files in ./data/ to find a JSON file with name == ID
 		//		2. load that JSON file
+		// takes in an already parsed JSON object
+		// makes sure that the query is valid
+		const valid = this.validateQuery(query);
+		if (!valid) {
+			return Promise.reject(new InsightError("Query validation failed."));
+		}
+		const datasetId = this.extractDatasetId(query);
+		if (!datasetId) {
+			throw new InsightError("Dataset ID could not be determined from the query.");
+		}
+		const dataset = await this.loadDataset(datasetId);
+			// Continue with query processing on the loaded dataset...
+			// This would involve filtering the dataset based on the WHERE clause,
+			// applying any transformations, and then selecting/sorting based on OPTIONS.
+		return []; // Placeholder return, replace with actual query results after processin
+	}
+
+	private extractDatasetId(query: any): string | null {
+		// Assuming OPTIONS.COLUMNS contains field names prefixed with dataset ID
+		if (query && query.OPTIONS && query.OPTIONS.COLUMNS && query.OPTIONS.COLUMNS.length > 0) {
+			// Extract the dataset ID from the first column name
+			const firstColumn = query.OPTIONS.COLUMNS[0];
+			if (typeof firstColumn === "string" && firstColumn.includes("_")) {
+				const [datasetId] = firstColumn.split("_");
+				return datasetId;
+			}
+		}
+		return null; // Return null or throw an error if the dataset ID cannot be determined
+	}
+
+	private async loadDataset(datasetId: string): Promise<any> {
+		// loads the dataset in
+		const datasetPath = this.dataDir + datasetId + ".json"; // Assuming this.dataDir is './data/'
+		try {
+			const dataset = await fs.readJson(datasetPath);
+			return dataset;
+		} catch (error) {
+			console.error(`Failed to load dataset ${datasetId}: ${error}`);
+			throw new InsightError(`Failed to load dataset ${datasetId}: ${error}`);
+		}
+	}
+
 
 		// TODO: query through dataset to find data that matches query
 		//		1. this will be done recursively
@@ -290,9 +331,6 @@ export default class InsightFacade implements IInsightFacade {
 		//				^^^ this part might not be right and might be handled by the test suite actually
 		//			a. should call handleWhere, handleOptions etc
 		// Step 1: Validate the query
-		console.log(query);
-		const valid = this.validateQuery(query);
-
 		// // Step 2: Determine the dataset ID to query
 		// const datasetId = this.extractDatasetId(query);
 		// if (!datasetId || !this.datasets[datasetId]) {
@@ -304,8 +342,7 @@ export default class InsightFacade implements IInsightFacade {
 		// const parsedQuery = this.parseQuery(query);
 		// // Step 4: Execute the query against the dataset
 		// // Step 5: Return the results
-		return [];
-	}
+
 
 	// receives a query as a JS object then recursively checks each field to see if it follows EBNF
 	private validateQuery(query: any): boolean {
