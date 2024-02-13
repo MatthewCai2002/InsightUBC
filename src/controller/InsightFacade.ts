@@ -294,7 +294,6 @@ export default class InsightFacade implements IInsightFacade {
 		// 		return conditions.reduce((result: Section[], condition: any) =>
 		// 			this.filterByWhereClause(result, condition), dataset);
 		// 	case "OR":
-		// 		// eslint-disable-next-line no-case-declarations
 		// 		let orResults: Section[] = [];
 		// 		conditions.forEach((condition: any) => {
 		// 			const conditionResults: Section[] = this.filterByWhereClause(dataset, condition);
@@ -302,7 +301,6 @@ export default class InsightFacade implements IInsightFacade {
 		// 		});
 		// 		return orResults;
 		// 	case "NOT":
-		// 		// eslint-disable-next-line no-case-declarations
 		// 		const notResults: Section[] = this.filterByWhereClause(dataset, conditions);
 		// 		return dataset.filter((item) => !notResults.includes(item));
 		// 	default:
