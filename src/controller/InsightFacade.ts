@@ -10,6 +10,12 @@ import * as fs from "fs-extra";
 import JSZip from "jszip";
 import Section from "./section";
 
+// Assuming the structure of your options object based on the provided code
+interface QueryOptions {
+	COLUMNS: string[];
+	ORDER?: string; // Optional
+}
+
 export default class InsightFacade implements IInsightFacade {
 	private validFields: string[] = ["id", "Course", "Title", "Professor", "Subject",
 		"Year", "Avg", "Pass", "Fail", "Audit"];
@@ -179,7 +185,6 @@ export default class InsightFacade implements IInsightFacade {
 			if(!str) {
 				continue;
 			}
-
 			let course = JSON.parse(str);
 			let validCourse = this.isValidCourse(course);
 			validCourses.push(validCourse);
@@ -190,7 +195,6 @@ export default class InsightFacade implements IInsightFacade {
 			console.log("invalid dataset");
 			return false;
 		}
-
 		return true;
 	}
 
@@ -209,19 +213,16 @@ export default class InsightFacade implements IInsightFacade {
 		if (results.length < 1) {
 			return false;
 		}
-
 		// check if all sections of a course are valid or not
 		// for each section check if it's valid
 		results.forEach((section: any) => {
 			let validSection = this.isValidSection(section);
 			validSections.push(validSection);
 		});
-
 		// if all sections of a course are invalid then course is invalid
 		if (validSections.every((valid) => !valid)) {
 			return false;
 		}
-
 		return true;
 
 	}
@@ -234,7 +235,6 @@ export default class InsightFacade implements IInsightFacade {
 				return false;
 			}
 		});
-
 		return true;
 	}
 
@@ -244,7 +244,6 @@ export default class InsightFacade implements IInsightFacade {
 		if (!id.trim() || id.includes("_")) {
 			return Promise.reject(new InsightError("Invalid dataset ID."));
 		}
-
 		// Check if the dataset exists
 		if (!this.datasets[id]) {
 			return Promise.reject(new NotFoundError("Dataset not found."));
@@ -264,13 +263,6 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public async performQuery(query: any): Promise<InsightResult[]> {
-
-		// TODO: determine the dataset to query using ID
-		//		1. dataset JSON files in./data/ are named with their ID
-		//			a. can iterate through all files in ./data/ to find a JSON file with name == ID
-		//		2. load that JSON file
-		// takes in an already parsed JSON object
-		// makes sure that the query is valid
 		const valid = this.validateQuery(query);
 		if (!valid) {
 			return Promise.reject(new InsightError("Query validation failed."));
@@ -280,10 +272,75 @@ export default class InsightFacade implements IInsightFacade {
 			throw new InsightError("Dataset ID could not be determined from the query.");
 		}
 		const dataset = await this.loadDataset(datasetId);
+		const filteredResults = this.filterByWhereClause(dataset, query.WHERE);
+		// Apply transformations (if any) and options to the filtered results
+		return this.applyOptions(filteredResults, query.OPTIONS);
 			// Continue with query processing on the loaded dataset...
 			// This would involve filtering the dataset based on the WHERE clause,
 			// applying any transformations, and then selecting/sorting based on OPTIONS.
-		return []; // Placeholder return, replace with actual query results after processin
+	}
+
+	private filterByWhereClause(dataset: Section[], whereClause: any): Section[] {
+		// Explicit typing for operator and conditions helps with code clarity and type checking
+		// MADE ESLINT SUPRESSIONS
+		// if (Object.keys(whereClause).length === 0) {
+		// 	return dataset;
+		// }
+		// const operator: string = Object.keys(whereClause)[0];
+		// const conditions: any = whereClause[operator]; // Consider defining a type for conditions
+		// switch (operator) {
+		// 	case "AND":
+		// 		// Here, TypeScript knows conditions must be an array, so we can avoid explicit 'any' typing
+		// 		return conditions.reduce((result: Section[], condition: any) =>
+		// 			this.filterByWhereClause(result, condition), dataset);
+		// 	case "OR":
+		// 		// eslint-disable-next-line no-case-declarations
+		// 		let orResults: Section[] = [];
+		// 		conditions.forEach((condition: any) => {
+		// 			const conditionResults: Section[] = this.filterByWhereClause(dataset, condition);
+		// 			orResults = [...orResults, ...conditionResults.filter((item) => !orResults.includes(item))];
+		// 		});
+		// 		return orResults;
+		// 	case "NOT":
+		// 		// eslint-disable-next-line no-case-declarations
+		// 		const notResults: Section[] = this.filterByWhereClause(dataset, conditions);
+		// 		return dataset.filter((item) => !notResults.includes(item));
+		// 	default:
+		// 		return this.handleComparisonOperations(dataset, operator, conditions);
+		// }
+		return [];
+	}
+	//
+	// private handleComparisonOperations(dataset: any[], operator: string, condition: any): any[] {
+	// 	const field = Object.keys(condition)[0];
+	// 	const value = condition[field];
+	//
+	// 	return dataset.filter((section) => {
+	// 		switch (operator) {
+	// 			case "GT": return section[field] > value;
+	// 			case "LT": return section[field] < value;
+	// 			case "EQ": return section[field] === value;
+	// 			case "IS": return new RegExp(`^${value.replace(/\*/g, ".*")}$`).test(section[field]);
+	// 			default: return true; // Or handle invalid operator
+	// 		}
+	// 	});
+	// }
+
+	private applyOptions(filteredResults: any[], options: any): InsightResult[] {
+		// Project specified columns
+		// const projectedResults = filteredResults.map((item) => {
+		// 	const projectedItem = {};
+		// 	options.COLUMNS.forEach((column) => {
+		// 		projectedItem[column] = item[column];
+		// 	});
+		// 	return projectedItem;
+		// });
+		// // Sort results if ORDER is specified
+		// if (options.ORDER) {
+		// 	const orderKey = options.ORDER;
+		// 	projectedResults.sort((a, b) => a[orderKey] - b[orderKey]);
+		// }
+		return [];
 	}
 
 	private extractDatasetId(query: any): string | null {
@@ -311,137 +368,76 @@ export default class InsightFacade implements IInsightFacade {
 		}
 	}
 
-		// TODO: query through dataset to find data that matches query
-		//		1. this will be done recursively
-		//			a. idea is that we will recurse until a leaf clause (just a clause with no nested clauses)
-		//			-> then filter through all sections using just the leaf clause
-		//			-> then return the result of this filtering (array) to the callee
-		//			-> this means that we pass filtered data to the higher level clauses
-		//			-> then the higher level clauses will apply their own filter
-		//			-> essentially layering filters on top of each other
-		//			-> eventually we return back up to the WHERE clause which is when we finish querying
-		//		2. need a function to handle every EBNF keyword
-		//			a. ie: handleWhere would be the highest level function
-		//				which calls the other filtering functions appropriately depending
-		//				depending on what clauses are in the where (might need a switch statement to do this)
-		//		3. we have a top level function which takes in a query obj
-		//			handles any preprocessing needed, formatting, calling handlers, returning the final result etc
-		//				will also need to handle test queries with an expected field in the JSON file
-		//				^^^ this part might not be right and might be handled by the test suite actually
-		//			a. should call handleWhere, handleOptions etc
-		// Step 1: Validate the query
-		// // Step 2: Determine the dataset ID to query
-		// const datasetId = this.extractDatasetId(query);
-		// if (!datasetId || !this.datasets[datasetId]) {
-		// 	return Promise.reject(new InsightError("Dataset ID is not found or not loaded."));
-		// }
-		// // Load the dataset from disk or memory as needed
-		// const dataset = await this.loadDataset(datasetId);
-		// // Step 3: Parse the query to an intermediate representation (e.g., AST)
-		// const parsedQuery = this.parseQuery(query);
-		// // Step 4: Execute the query against the dataset
-		// // Step 5: Return the results
-	// receives a query as a JS object then recursively checks each field to see if it follows EBNF
 	private validateQuery(query: any): boolean {
-		// dict for db references
+		// Initialize a dictionary for tracking dataset references
 		let dbRefDict = {};
-		// check for WHERE
-		if (!("WHERE"  in query)) {
-			throw new InsightError("No WHERE clause");
+		// Ensure the query contains both WHERE and OPTIONS clauses
+		if (!("WHERE" in query) || !("OPTIONS" in query)) {
+			throw new InsightError("Query must contain WHERE and OPTIONS clauses.");
 		}
-
+		// Validate WHERE and OPTIONS clauses
 		const validWhere = this.validateWhere(query.WHERE, dbRefDict);
 		const validOpt = this.validateOptions(query.OPTIONS, dbRefDict);
-
-		if (validWhere && validOpt && Object.keys(dbRefDict).length < 2) {
-			return true;
+		// Check if the query references one or fewer datasets
+		if (Object.keys(dbRefDict).length > 1) {
+			return false; // Invalid if multiple datasets are referenced
 		}
-		return false;
-		// TODO: validate Query recursively.
-		//		 1. check if the query follows EBNF
-		//			- all queries need to have a WHERE clause
-		//			a. (ie: query has a WHERE clause, and looks like WHERE: {EQ: ubc.id is 1}} or something)
-		//				- as we check through where and options we must check for db references
-		//			b. need to check if current keyword is an EBNF keyword
-		//			c. need to check if current word is being used correctly
-		//				- ie: IS: {ubc.id: 1} is how you use the IS keyword
-		//				      but IS: [{ubc.id: 1}, {ubc.id: 2}] isn't.
-		//				- this part will have to be done recursively
-		//					-> curr word is only valid of all children are valid
-		//					-> need to check if chlidren are valid
-		//					-> keep recursing until a leaf node (a clause with no nested clauses)
-		//					-> return up the call stack until curr.
-		//					-> if curr and all its children are valid then curr is valid
-		//		 2. check if the query references 1 DB.
-		//		 	a. (ie: ubc.id is 1 is fine but ubc.id is ubc2.id isn't)
-		//			b. maybe we could have a dictionary with all the DBs seen so far and length should be < 2
-		//				- then as we recurse through the query we can just check the length of this each time
-		//		 3. cannot check for the 5000 result limit initially, so check it as we find results.
-		//			a. put results into an array and at the end of performQuery if arr.length > 5000 then return invalid
+		return validWhere && validOpt;
 	}
 
 	private validateWhere(currQuery: any, dbRefDict: any): boolean {
-		// check if current keyword is a EBNF keyword
-		// if we can, parse any string into the dataset ID using str split
-		// check keyword usage (done recursively)
-		// if all children are being used correctly then this is being used correctly
 		// Base case: If currQuery is empty, it's considered valid
 		if (Object.keys(currQuery).length === 0) {
 			return true;
 		}
 
-		// Iterate through each key in the currQuery object to process EBNF keywords
-		for (const key of Object.keys(currQuery)) {
-			const value = currQuery[key];
-
+		return Object.entries(currQuery).every(([key, value]) => {
 			// Check if the key is a valid EBNF keyword
 			if (!this.isValidEBNFKeyword(key)) {
 				return false; // Invalid if the keyword is not recognized
 			}
 
-			// Handling different types of conditions based on the keyword
-			switch (key) {
-				case "AND":
-				case "OR":
-					// For logical operators like AND/OR, we expect an array of conditions
-					if (!Array.isArray(value) || !value.every((subQuery) => this.validateWhere(subQuery, dbRefDict))) {
-						return false;
-					}
-					break;
-				case "GT":
-				case "LT":
-				case "EQ":
-				case "IS":
-					// For comparison operators, validate the structure of the condition
-					if (!this.validateComparison(value, dbRefDict)) {
-						return false;
-					}
-					break;
-				case "NOT":
-					// For negation, validate the nested condition
-					if (!this.validateWhere(value, dbRefDict)) {
-						return false;
-					}
-					break;
-				default:
-					// Additional case handlers for other EBNF keywords can be added here
-					return false;
-			}
-		}
-		// If all conditions pass, the query part is considered valid
-		return true;
+			// Delegate to specific handler based on the keyword
+			return this.handleWhereCondition(key, value, dbRefDict);
+		});
 	}
 
-	private validateOptions(currQuery: any, dbRefDict: any): boolean {
+	private handleWhereCondition(key: string, value: any, dbRefDict: any): boolean {
+		switch (key) {
+			case "AND":
+			case "OR":
+				return Array.isArray(value) && value.every((subQuery) => this.validateWhere(subQuery, dbRefDict));
+			case "NOT":
+				return this.validateWhere(value, dbRefDict);
+			case "GT":
+			case "LT":
+			case "EQ":
+			case "IS":
+				return this.validateComparison(value, dbRefDict);
+			default:
+				return false;
+		}
+	}
+
+	private validateOptions(options: any, dbRefDict: any): boolean {
+		// Check for required components in OPTIONS
+		if (!options.COLUMNS || !Array.isArray(options.COLUMNS)) {
+			return false; // Invalid if COLUMNS is missing or not an array
+		}
+		// Optionally, validate ORDER if present
+		if (options.ORDER && !options.COLUMNS.includes(options.ORDER)) {
+			return false; // Invalid if ORDER references a field not in COLUMNS
+		}
+		// Ensure all fields in COLUMNS are valid and potentially check against dbRefDict
+		// Placeholder for field validation logic
 		return true;
 	}
 
 	private validateComparison(condition: any, dbRefDict: any): boolean {
 		// Each comparison should have exactly one key-value pair: { "fieldName": value }
-		if (Object.keys(condition).length !== 1) {
-			return false;
-		}
-
+		// if (Object.keys(condition).length !== 1) {
+		// 	return false;
+		// }
 		const fieldName = Object.keys(condition)[0];
 		const value = condition[fieldName];
 
@@ -475,8 +471,9 @@ export default class InsightFacade implements IInsightFacade {
 		// If your field names contain dataset IDs, extract and return the ID
 		// Example: "courses_avg" might extract "courses" as the dataset ID
 		// Adjust this logic based on how your dataset IDs are structured within field names
-		const parts = fieldName.split("_");
-		return parts.length > 1 ? parts[0] : null;
+		// const parts = fieldName.split("_");
+		// return parts.length > 1 ? parts[0] : null;
+		return null;
 	}
 
 	private isValueValidForField(fieldName: string, value: any): boolean {
@@ -486,9 +483,10 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	private isValidEBNFKeyword(keyword: string): boolean {
-		// Define a set of valid EBNF keywords for your query language
-		const validKeywords = new Set(["AND", "OR", "GT", "LT", "EQ", "IS", "NOT"]);
-		return validKeywords.has(keyword);
+		// // Define a set of valid EBNF keywords for your query language
+		// const validKeywords = new Set(["AND", "OR", "GT", "LT", "EQ", "IS", "NOT"]);
+		// return validKeywords.has(keyword);
+		return false;
 	}
 
 	public async listDatasets(): Promise<InsightDataset[]> {
@@ -505,3 +503,64 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 }
+
+// TODO: determine the dataset to query using ID
+//		1. dataset JSON files in./data/ are named with their ID
+//			a. can iterate through all files in ./data/ to find a JSON file with name == ID
+//		2. load that JSON file
+// takes in an already parsed JSON object
+// makes sure that the query is valid
+
+// TODO: query through dataset to find data that matches query
+//		1. this will be done recursively
+//			a. idea is that we will recurse until a leaf clause (just a clause with no nested clauses)
+//			-> then filter through all sections using just the leaf clause
+//			-> then return the result of this filtering (array) to the callee
+//			-> this means that we pass filtered data to the higher level clauses
+//			-> then the higher level clauses will apply their own filter
+//			-> essentially layering filters on top of each other
+//			-> eventually we return back up to the WHERE clause which is when we finish querying
+//		2. need a function to handle every EBNF keyword
+//			a. ie: handleWhere would be the highest level function
+//				which calls the other filtering functions appropriately depending
+//				depending on what clauses are in the where (might need a switch statement to do this)
+//		3. we have a top level function which takes in a query obj
+//			handles any preprocessing needed, formatting, calling handlers, returning the final result etc
+//				will also need to handle test queries with an expected field in the JSON file
+//				^^^ this part might not be right and might be handled by the test suite actually
+//			a. should call handleWhere, handleOptions etc
+// Step 1: Validate the query
+// // Step 2: Determine the dataset ID to query
+// const datasetId = this.extractDatasetId(query);
+// if (!datasetId || !this.datasets[datasetId]) {
+// 	return Promise.reject(new InsightError("Dataset ID is not found or not loaded."));
+// }
+// // Load the dataset from disk or memory as needed
+// const dataset = await this.loadDataset(datasetId);
+// // Step 3: Parse the query to an intermediate representation (e.g., AST)
+// const parsedQuery = this.parseQuery(query);
+// // Step 4: Execute the query against the dataset
+// // Step 5: Return the results
+// receives a query as a JS object then recursively checks each field to see if it follows EBNF
+
+// TODO: validate Query recursively.
+//		 1. check if the query follows EBNF
+//			- all queries need to have a WHERE clause
+//			a. (ie: query has a WHERE clause, and looks like WHERE: {EQ: ubc.id is 1}} or something)
+//				- as we check through where and options we must check for db references
+//			b. need to check if current keyword is an EBNF keyword
+//			c. need to check if current word is being used correctly
+//				- ie: IS: {ubc.id: 1} is how you use the IS keyword
+//				      but IS: [{ubc.id: 1}, {ubc.id: 2}] isn't.
+//				- this part will have to be done recursively
+//					-> curr word is only valid of all children are valid
+//					-> need to check if chlidren are valid
+//					-> keep recursing until a leaf node (a clause with no nested clauses)
+//					-> return up the call stack until curr.
+//					-> if curr and all its children are valid then curr is valid
+//		 2. check if the query references 1 DB.
+//		 	a. (ie: ubc.id is 1 is fine but ubc.id is ubc2.id isn't)
+//			b. maybe we could have a dictionary with all the DBs seen so far and length should be < 2
+//				- then as we recurse through the query we can just check the length of this each time
+//		 3. cannot check for the 5000 result limit initially, so check it as we find results.
+//			a. put results into an array and at the end of performQuery if arr.length > 5000 then return invalid
