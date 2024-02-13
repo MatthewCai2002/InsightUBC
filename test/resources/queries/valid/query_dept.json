@@ -1,0 +1,43 @@
+{
+  "title": "SELECT dept WHERE dept = appp",
+  "input": {
+    "WHERE": {
+      "IS": {
+        "sections_dept": "appp"
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_dept"
+      ],
+      "ORDER": "sections_dept"
+    }
+  },
+  "errorExpected": false,
+  "expected": [
+    {
+      "sections_dept": "appp"
+    },
+    {
+      "sections_dept": "appp"
+    },
+    {
+      "sections_dept": "appp"
+    },
+    {
+      "sections_dept": "appp"
+    },
+    {
+      "sections_dept": "appp"
+    },
+    {
+      "sections_dept": "appp"
+    },
+    {
+      "sections_dept": "appp"
+    },
+    {
+      "sections_dept": "appp"
+    }
+  ]
+}

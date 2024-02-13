@@ -1,0 +1,880 @@
+{
+  "title": "SELECT title WHERE title = *and*",
+  "input": {
+    "WHERE": {
+      "IS": {
+        "sections_title": "*and*"
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_title"
+      ],
+      "ORDER": "sections_title"
+    }
+  },
+  "errorExpected": false,
+  "expected": [
+    {
+      "sections_title": "arch and bible"
+    },
+    {
+      "sections_title": "arch and bible"
+    },
+    {
+      "sections_title": "arch and bible"
+    },
+    {
+      "sections_title": "arch and bible"
+    },
+    {
+      "sections_title": "arch and bible"
+    },
+    {
+      "sections_title": "arch and bible"
+    },
+    {
+      "sections_title": "arch and bible"
+    },
+    {
+      "sections_title": "arch and bible"
+    },
+    {
+      "sections_title": "arch and bible"
+    },
+    {
+      "sections_title": "arch and bible"
+    },
+    {
+      "sections_title": "arch and bible"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "brand management"
+    },
+    {
+      "sections_title": "dis and justice"
+    },
+    {
+      "sections_title": "dis and justice"
+    },
+    {
+      "sections_title": "env chg and qual"
+    },
+    {
+      "sections_title": "env chg and qual"
+    },
+    {
+      "sections_title": "env chg and qual"
+    },
+    {
+      "sections_title": "env chg and qual"
+    },
+    {
+      "sections_title": "env chg and qual"
+    },
+    {
+      "sections_title": "env chg and qual"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "flds and fluxes"
+    },
+    {
+      "sections_title": "hearng and noise"
+    },
+    {
+      "sections_title": "hearng and noise"
+    },
+    {
+      "sections_title": "hearng and noise"
+    },
+    {
+      "sections_title": "hearng and noise"
+    },
+    {
+      "sections_title": "hearng and noise"
+    },
+    {
+      "sections_title": "hearng and noise"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "in land food com"
+    },
+    {
+      "sections_title": "land econ"
+    },
+    {
+      "sections_title": "land econ"
+    },
+    {
+      "sections_title": "land econ"
+    },
+    {
+      "sections_title": "land econ"
+    },
+    {
+      "sections_title": "land econ"
+    },
+    {
+      "sections_title": "land econ"
+    },
+    {
+      "sections_title": "land econ"
+    },
+    {
+      "sections_title": "land econ"
+    },
+    {
+      "sections_title": "land econ"
+    },
+    {
+      "sections_title": "land econ"
+    },
+    {
+      "sections_title": "land econ"
+    },
+    {
+      "sections_title": "land econ"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land economics"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 2"
+    },
+    {
+      "sections_title": "land food comm 3"
+    },
+    {
+      "sections_title": "land food comm 3"
+    },
+    {
+      "sections_title": "land food comm 3"
+    },
+    {
+      "sections_title": "land food comm 3"
+    },
+    {
+      "sections_title": "land food comm 3"
+    },
+    {
+      "sections_title": "land food comm 3"
+    },
+    {
+      "sections_title": "land food comm 3"
+    },
+    {
+      "sections_title": "land food comm 3"
+    },
+    {
+      "sections_title": "land food comm 3"
+    },
+    {
+      "sections_title": "land food comm 3"
+    },
+    {
+      "sections_title": "land food comm 3"
+    },
+    {
+      "sections_title": "land food comm 3"
+    },
+    {
+      "sections_title": "land food comm 3"
+    },
+    {
+      "sections_title": "land food comm 3"
+    },
+    {
+      "sections_title": "land law"
+    },
+    {
+      "sections_title": "land law"
+    },
+    {
+      "sections_title": "land law"
+    },
+    {
+      "sections_title": "land law"
+    },
+    {
+      "sections_title": "land law"
+    },
+    {
+      "sections_title": "land law"
+    },
+    {
+      "sections_title": "land law"
+    },
+    {
+      "sections_title": "land law"
+    },
+    {
+      "sections_title": "land law"
+    },
+    {
+      "sections_title": "land law"
+    },
+    {
+      "sections_title": "land law"
+    },
+    {
+      "sections_title": "land law"
+    },
+    {
+      "sections_title": "land law"
+    },
+    {
+      "sections_title": "land law"
+    },
+    {
+      "sections_title": "land law"
+    },
+    {
+      "sections_title": "land law"
+    },
+    {
+      "sections_title": "land resrce econ"
+    },
+    {
+      "sections_title": "land resrce econ"
+    },
+    {
+      "sections_title": "land resrce econ"
+    },
+    {
+      "sections_title": "land resrce econ"
+    },
+    {
+      "sections_title": "land resrce econ"
+    },
+    {
+      "sections_title": "land resrce econ"
+    },
+    {
+      "sections_title": "land tech i site"
+    },
+    {
+      "sections_title": "land tech i site"
+    },
+    {
+      "sections_title": "land tech i site"
+    },
+    {
+      "sections_title": "land tech i site"
+    },
+    {
+      "sections_title": "land tech i site"
+    },
+    {
+      "sections_title": "land tech i site"
+    },
+    {
+      "sections_title": "land tech i site"
+    },
+    {
+      "sections_title": "land tech i site"
+    },
+    {
+      "sections_title": "land tech i site"
+    },
+    {
+      "sections_title": "land tech i site"
+    },
+    {
+      "sections_title": "land tech i site"
+    },
+    {
+      "sections_title": "land tech i site"
+    },
+    {
+      "sections_title": "land tech i site"
+    },
+    {
+      "sections_title": "land tech i site"
+    },
+    {
+      "sections_title": "land tech i site"
+    },
+    {
+      "sections_title": "land tech i site"
+    },
+    {
+      "sections_title": "land technlgy i"
+    },
+    {
+      "sections_title": "land technlgy i"
+    },
+    {
+      "sections_title": "land technlgy i"
+    },
+    {
+      "sections_title": "land technlgy i"
+    },
+    {
+      "sections_title": "land technlgy i"
+    },
+    {
+      "sections_title": "land technlgy i"
+    },
+    {
+      "sections_title": "land technlgy i"
+    },
+    {
+      "sections_title": "land technlgy i"
+    },
+    {
+      "sections_title": "land technlgy i"
+    },
+    {
+      "sections_title": "land technlgy i"
+    },
+    {
+      "sections_title": "land technlgy i"
+    },
+    {
+      "sections_title": "land technlgy i"
+    },
+    {
+      "sections_title": "land technlgy i"
+    },
+    {
+      "sections_title": "land technlgy i"
+    },
+    {
+      "sections_title": "land technlgy i"
+    },
+    {
+      "sections_title": "land technlgy i"
+    },
+    {
+      "sections_title": "land water semnr"
+    },
+    {
+      "sections_title": "land water semnr"
+    },
+    {
+      "sections_title": "land water semnr"
+    },
+    {
+      "sections_title": "land water semnr"
+    },
+    {
+      "sections_title": "landsc plan&mgmt"
+    },
+    {
+      "sections_title": "landsc plan&mgmt"
+    },
+    {
+      "sections_title": "landsc plan&mgmt"
+    },
+    {
+      "sections_title": "landsc plan&mgmt"
+    },
+    {
+      "sections_title": "landsc plan&mgmt"
+    },
+    {
+      "sections_title": "landsc plan&mgmt"
+    },
+    {
+      "sections_title": "landsc plan&mgmt"
+    },
+    {
+      "sections_title": "landsc plan&mgmt"
+    },
+    {
+      "sections_title": "landsc plan&mgmt"
+    },
+    {
+      "sections_title": "landsc plan&mgmt"
+    },
+    {
+      "sections_title": "landsc plan&mgmt"
+    },
+    {
+      "sections_title": "landsc plan&mgmt"
+    },
+    {
+      "sections_title": "landscp lnd mgmt"
+    },
+    {
+      "sections_title": "landscp lnd mgmt"
+    },
+    {
+      "sections_title": "landscp lnd mgmt"
+    },
+    {
+      "sections_title": "landscp lnd mgmt"
+    },
+    {
+      "sections_title": "landscp lnd mgmt"
+    },
+    {
+      "sections_title": "landscp lnd mgmt"
+    },
+    {
+      "sections_title": "landscp lnd mgmt"
+    },
+    {
+      "sections_title": "landscp lnd mgmt"
+    },
+    {
+      "sections_title": "landscp tech i"
+    },
+    {
+      "sections_title": "landscp tech i"
+    },
+    {
+      "sections_title": "landscp tech ii"
+    },
+    {
+      "sections_title": "landscp tech ii"
+    },
+    {
+      "sections_title": "landscp tech ii"
+    },
+    {
+      "sections_title": "landscp tech ii"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    },
+    {
+      "sections_title": "urban land econ"
+    }
+  ]
+}

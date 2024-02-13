@@ -1,0 +1,37 @@
+{
+  "title": "SELECT instructor WHERE instructor = walker, kristen",
+  "input": {
+    "WHERE": {
+      "IS": {
+        "sections_instructor": "walker, kristen"
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_instructor"
+      ],
+      "ORDER": "sections_instructor"
+    }
+  },
+  "errorExpected": false,
+  "expected": [
+    {
+      "sections_instructor": "walker, kristen"
+    },
+    {
+      "sections_instructor": "walker, kristen"
+    },
+    {
+      "sections_instructor": "walker, kristen"
+    },
+    {
+      "sections_instructor": "walker, kristen"
+    },
+    {
+      "sections_instructor": "walker, kristen"
+    },
+    {
+      "sections_instructor": "walker, kristen"
+    }
+  ]
+}

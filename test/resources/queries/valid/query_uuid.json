@@ -1,0 +1,22 @@
+{
+  "title": "SELECT uuid WHERE uuid = 12251",
+  "input": {
+    "WHERE": {
+      "IS": {
+        "sections_uuid": "12251"
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_uuid"
+      ],
+      "ORDER": "sections_uuid"
+    }
+  },
+  "errorExpected": false,
+  "expected": [
+    {
+      "sections_uuid": "12251"
+    }
+  ]
+}

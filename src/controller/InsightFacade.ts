@@ -17,7 +17,12 @@ interface QueryOptions {
 }
 
 export default class InsightFacade implements IInsightFacade {
-	private validFields: string[] = ["id", "Course", "Title", "Professor", "Subject",
+	private validKeywords: string[] = ["WHERE", "OPTIONS", "COLUMNS", "ORDER",
+		"IS", "NOT", "AND", "OR", "LT", "GT", "EQ"];
+
+	private mFields: string[] = ["year", "avg", "pass", "fail", "audit"];
+	private sFields: string[] = ["uuid", "id", "title", "instructor", "dept"];
+	private fileFields: string[] = ["id", "Course", "Title", "Professor", "Subject",
 		"Year", "Avg", "Pass", "Fail", "Audit"];
 
 
@@ -230,7 +235,7 @@ export default class InsightFacade implements IInsightFacade {
 	// validate a single section
 	// checks to see if a section has all validFields
 	private isValidSection(section: any): boolean {
-		this.validFields.forEach((field: string) => {
+		this.fileFields.forEach((field: string) => {
 			if (!(field in section)) {
 				return false;
 			}
@@ -278,6 +283,87 @@ export default class InsightFacade implements IInsightFacade {
 			// Continue with query processing on the loaded dataset...
 			// This would involve filtering the dataset based on the WHERE clause,
 			// applying any transformations, and then selecting/sorting based on OPTIONS.
+	}
+
+	private validateQuery(query: any): boolean {
+		// Initialize a dictionary for tracking dataset references
+		let dbRefDict: any = {};
+
+		// Ensure the query contains both WHERE and OPTIONS clauses
+		if (!("WHERE" in query) || !("OPTIONS" in query)) {
+			throw new InsightError("Query must contain WHERE or OPTIONS clauses.");
+		}
+
+		// Validate WHERE and OPTIONS clauses
+		const validWhere = this.validateWhere(query.WHERE, dbRefDict);
+		const validOpt = this.validateOptions(query.OPTIONS, dbRefDict);
+		// Check if the query references one or fewer datasets
+		if (Object.keys(dbRefDict).length > 1) {
+			return false; // Invalid if multiple datasets are referenced
+		}
+		return validWhere && validOpt;
+	}
+
+	private validateWhere(currQuery: any, dbRefDict: any): boolean {
+		// get filter key word
+		const key = Object.keys(currQuery)[0];
+
+		// check if it's a valid keyword
+		if (!(this.validKeywords.includes(key))) {
+			return false;
+		}
+
+		// WHERE only has 1 nested obj
+		// call appropriate validator
+		this.callValidator(currQuery, dbRefDict);
+
+		return true;
+	}
+
+	private callValidator(query: any, dbRefDict: any): boolean {
+		const key = Object.keys(query)[0];
+		switch (key) {
+			// these 2 take lists of filters
+			case "AND":
+				return this.validateListQuery(query.AND, dbRefDict);
+			case "OR":
+				return this.validateListQuery(query.OR, dbRefDict);
+
+			// this can have nested filters
+			case "NOT": break;
+
+			// these ones can't have nested filters (base case)
+			case "IS":
+				// this.validateIs(currQuery.IS, dbRefDict);
+				break;
+			case "LT": break;
+			case "GT": break;
+			case "EQ": break;
+			default:
+				// can't have string just on it's own in a where
+				// must be nested inside one of the above filters
+				return false;
+		}
+		return false;
+	}
+
+	private validateListQuery(queryArray: any, dbRefDict: any): boolean {
+		// check if value is a list
+		let validQueries: boolean[] = [];
+		if (!Array.isArray(queryArray)) {
+			return false;
+		}
+		// for each query in queryArrays
+		// 	-> get key of the query
+		//  -> call validator
+		for (const q of queryArray) {
+			validQueries.push(this.callValidator(q, dbRefDict));
+		}
+
+		if (validQueries.every((valid) => !valid)) {
+			return true;
+		}
+		return false;
 	}
 
 	private filterByWhereClause(dataset: Section[], whereClause: any): Section[] {
@@ -366,55 +452,24 @@ export default class InsightFacade implements IInsightFacade {
 		}
 	}
 
-	private validateQuery(query: any): boolean {
-		// Initialize a dictionary for tracking dataset references
-		let dbRefDict = {};
-		// Ensure the query contains both WHERE and OPTIONS clauses
-		if (!("WHERE" in query) || !("OPTIONS" in query)) {
-			throw new InsightError("Query must contain WHERE and OPTIONS clauses.");
-		}
-		// Validate WHERE and OPTIONS clauses
-		const validWhere = this.validateWhere(query.WHERE, dbRefDict);
-		const validOpt = this.validateOptions(query.OPTIONS, dbRefDict);
-		// Check if the query references one or fewer datasets
-		if (Object.keys(dbRefDict).length > 1) {
-			return false; // Invalid if multiple datasets are referenced
-		}
-		return validWhere && validOpt;
-	}
-
-	private validateWhere(currQuery: any, dbRefDict: any): boolean {
-		// Base case: If currQuery is empty, it's considered valid
-		if (Object.keys(currQuery).length === 0) {
-			return true;
-		}
-
-		return Object.entries(currQuery).every(([key, value]) => {
-			// Check if the key is a valid EBNF keyword
-			if (!this.isValidEBNFKeyword(key)) {
-				return false; // Invalid if the keyword is not recognized
-			}
-
-			// Delegate to specific handler based on the keyword
-			return this.handleWhereCondition(key, value, dbRefDict);
-		});
-	}
 
 	private handleWhereCondition(key: string, value: any, dbRefDict: any): boolean {
-		switch (key) {
-			case "AND":
-			case "OR":
-				return Array.isArray(value) && value.every((subQuery) => this.validateWhere(subQuery, dbRefDict));
-			case "NOT":
-				return this.validateWhere(value, dbRefDict);
-			case "GT":
-			case "LT":
-			case "EQ":
-			case "IS":
-				return this.validateComparison(value, dbRefDict);
-			default:
-				return false;
-		}
+
+		// switch (key) {
+		// 	case "AND":
+		// 	case "OR":
+		// 		return Array.isArray(value) && value.every((subQuery) => this.validateWhere(subQuery, dbRefDict));
+		// 	case "NOT":
+		// 		return this.validateWhere(value, dbRefDict);
+		// 	case "GT":
+		// 	case "LT":
+		// 	case "EQ":
+		// 	case "IS":
+		// 		return this.validateComparison(value, dbRefDict);
+		// 	default:
+		// 		return false;
+		// }
+		return false;
 	}
 
 	private validateOptions(options: any, dbRefDict: any): boolean {
@@ -431,61 +486,61 @@ export default class InsightFacade implements IInsightFacade {
 		return true;
 	}
 
-	private validateComparison(condition: any, dbRefDict: any): boolean {
-		// Each comparison should have exactly one key-value pair: { "fieldName": value }
-		// if (Object.keys(condition).length !== 1) {
-		// 	return false;
-		// }
-		const fieldName = Object.keys(condition)[0];
-		const value = condition[fieldName];
+	// private validateComparison(condition: any, dbRefDict: any): boolean {
+	// 	// Each comparison should have exactly one key-value pair: { "fieldName": value }
+	// 	// if (Object.keys(condition).length !== 1) {
+	// 	// 	return false;
+	// 	// }
+	// 	const fieldName = Object.keys(condition)[0];
+	// 	const value = condition[fieldName];
+	//
+	// 	// Validate the field name
+	// 	if (!this.isValidFieldName(fieldName)) {
+	// 		return false;
+	// 	}
+	// 	// Optionally, validate the field's dataset ID if your query spans multiple datasets
+	// 	const datasetId = this.extractDatasetIdFromField(fieldName);
+	// 	if (datasetId && Object.keys(dbRefDict).length > 0 && !dbRefDict[datasetId]) {
+	// 		dbRefDict[datasetId] = true; // Track the dataset ID for consistency checks
+	// 	} else if (!datasetId) {
+	// 		// Handle error if dataset ID extraction fails or is not applicable
+	// 		return false;
+	// 	}
+	// 	// Validate the value based on the field's expected type
+	// 	// This step depends on your data model and the types of values each field can have
+	// 	if (!this.isValueValidForField(fieldName, value)) {
+	// 		return false;
+	// 	}
+	// 	return true;
+	// }
 
-		// Validate the field name
-		if (!this.isValidFieldName(fieldName)) {
-			return false;
-		}
-		// Optionally, validate the field's dataset ID if your query spans multiple datasets
-		const datasetId = this.extractDatasetIdFromField(fieldName);
-		if (datasetId && Object.keys(dbRefDict).length > 0 && !dbRefDict[datasetId]) {
-			dbRefDict[datasetId] = true; // Track the dataset ID for consistency checks
-		} else if (!datasetId) {
-			// Handle error if dataset ID extraction fails or is not applicable
-			return false;
-		}
-		// Validate the value based on the field's expected type
-		// This step depends on your data model and the types of values each field can have
-		if (!this.isValueValidForField(fieldName, value)) {
-			return false;
-		}
-		return true;
-	}
-
-	private isValidFieldName(fieldName: string): boolean {
-		// Placeholder: Validate the field name against your data model or schema
-		// For example, check if the field name is one of the validFields
-		return this.validFields.includes(fieldName);
-	}
-
-	private extractDatasetIdFromField(fieldName: string): string | null {
-		// If your field names contain dataset IDs, extract and return the ID
-		// Example: "courses_avg" might extract "courses" as the dataset ID
-		// Adjust this logic based on how your dataset IDs are structured within field names
-		// const parts = fieldName.split("_");
-		// return parts.length > 1 ? parts[0] : null;
-		return null;
-	}
-
-	private isValueValidForField(fieldName: string, value: any): boolean {
-		// This could involve checking the value's type (e.g., number, string) against expected types
-		// Example: Assuming all comparisons are numeric for simplicity
-		return typeof value === "number";
-	}
-
-	private isValidEBNFKeyword(keyword: string): boolean {
-		// // Define a set of valid EBNF keywords for your query language
-		// const validKeywords = new Set(["AND", "OR", "GT", "LT", "EQ", "IS", "NOT"]);
-		// return validKeywords.has(keyword);
-		return false;
-	}
+	// private isValidFieldName(fieldName: string): boolean {
+	// 	// Placeholder: Validate the field name against your data model or schema
+	// 	// For example, check if the field name is one of the validFields
+	// 	return this.validFields.includes(fieldName);
+	// }
+	//
+	// private extractDatasetIdFromField(fieldName: string): string | null {
+	// 	// If your field names contain dataset IDs, extract and return the ID
+	// 	// Example: "courses_avg" might extract "courses" as the dataset ID
+	// 	// Adjust this logic based on how your dataset IDs are structured within field names
+	// 	// const parts = fieldName.split("_");
+	// 	// return parts.length > 1 ? parts[0] : null;
+	// 	return null;
+	// }
+	//
+	// private isValueValidForField(fieldName: string, value: any): boolean {
+	// 	// This could involve checking the value's type (e.g., number, string) against expected types
+	// 	// Example: Assuming all comparisons are numeric for simplicity
+	// 	return typeof value === "number";
+	// }
+	//
+	// private isValidEBNFKeyword(keyword: string): boolean {
+	// 	// // Define a set of valid EBNF keywords for your query language
+	// 	// const validKeywords = new Set(["AND", "OR", "GT", "LT", "EQ", "IS", "NOT"]);
+	// 	// return validKeywords.has(keyword);
+	// 	return false;
+	// }
 
 	public async listDatasets(): Promise<InsightDataset[]> {
 		// and an object with kind and numRows as the value
@@ -499,6 +554,7 @@ export default class InsightFacade implements IInsightFacade {
 		});
 		return Promise.resolve(datasetList);
 	}
+
 
 }
 

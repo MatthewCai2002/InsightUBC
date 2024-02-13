@@ -1,0 +1,601 @@
+{
+  "title": "SELECT id, course WHERE id = 51134 OR course = 544",
+  "input": {
+    "WHERE": {
+      "OR": [
+        {
+          "IS": {
+            "sections_uuid": "51134"
+          }
+        },
+        {
+          "IS": {
+            "sections_id": "544"
+          }
+        }
+      ]
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_uuid",
+        "sections_id"
+      ],
+      "ORDER": "sections_uuid"
+    }
+  },
+  "errorExpected": false,
+  "expected": [
+    {
+      "sections_uuid": "10237",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "10238",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "11619",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "11620",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "11813",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "11814",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "12454",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "12455",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "1378",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "1379",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "1497",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "1498",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "18458",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "18459",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "21159",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "21160",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "21317",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "21318",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "21319",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "21320",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "22761",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "22762",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "2329",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "2330",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "27488",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "27489",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "29981",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "29982",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "32016",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "32017",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "33077",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "33078",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "34215",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "34216",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "34972",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "34973",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "34974",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "34975",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "36447",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "36448",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "4009",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "4010",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "46805",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "46806",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "47264",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "47265",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "50001",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "50002",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "51134",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "51135",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "52117",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "52118",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "5385",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "5386",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "55002",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "55003",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "55004",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "55005",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "55658",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "55659",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "5878",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "5879",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "59758",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "59759",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "59760",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "59761",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "60751",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "60752",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "61241",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "61242",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "6235",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "6236",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "62478",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "62479",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "62539",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "62540",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "62541",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "62636",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "62637",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "63310",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "63311",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "66647",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "66648",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "6713",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "6714",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "68640",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "68641",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "72005",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "72006",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "72469",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "72470",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "73177",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "73178",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "7418",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "7419",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "7420",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "7421",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "74474",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "74475",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "74891",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "74892",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "76004",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "76005",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "76433",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "76434",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "76738",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "76739",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "78526",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "78527",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "80808",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "80809",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "83537",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "83538",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "85954",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "85955",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "86654",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "86655",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "86656",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "86657",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "89644",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "89645",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "89646",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "89647",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "89932",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "89933",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "90222",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "90223",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "90648",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "90649",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "91071",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "91072",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "94710",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "94711",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "95019",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "95020",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "95874",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "95875",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "97737",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "97738",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "97739",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "97740",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "97773",
+      "sections_id": "544"
+    },
+    {
+      "sections_uuid": "97774",
+      "sections_id": "544"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "title": "SELECT fail WHERE fail = 50",
+  "input": {
+    "WHERE": {
+      "EQ": {
+        "sections_fail": 50
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_fail"
+      ],
+      "ORDER": "sections_fail"
+    }
+  },
+  "errorExpected": false,
+  "expected": [
+    {
+      "sections_fail": 50
+    },
+    {
+      "sections_fail": 50
+    },
+    {
+      "sections_fail": 50
+    },
+    {
+      "sections_fail": 50
+    },
+    {
+      "sections_fail": 50
+    },
+    {
+      "sections_fail": 50
+    },
+    {
+      "sections_fail": 50
+    },
+    {
+      "sections_fail": 50
+    },
+    {
+      "sections_fail": 50
+    },
+    {
+      "sections_fail": 50
+    }
+  ]
+}
