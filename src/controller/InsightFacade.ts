@@ -311,7 +311,6 @@ export default class InsightFacade implements IInsightFacade {
 		}
 	}
 
-
 		// TODO: query through dataset to find data that matches query
 		//		1. this will be done recursively
 		//			a. idea is that we will recurse until a leaf clause (just a clause with no nested clauses)
@@ -342,8 +341,6 @@ export default class InsightFacade implements IInsightFacade {
 		// const parsedQuery = this.parseQuery(query);
 		// // Step 4: Execute the query against the dataset
 		// // Step 5: Return the results
-
-
 	// receives a query as a JS object then recursively checks each field to see if it follows EBNF
 	private validateQuery(query: any): boolean {
 		// dict for db references
@@ -388,16 +385,113 @@ export default class InsightFacade implements IInsightFacade {
 		// if we can, parse any string into the dataset ID using str split
 		// check keyword usage (done recursively)
 		// if all children are being used correctly then this is being used correctly
+		// Base case: If currQuery is empty, it's considered valid
+		if (Object.keys(currQuery).length === 0) {
+			return true;
+		}
 
+		// Iterate through each key in the currQuery object to process EBNF keywords
+		for (const key of Object.keys(currQuery)) {
+			const value = currQuery[key];
+
+			// Check if the key is a valid EBNF keyword
+			if (!this.isValidEBNFKeyword(key)) {
+				return false; // Invalid if the keyword is not recognized
+			}
+
+			// Handling different types of conditions based on the keyword
+			switch (key) {
+				case "AND":
+				case "OR":
+					// For logical operators like AND/OR, we expect an array of conditions
+					if (!Array.isArray(value) || !value.every((subQuery) => this.validateWhere(subQuery, dbRefDict))) {
+						return false;
+					}
+					break;
+				case "GT":
+				case "LT":
+				case "EQ":
+				case "IS":
+					// For comparison operators, validate the structure of the condition
+					if (!this.validateComparison(value, dbRefDict)) {
+						return false;
+					}
+					break;
+				case "NOT":
+					// For negation, validate the nested condition
+					if (!this.validateWhere(value, dbRefDict)) {
+						return false;
+					}
+					break;
+				default:
+					// Additional case handlers for other EBNF keywords can be added here
+					return false;
+			}
+		}
+		// If all conditions pass, the query part is considered valid
 		return true;
 	}
 
-	private validateOptions(whereQuery: any, dbRefDict: any): boolean {
+	private validateOptions(currQuery: any, dbRefDict: any): boolean {
 		return true;
+	}
+
+	private validateComparison(condition: any, dbRefDict: any): boolean {
+		// Each comparison should have exactly one key-value pair: { "fieldName": value }
+		if (Object.keys(condition).length !== 1) {
+			return false;
+		}
+
+		const fieldName = Object.keys(condition)[0];
+		const value = condition[fieldName];
+
+		// Validate the field name
+		if (!this.isValidFieldName(fieldName)) {
+			return false;
+		}
+		// Optionally, validate the field's dataset ID if your query spans multiple datasets
+		const datasetId = this.extractDatasetIdFromField(fieldName);
+		if (datasetId && Object.keys(dbRefDict).length > 0 && !dbRefDict[datasetId]) {
+			dbRefDict[datasetId] = true; // Track the dataset ID for consistency checks
+		} else if (!datasetId) {
+			// Handle error if dataset ID extraction fails or is not applicable
+			return false;
+		}
+		// Validate the value based on the field's expected type
+		// This step depends on your data model and the types of values each field can have
+		if (!this.isValueValidForField(fieldName, value)) {
+			return false;
+		}
+		return true;
+	}
+
+	private isValidFieldName(fieldName: string): boolean {
+		// Placeholder: Validate the field name against your data model or schema
+		// For example, check if the field name is one of the validFields
+		return this.validFields.includes(fieldName);
+	}
+
+	private extractDatasetIdFromField(fieldName: string): string | null {
+		// If your field names contain dataset IDs, extract and return the ID
+		// Example: "courses_avg" might extract "courses" as the dataset ID
+		// Adjust this logic based on how your dataset IDs are structured within field names
+		const parts = fieldName.split("_");
+		return parts.length > 1 ? parts[0] : null;
+	}
+
+	private isValueValidForField(fieldName: string, value: any): boolean {
+		// This could involve checking the value's type (e.g., number, string) against expected types
+		// Example: Assuming all comparisons are numeric for simplicity
+		return typeof value === "number";
+	}
+
+	private isValidEBNFKeyword(keyword: string): boolean {
+		// Define a set of valid EBNF keywords for your query language
+		const validKeywords = new Set(["AND", "OR", "GT", "LT", "EQ", "IS", "NOT"]);
+		return validKeywords.has(keyword);
 	}
 
 	public async listDatasets(): Promise<InsightDataset[]> {
-		// made with chatgpt
 		// and an object with kind and numRows as the value
 		const datasetList: InsightDataset[] = Object.keys(this.datasets).map((id) => {
 			const dataset = this.datasets[id];
