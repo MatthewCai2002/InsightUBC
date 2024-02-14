@@ -1,8 +1,19 @@
 import {InsightError} from "./IInsightFacade";
 
 export default class Validator {
-	private validKeywords: string[] = ["WHERE", "OPTIONS", "COLUMNS", "ORDER",
-		"IS", "NOT", "AND", "OR", "LT", "GT", "EQ"];
+	private validKeywords: string[] = [
+		"WHERE",
+		"OPTIONS",
+		"COLUMNS",
+		"ORDER",
+		"IS",
+		"NOT",
+		"AND",
+		"OR",
+		"LT",
+		"GT",
+		"EQ",
+	];
 
 	private mFields: string[] = ["year", "avg", "pass", "fail", "audit"];
 	private sFields: string[] = ["uuid", "id", "title", "instructor", "dept"];
@@ -29,7 +40,7 @@ export default class Validator {
 		}
 		let res = {
 			valid: validWhere && validOpt,
-			id: dbRefSet.values()
+			id: [...dbRefSet][0],
 		};
 		return res;
 	}
@@ -39,7 +50,7 @@ export default class Validator {
 		const key = Object.keys(currQuery)[0];
 
 		// check if it's a valid keyword
-		if (!(this.validKeywords.includes(key))) {
+		if (!this.validKeywords.includes(key)) {
 			return false;
 		}
 
@@ -183,7 +194,7 @@ export default class Validator {
 		}
 
 		// check all fields in columns
-		let  validFields = this.sFields.concat(this.mFields);
+		let validFields = this.sFields.concat(this.mFields);
 		for (let key of options.COLUMNS) {
 			const keyParts: string[] = key.split("_");
 

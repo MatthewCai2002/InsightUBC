@@ -1,7 +1,6 @@
-
 export default class Section {
 	public readonly uuid: string;
-	public readonly id: string ;
+	public readonly id: string;
 	public readonly title: string;
 	public readonly instructor: string;
 	public readonly department: string;
