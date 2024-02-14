@@ -18,7 +18,6 @@ interface QueryOptions {
 }
 
 export default class InsightFacade implements IInsightFacade {
-
 	private fileFields: string[] = ["id", "Course", "Title", "Professor", "Subject",
 		"Year", "Avg", "Pass", "Fail", "Audit"];
 

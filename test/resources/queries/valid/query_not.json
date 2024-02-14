@@ -1,0 +1,585 @@
+{
+  "title": "SELECT pass WHERE NOT pass > 1",
+  "input": {
+    "WHERE": {
+      "NOT": {
+        "GT": {
+          "sections_pass": 1
+        }
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_pass"
+      ],
+      "ORDER": "sections_pass"
+    }
+  },
+  "errorExpected": false,
+  "expected": [
+    {
+      "sections_pass": 0
+    },
+    {
+      "sections_pass": 0
+    },
+    {
+      "sections_pass": 0
+    },
+    {
+      "sections_pass": 0
+    },
+    {
+      "sections_pass": 0
+    },
+    {
+      "sections_pass": 0
+    },
+    {
+      "sections_pass": 0
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    },
+    {
+      "sections_pass": 1
+    }
+  ]
+}
