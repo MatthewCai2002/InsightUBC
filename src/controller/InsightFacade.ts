@@ -4,12 +4,13 @@ import {
 	InsightDatasetKind,
 	InsightError,
 	InsightResult,
-	NotFoundError
+	NotFoundError,
 } from "./IInsightFacade";
 import * as fs from "fs-extra";
 import JSZip from "jszip";
 import Section from "./section";
 import Validator from "./validator";
+import Filter from "./filter";
 
 // Assuming the structure of your options object based on the provided code
 interface QueryOptions {
@@ -18,9 +19,18 @@ interface QueryOptions {
 }
 
 export default class InsightFacade implements IInsightFacade {
-	private fileFields: string[] = ["id", "Course", "Title", "Professor", "Subject",
-		"Year", "Avg", "Pass", "Fail", "Audit"];
-
+	private fileFields: string[] = [
+		"id",
+		"Course",
+		"Title",
+		"Professor",
+		"Subject",
+		"Year",
+		"Avg",
+		"Pass",
+		"Fail",
+		"Audit",
+	];
 
 	private datasets: {[id: string]: InsightDataset} = {};
 	private readonly dataDir = "./data/";
@@ -89,7 +99,7 @@ export default class InsightFacade implements IInsightFacade {
 			// parse course into JSON object
 
 			// if string is empty then skip it
-			if(!str) {
+			if (!str) {
 				continue;
 			}
 
@@ -116,7 +126,7 @@ export default class InsightFacade implements IInsightFacade {
 		const dataset: InsightDataset = {
 			id,
 			kind: InsightDatasetKind.Sections,
-			numRows: Object.keys(datasetObj).length
+			numRows: Object.keys(datasetObj).length,
 		};
 
 		return dataset;
@@ -144,7 +154,7 @@ export default class InsightFacade implements IInsightFacade {
 		}
 	}
 
-// adds sections to a dataset JSON obj
+	// adds sections to a dataset JSON obj
 	private updateDatasetObj(datasetObj: any, sections: Section[]): void {
 		for (let section of sections) {
 			datasetObj[section.uuid] = section;
@@ -172,9 +182,8 @@ export default class InsightFacade implements IInsightFacade {
 
 		// go through each course and validate it
 		for (let str of jsonStrings) {
-
 			// if string is empty then skip it
-			if(!str) {
+			if (!str) {
 				continue;
 			}
 			let course = JSON.parse(str);
@@ -216,7 +225,6 @@ export default class InsightFacade implements IInsightFacade {
 			return false;
 		}
 		return true;
-
 	}
 
 	// validate a single section
@@ -229,7 +237,6 @@ export default class InsightFacade implements IInsightFacade {
 		});
 		return true;
 	}
-
 
 	public async removeDataset(id: string): Promise<string> {
 		// Validate the dataset ID
@@ -255,7 +262,9 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public async performQuery(query: any): Promise<InsightResult[]> {
-		const validator = new Validator();
+		const validator: Validator = new Validator();
+		const filterer: Filter = new Filter();
+
 		const valid: any = validator.validateQuery(query);
 		if (!valid.valid) {
 			return Promise.reject(new InsightError("Query validation failed."));
@@ -265,73 +274,11 @@ export default class InsightFacade implements IInsightFacade {
 			throw new InsightError("Dataset ID could not be determined from the query.");
 		}
 		const dataset = await this.loadDataset(datasetId);
-		const filteredResults = this.filterByWhereClause(dataset, query.WHERE);
+		const filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
 		// Apply transformations (if any) and options to the filtered results
-		return this.applyOptions(filteredResults, query.OPTIONS);
-			// Continue with query processing on the loaded dataset...
-			// This would involve filtering the dataset based on the WHERE clause,
-			// applying any transformations, and then selecting/sorting based on OPTIONS.
-	}
-
-
-	private filterByWhereClause(dataset: Section[], whereClause: any): Section[] {
-		// Explicit typing for operator and conditions helps with code clarity and type checking
-		// MADE ESLINT SUPRESSIONS
-		// if (Object.keys(whereClause).length === 0) {
-		// 	return dataset;
-		// }
-		// const operator: string = Object.keys(whereClause)[0];
-		// const conditions: any = whereClause[operator]; // Consider defining a type for conditions
-		// switch (operator) {
-		// 	case "AND":
-		// 		// Here, TypeScript knows conditions must be an array, so we can avoid explicit 'any' typing
-		// 		return conditions.reduce((result: Section[], condition: any) =>
-		// 			this.filterByWhereClause(result, condition), dataset);
-		// 	case "OR":
-		// 		let orResults: Section[] = [];
-		// 		conditions.forEach((condition: any) => {
-		// 			const conditionResults: Section[] = this.filterByWhereClause(dataset, condition);
-		// 			orResults = [...orResults, ...conditionResults.filter((item) => !orResults.includes(item))];
-		// 		});
-		// 		return orResults;
-		// 	case "NOT":
-		// 		const notResults: Section[] = this.filterByWhereClause(dataset, conditions);
-		// 		return dataset.filter((item) => !notResults.includes(item));
-		// 	default:
-		// 		return this.handleComparisonOperations(dataset, operator, conditions);
-		// }
-		return [];
-	}
-	//
-	// private handleComparisonOperations(dataset: any[], operator: string, condition: any): any[] {
-	// 	const field = Object.keys(condition)[0];
-	// 	const value = condition[field];
-	//
-	// 	return dataset.filter((section) => {
-	// 		switch (operator) {
-	// 			case "GT": return section[field] > value;
-	// 			case "LT": return section[field] < value;
-	// 			case "EQ": return section[field] === value;
-	// 			case "IS": return new RegExp(`^${value.replace(/\*/g, ".*")}$`).test(section[field]);
-	// 			default: return true; // Or handle invalid operator
-	// 		}
-	// 	});
-	// }
-
-	private applyOptions(filteredResults: any[], options: any): InsightResult[] {
-		// Project specified columns
-		// const projectedResults = filteredResults.map((item) => {
-		// 	const projectedItem = {};
-		// 	options.COLUMNS.forEach((column) => {
-		// 		projectedItem[column] = item[column];
-		// 	});
-		// 	return projectedItem;
-		// });
-		// // Sort results if ORDER is specified
-		// if (options.ORDER) {
-		// 	const orderKey = options.ORDER;
-		// 	projectedResults.sort((a, b) => a[orderKey] - b[orderKey]);
-		// }
+		// Continue with query processing on the loaded dataset...
+		// This would involve filtering the dataset based on the WHERE clause,
+		// applying any transformations, and then selecting/sorting based on OPTIONS.
 		return [];
 	}
 
@@ -340,13 +287,12 @@ export default class InsightFacade implements IInsightFacade {
 		const datasetPath = this.dataDir + datasetId + ".json"; // Assuming this.dataDir is './data/'
 		try {
 			const dataset = await fs.readJson(datasetPath);
-			return dataset;
+			return Object.entries(dataset).map(([key, value]) => ({key, value}));
 		} catch (error) {
 			console.error(`Failed to load dataset ${datasetId}: ${error}`);
 			throw new InsightError(`Failed to load dataset ${datasetId}: ${error}`);
 		}
 	}
-
 
 	public async listDatasets(): Promise<InsightDataset[]> {
 		// and an object with kind and numRows as the value
@@ -355,13 +301,11 @@ export default class InsightFacade implements IInsightFacade {
 			return {
 				id: id, // Dataset ID from the dictionary key
 				kind: dataset.kind, // Assuming the kind is directly stored in the dataset object
-				numRows: dataset.numRows
+				numRows: dataset.numRows,
 			};
 		});
 		return Promise.resolve(datasetList);
 	}
-
-
 }
 
 // TODO: determine the dataset to query using ID

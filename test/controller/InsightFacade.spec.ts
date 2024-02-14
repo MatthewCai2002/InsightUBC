@@ -104,11 +104,7 @@ describe("InsightFacade", function () {
 				// trying to add the dataset
 				const result = await facade.listDatasets();
 				// set the result to the listDataset
-				expect(result).to.deep.equal([
-					{id: "ubc",
-						kind: InsightDatasetKind.Sections,
-						numRows: expectedRows}
-				]);
+				expect(result).to.deep.equal([{id: "ubc", kind: InsightDatasetKind.Sections, numRows: expectedRows}]);
 				// expect the result to be include the validID in the dataset. Needs to be one more becasue we added another
 				// row, since we start with 64612
 			} catch (error) {
@@ -129,7 +125,7 @@ describe("InsightFacade", function () {
 				// List datasets and verify
 				const result = await facade.listDatasets();
 				expect(result).to.deep.equal([
-					{id: "ubc2", kind: InsightDatasetKind.Sections, numRows: expectedRowsUbc2}
+					{id: "ubc2", kind: InsightDatasetKind.Sections, numRows: expectedRowsUbc2},
 				]);
 			} catch (error) {
 				expect.fail("Should not have thrown any error");
@@ -144,7 +140,7 @@ describe("InsightFacade", function () {
 				const result = await facade.listDatasets();
 				expect(result).to.deep.equal([
 					{id: "ubc", kind: InsightDatasetKind.Sections, numRows: expectedRow1},
-					{id: "ubc2", kind: InsightDatasetKind.Sections, numRows: expectedRow2}
+					{id: "ubc2", kind: InsightDatasetKind.Sections, numRows: expectedRow2},
 					// would need to be incremented by 1 becasue we added one more
 				]);
 			} catch (error) {
