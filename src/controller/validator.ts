@@ -7,7 +7,7 @@ export default class Validator {
 	private mFields: string[] = ["year", "avg", "pass", "fail", "audit"];
 	private sFields: string[] = ["uuid", "id", "title", "instructor", "dept"];
 
-	public validateQuery(query: any): boolean {
+	public validateQuery(query: any): any {
 		// Initialize a dictionary for tracking dataset references
 		let dbRefSet: Set<string> = new Set<string>();
 
@@ -27,7 +27,11 @@ export default class Validator {
 		if (dbRefSet.size > 1) {
 			return false; // Invalid if multiple datasets are referenced
 		}
-		return validWhere && validOpt;
+		let res = {
+			valid: validWhere && validOpt,
+			id: dbRefSet.values()
+		};
+		return res;
 	}
 
 	public validateWhere(currQuery: any, dbRefSet: Set<string>): boolean {

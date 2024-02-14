@@ -110,7 +110,7 @@ export default class InsightFacade implements IInsightFacade {
 		}
 
 		// write datasetOBJ to json file in ./src/controller/data/ dir
-		this.writeDataset(datasetObj, id);
+		await this.writeDataset(datasetObj, id);
 
 		// create InsightDataset obj and fill in proper values
 		const dataset: InsightDataset = {
@@ -123,34 +123,25 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	// writes a dataset to a JSON file
-	private writeDataset(datasetObj: any, id: string) {
+	private async writeDataset(datasetObj: any, id: string) {
 		// check if data directory exists
-		fs.promises.stat(this.dataDir)
-			.then((stats) => {
-				// if the data directory exists then write to it
-				if (stats.isDirectory()) {
-					const datasetJSONString = JSON.stringify(datasetObj, null, 2);
-					fs.writeFile(this.dataDir + id + ".json", datasetJSONString, "utf-8", (err) => {
-						if (err) {
-							console.error("Error writing to file:", err);
-						} else {
-							console.log("File has been written successfully.");
-						}
-					});
-				} else {
-					console.log(`'${this.dataDir}' is not a directory.`);
-				}
-			}).catch((err) => {
-			// make data dir if it doesn't exist
+		try {
+			// Check if the directory exists; if not, try to create it
+			await fs.promises.stat(this.dataDir).catch(async () => {
 				console.log(`Directory '${this.dataDir}' does not exist.`);
-				fs.promises.mkdir(this.dataDir)
-					.then(() => {
-						console.log(`Directory '${this.dataDir}' created successfully.`);
-					})
-					.catch((e) => {
-						console.error("Error creating directory:", e);
-					});
+				await fs.promises.mkdir(this.dataDir);
+				console.log(`Directory '${this.dataDir}' created successfully.`);
 			});
+
+			// Prepare the dataset JSON string
+			const datasetJSONString = JSON.stringify(datasetObj, null, 2);
+
+			// Write the file
+			await fs.promises.writeFile(this.dataDir + id + ".json", datasetJSONString, "utf-8");
+			console.log("File has been written successfully.");
+		} catch (e) {
+			console.error("Error writing to file or creating directory:", e);
+		}
 	}
 
 // adds sections to a dataset JSON obj
@@ -265,11 +256,11 @@ export default class InsightFacade implements IInsightFacade {
 
 	public async performQuery(query: any): Promise<InsightResult[]> {
 		const validator = new Validator();
-		const valid = validator.validateQuery(query);
-		if (!valid) {
+		const valid: any = validator.validateQuery(query);
+		if (!valid.valid) {
 			return Promise.reject(new InsightError("Query validation failed."));
 		}
-		const datasetId = this.extractDatasetId(query);
+		const datasetId = valid.id;
 		if (!datasetId) {
 			throw new InsightError("Dataset ID could not be determined from the query.");
 		}
@@ -342,19 +333,6 @@ export default class InsightFacade implements IInsightFacade {
 		// 	projectedResults.sort((a, b) => a[orderKey] - b[orderKey]);
 		// }
 		return [];
-	}
-
-	private extractDatasetId(query: any): string | null {
-		// Assuming OPTIONS.COLUMNS contains field names prefixed with dataset ID
-		if (query && query.OPTIONS && query.OPTIONS.COLUMNS && query.OPTIONS.COLUMNS.length > 0) {
-			// Extract the dataset ID from the first column name
-			const firstColumn = query.OPTIONS.COLUMNS[0];
-			if (typeof firstColumn === "string" && firstColumn.includes("_")) {
-				const [datasetId] = firstColumn.split("_");
-				return datasetId;
-			}
-		}
-		return null; // Return null or throw an error if the dataset ID cannot be determined
 	}
 
 	private async loadDataset(datasetId: string): Promise<any> {
