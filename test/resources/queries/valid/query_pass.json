@@ -1,0 +1,40 @@
+{
+  "title": "SELECT pass WHERE pass = 0",
+  "input": {
+    "WHERE": {
+      "EQ": {
+        "sections_pass": 0
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_pass"
+      ],
+      "ORDER": "sections_pass"
+    }
+  },
+  "errorExpected": false,
+  "expected": [
+    {
+      "sections_pass": 0
+    },
+    {
+      "sections_pass": 0
+    },
+    {
+      "sections_pass": 0
+    },
+    {
+      "sections_pass": 0
+    },
+    {
+      "sections_pass": 0
+    },
+    {
+      "sections_pass": 0
+    },
+    {
+      "sections_pass": 0
+    }
+  ]
+}

@@ -1,0 +1,382 @@
+{
+  "title": "SELECT title WHERE title = *op",
+  "input": {
+    "WHERE": {
+      "IS": {
+        "sections_title": "*op"
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_title"
+      ],
+      "ORDER": "sections_title"
+    }
+  },
+  "errorExpected": false,
+  "expected": [
+    {
+      "sections_title": "combinatorial op"
+    },
+    {
+      "sections_title": "combinatorial op"
+    },
+    {
+      "sections_title": "combinatorial op"
+    },
+    {
+      "sections_title": "combinatorial op"
+    },
+    {
+      "sections_title": "combinatorial op"
+    },
+    {
+      "sections_title": "combinatorial op"
+    },
+    {
+      "sections_title": "combinatorial op"
+    },
+    {
+      "sections_title": "combinatorial op"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "geog econ devlop"
+    },
+    {
+      "sections_title": "intr workshop"
+    },
+    {
+      "sections_title": "intr workshop"
+    },
+    {
+      "sections_title": "intr workshop"
+    },
+    {
+      "sections_title": "intr workshop"
+    },
+    {
+      "sections_title": "mthd pwr syst op"
+    },
+    {
+      "sections_title": "mthd pwr syst op"
+    },
+    {
+      "sections_title": "real est develop"
+    },
+    {
+      "sections_title": "real est develop"
+    },
+    {
+      "sections_title": "real est develop"
+    },
+    {
+      "sections_title": "real est develop"
+    },
+    {
+      "sections_title": "real est develop"
+    },
+    {
+      "sections_title": "real est develop"
+    },
+    {
+      "sections_title": "real est develop"
+    },
+    {
+      "sections_title": "real est develop"
+    },
+    {
+      "sections_title": "real est develop"
+    },
+    {
+      "sections_title": "real est develop"
+    },
+    {
+      "sections_title": "real est develop"
+    },
+    {
+      "sections_title": "real est develop"
+    },
+    {
+      "sections_title": "real est develop"
+    },
+    {
+      "sections_title": "real est develop"
+    },
+    {
+      "sections_title": "real est develop"
+    },
+    {
+      "sections_title": "real est develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "relation develop"
+    },
+    {
+      "sections_title": "sanskrit cosmop"
+    },
+    {
+      "sections_title": "sanskrit cosmop"
+    },
+    {
+      "sections_title": "sanskrit cosmop"
+    },
+    {
+      "sections_title": "sanskrit cosmop"
+    },
+    {
+      "sections_title": "sanskrit cosmop"
+    },
+    {
+      "sections_title": "sanskrit cosmop"
+    },
+    {
+      "sections_title": "strs & stllr pop"
+    },
+    {
+      "sections_title": "strs & stllr pop"
+    },
+    {
+      "sections_title": "strs & stllr pop"
+    },
+    {
+      "sections_title": "strs & stllr pop"
+    },
+    {
+      "sections_title": "strs & stllr pop"
+    },
+    {
+      "sections_title": "strs & stllr pop"
+    },
+    {
+      "sections_title": "sustain develop"
+    },
+    {
+      "sections_title": "sustain develop"
+    },
+    {
+      "sections_title": "sustain develop"
+    },
+    {
+      "sections_title": "sustain develop"
+    },
+    {
+      "sections_title": "sustain develop"
+    },
+    {
+      "sections_title": "sustain develop"
+    },
+    {
+      "sections_title": "sustain develop"
+    },
+    {
+      "sections_title": "sustain develop"
+    },
+    {
+      "sections_title": "sustain develop"
+    },
+    {
+      "sections_title": "sustain develop"
+    },
+    {
+      "sections_title": "sustain develop"
+    },
+    {
+      "sections_title": "sustain develop"
+    },
+    {
+      "sections_title": "sustain develop"
+    },
+    {
+      "sections_title": "sustain develop"
+    }
+  ]
+}

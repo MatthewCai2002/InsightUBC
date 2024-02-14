@@ -1,0 +1,34 @@
+{
+  "title": "SELECT audit WHERE audit = 10",
+  "input": {
+    "WHERE": {
+      "EQ": {
+        "sections_audit": 10
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_audit"
+      ],
+      "ORDER": "sections_audit"
+    }
+  },
+  "errorExpected": false,
+  "expected": [
+      {
+        "sections_audit": 10
+      },
+      {
+        "sections_audit": 10
+      },
+      {
+        "sections_audit": 10
+      },
+      {
+        "sections_audit": 10
+      },
+      {
+        "sections_audit": 10
+      }
+    ]
+  }

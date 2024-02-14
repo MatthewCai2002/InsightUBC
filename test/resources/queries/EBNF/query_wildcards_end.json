@@ -1,0 +1,3268 @@
+{
+  "title": "SELECT title WHERE title = str*",
+  "input": {
+    "WHERE": {
+      "IS": {
+        "sections_title": "str*"
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_title"
+      ],
+      "ORDER": "sections_title"
+    }
+  },
+  "errorExpected": false,
+  "expected": [
+    {
+      "sections_title": "str bnd equ chem"
+    },
+    {
+      "sections_title": "str bnd equ chem"
+    },
+    {
+      "sections_title": "str bnd equ chem"
+    },
+    {
+      "sections_title": "str bnd equ chem"
+    },
+    {
+      "sections_title": "str mthd iorg ch"
+    },
+    {
+      "sections_title": "str mthd iorg ch"
+    },
+    {
+      "sections_title": "str mthd iorg ch"
+    },
+    {
+      "sections_title": "str mthd iorg ch"
+    },
+    {
+      "sections_title": "str mthd iorg ch"
+    },
+    {
+      "sections_title": "str mthd iorg ch"
+    },
+    {
+      "sections_title": "str mthd iorg ch"
+    },
+    {
+      "sections_title": "str mthd iorg ch"
+    },
+    {
+      "sections_title": "str mthd iorg ch"
+    },
+    {
+      "sections_title": "str mthd iorg ch"
+    },
+    {
+      "sections_title": "str mthd iorg ch"
+    },
+    {
+      "sections_title": "str mthd iorg ch"
+    },
+    {
+      "sections_title": "str mthd iorg ch"
+    },
+    {
+      "sections_title": "str mthd iorg ch"
+    },
+    {
+      "sections_title": "str sentences"
+    },
+    {
+      "sections_title": "str sentences"
+    },
+    {
+      "sections_title": "str sentences"
+    },
+    {
+      "sections_title": "str sentences"
+    },
+    {
+      "sections_title": "str sentences"
+    },
+    {
+      "sections_title": "str sentences"
+    },
+    {
+      "sections_title": "str sentences"
+    },
+    {
+      "sections_title": "str sentences"
+    },
+    {
+      "sections_title": "str sentences"
+    },
+    {
+      "sections_title": "str sentences"
+    },
+    {
+      "sections_title": "str sentences"
+    },
+    {
+      "sections_title": "str sentences"
+    },
+    {
+      "sections_title": "str sentences"
+    },
+    {
+      "sections_title": "str sentences"
+    },
+    {
+      "sections_title": "str sentences"
+    },
+    {
+      "sections_title": "str&fnc mrne anl"
+    },
+    {
+      "sections_title": "str&fnc mrne anl"
+    },
+    {
+      "sections_title": "str&fnc mrne anl"
+    },
+    {
+      "sections_title": "str&fnc mrne anl"
+    },
+    {
+      "sections_title": "str&fnc mrne anl"
+    },
+    {
+      "sections_title": "str&fnc mrne anl"
+    },
+    {
+      "sections_title": "str&fnc mrne anl"
+    },
+    {
+      "sections_title": "str&fnc mrne anl"
+    },
+    {
+      "sections_title": "str&fnc mrne anl"
+    },
+    {
+      "sections_title": "str&fnc mrne anl"
+    },
+    {
+      "sections_title": "strat compnsaton"
+    },
+    {
+      "sections_title": "strat compnsaton"
+    },
+    {
+      "sections_title": "strat compnsaton"
+    },
+    {
+      "sections_title": "strat compnsaton"
+    },
+    {
+      "sections_title": "strat compnsaton"
+    },
+    {
+      "sections_title": "strat compnsaton"
+    },
+    {
+      "sections_title": "strat hr mgmt"
+    },
+    {
+      "sections_title": "strat hr mgmt"
+    },
+    {
+      "sections_title": "strat hr mgmt"
+    },
+    {
+      "sections_title": "strat hr mgmt"
+    },
+    {
+      "sections_title": "strat hr mgmt"
+    },
+    {
+      "sections_title": "strat hr mgmt"
+    },
+    {
+      "sections_title": "strat hr mgmt"
+    },
+    {
+      "sections_title": "strat hr mgmt"
+    },
+    {
+      "sections_title": "strat hr mgmt"
+    },
+    {
+      "sections_title": "strat hr mgmt"
+    },
+    {
+      "sections_title": "strat hr mgmt"
+    },
+    {
+      "sections_title": "strat hr mgmt"
+    },
+    {
+      "sections_title": "strat hr mgmt"
+    },
+    {
+      "sections_title": "strat hr mgmt"
+    },
+    {
+      "sections_title": "strat hr mgmt"
+    },
+    {
+      "sections_title": "strat hr mgmt"
+    },
+    {
+      "sections_title": "strat mgmt"
+    },
+    {
+      "sections_title": "strat mgmt"
+    },
+    {
+      "sections_title": "strat mgmt"
+    },
+    {
+      "sections_title": "strat mgmt"
+    },
+    {
+      "sections_title": "strat mgmt"
+    },
+    {
+      "sections_title": "strat mgmt"
+    },
+    {
+      "sections_title": "strat mgmt"
+    },
+    {
+      "sections_title": "strat mgmt"
+    },
+    {
+      "sections_title": "strat mgmt"
+    },
+    {
+      "sections_title": "strat mgmt"
+    },
+    {
+      "sections_title": "strat mgmt"
+    },
+    {
+      "sections_title": "strat mgmt"
+    },
+    {
+      "sections_title": "strat mgmt"
+    },
+    {
+      "sections_title": "strat mgmt"
+    },
+    {
+      "sections_title": "strat mgmt"
+    },
+    {
+      "sections_title": "strat mgmt"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat univ writ"
+    },
+    {
+      "sections_title": "strat&techn cell"
+    },
+    {
+      "sections_title": "strat&techn cell"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "strategic mangmt"
+    },
+    {
+      "sections_title": "stratgc staffing"
+    },
+    {
+      "sections_title": "stratgc staffing"
+    },
+    {
+      "sections_title": "stratgc staffing"
+    },
+    {
+      "sections_title": "stratgc staffing"
+    },
+    {
+      "sections_title": "stratgc staffing"
+    },
+    {
+      "sections_title": "stratgc staffing"
+    },
+    {
+      "sections_title": "stratgc staffing"
+    },
+    {
+      "sections_title": "stratgc staffing"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "strctr bond chem"
+    },
+    {
+      "sections_title": "stress & coping"
+    },
+    {
+      "sections_title": "stress & coping"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strg mngmnt bus"
+    },
+    {
+      "sections_title": "strs & stllr pop"
+    },
+    {
+      "sections_title": "strs & stllr pop"
+    },
+    {
+      "sections_title": "strs & stllr pop"
+    },
+    {
+      "sections_title": "strs & stllr pop"
+    },
+    {
+      "sections_title": "strs & stllr pop"
+    },
+    {
+      "sections_title": "strs & stllr pop"
+    },
+    {
+      "sections_title": "strtgc mng serv"
+    },
+    {
+      "sections_title": "strtgc mng serv"
+    },
+    {
+      "sections_title": "strtgc mng serv"
+    },
+    {
+      "sections_title": "strtgc mng serv"
+    },
+    {
+      "sections_title": "strtgc mng serv"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc analys"
+    },
+    {
+      "sections_title": "struc endg lang"
+    },
+    {
+      "sections_title": "struc endg lang"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology i"
+    },
+    {
+      "sections_title": "struc geology ii"
+    },
+    {
+      "sections_title": "struc geology ii"
+    },
+    {
+      "sections_title": "struc geology ii"
+    },
+    {
+      "sections_title": "struc geology ii"
+    },
+    {
+      "sections_title": "struc geology ii"
+    },
+    {
+      "sections_title": "struc geology ii"
+    },
+    {
+      "sections_title": "struc geology ii"
+    },
+    {
+      "sections_title": "struc geology ii"
+    },
+    {
+      "sections_title": "struc geology ii"
+    },
+    {
+      "sections_title": "struc geology ii"
+    },
+    {
+      "sections_title": "struc geology ii"
+    },
+    {
+      "sections_title": "struc geology ii"
+    },
+    {
+      "sections_title": "struc geology ii"
+    },
+    {
+      "sections_title": "struc geology ii"
+    },
+    {
+      "sections_title": "struc geology ii"
+    },
+    {
+      "sections_title": "struc geology ii"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&prpty lab"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "struc&repr fungi"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structural chem"
+    },
+    {
+      "sections_title": "structures i"
+    },
+    {
+      "sections_title": "structures i"
+    },
+    {
+      "sections_title": "structures i"
+    },
+    {
+      "sections_title": "structures i"
+    },
+    {
+      "sections_title": "structures i"
+    },
+    {
+      "sections_title": "structures i"
+    }
+  ]
+}

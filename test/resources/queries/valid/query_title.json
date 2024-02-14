@@ -1,0 +1,25 @@
+{
+  "title": "SELECT title WHERE title = stress coping",
+  "input": {
+    "WHERE": {
+      "IS": {
+        "sections_title": "stress \u0026 coping"
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_title"
+      ],
+      "ORDER": "sections_title"
+    }
+  },
+  "errorExpected": false,
+  "expected": [
+    {
+      "sections_title": "stress \u0026 coping"
+    },
+    {
+      "sections_title": "stress \u0026 coping"
+    }
+  ]
+}

@@ -9,9 +9,16 @@ import {
 import * as fs from "fs-extra";
 import JSZip from "jszip";
 import Section from "./section";
+import Validator from "./validator";
+
+// Assuming the structure of your options object based on the provided code
+interface QueryOptions {
+	COLUMNS: string[];
+	ORDER?: string; // Optional
+}
 
 export default class InsightFacade implements IInsightFacade {
-	private validFields: string[] = ["id", "Course", "Title", "Professor", "Subject",
+	private fileFields: string[] = ["id", "Course", "Title", "Professor", "Subject",
 		"Year", "Avg", "Pass", "Fail", "Audit"];
 
 
@@ -103,7 +110,7 @@ export default class InsightFacade implements IInsightFacade {
 		}
 
 		// write datasetOBJ to json file in ./src/controller/data/ dir
-		this.writeDataset(datasetObj, id);
+		await this.writeDataset(datasetObj, id);
 
 		// create InsightDataset obj and fill in proper values
 		const dataset: InsightDataset = {
@@ -116,34 +123,25 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	// writes a dataset to a JSON file
-	private writeDataset(datasetObj: any, id: string) {
+	private async writeDataset(datasetObj: any, id: string) {
 		// check if data directory exists
-		fs.promises.stat(this.dataDir)
-			.then((stats) => {
-				// if the data directory exists then write to it
-				if (stats.isDirectory()) {
-					const datasetJSONString = JSON.stringify(datasetObj, null, 2);
-					fs.writeFile(this.dataDir + id + ".json", datasetJSONString, "utf-8", (err) => {
-						if (err) {
-							console.error("Error writing to file:", err);
-						} else {
-							console.log("File has been written successfully.");
-						}
-					});
-				} else {
-					console.log(`'${this.dataDir}' is not a directory.`);
-				}
-			}).catch((err) => {
-			// make data dir if it doesn't exist
-				fs.promises.mkdir(this.dataDir)
-					.then(() => {
-						console.log(`Directory '${this.dataDir}' created successfully.`);
-					})
-					.catch((e) => {
-						console.error("Error creating directory:", e);
-					});
+		try {
+			// Check if the directory exists; if not, try to create it
+			await fs.promises.stat(this.dataDir).catch(async () => {
 				console.log(`Directory '${this.dataDir}' does not exist.`);
+				await fs.promises.mkdir(this.dataDir);
+				console.log(`Directory '${this.dataDir}' created successfully.`);
 			});
+
+			// Prepare the dataset JSON string
+			const datasetJSONString = JSON.stringify(datasetObj, null, 2);
+
+			// Write the file
+			await fs.promises.writeFile(this.dataDir + id + ".json", datasetJSONString, "utf-8");
+			console.log("File has been written successfully.");
+		} catch (e) {
+			console.error("Error writing to file or creating directory:", e);
+		}
 	}
 
 // adds sections to a dataset JSON obj
@@ -179,7 +177,6 @@ export default class InsightFacade implements IInsightFacade {
 			if(!str) {
 				continue;
 			}
-
 			let course = JSON.parse(str);
 			let validCourse = this.isValidCourse(course);
 			validCourses.push(validCourse);
@@ -190,7 +187,6 @@ export default class InsightFacade implements IInsightFacade {
 			console.log("invalid dataset");
 			return false;
 		}
-
 		return true;
 	}
 
@@ -209,19 +205,16 @@ export default class InsightFacade implements IInsightFacade {
 		if (results.length < 1) {
 			return false;
 		}
-
 		// check if all sections of a course are valid or not
 		// for each section check if it's valid
 		results.forEach((section: any) => {
 			let validSection = this.isValidSection(section);
 			validSections.push(validSection);
 		});
-
 		// if all sections of a course are invalid then course is invalid
 		if (validSections.every((valid) => !valid)) {
 			return false;
 		}
-
 		return true;
 
 	}
@@ -229,12 +222,11 @@ export default class InsightFacade implements IInsightFacade {
 	// validate a single section
 	// checks to see if a section has all validFields
 	private isValidSection(section: any): boolean {
-		this.validFields.forEach((field: string) => {
+		this.fileFields.forEach((field: string) => {
 			if (!(field in section)) {
 				return false;
 			}
 		});
-
 		return true;
 	}
 
@@ -244,7 +236,6 @@ export default class InsightFacade implements IInsightFacade {
 		if (!id.trim() || id.includes("_")) {
 			return Promise.reject(new InsightError("Invalid dataset ID."));
 		}
-
 		// Check if the dataset exists
 		if (!this.datasets[id]) {
 			return Promise.reject(new NotFoundError("Dataset not found."));
@@ -264,67 +255,100 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public async performQuery(query: any): Promise<InsightResult[]> {
-		// Step 1: Validate the query
-		if (!this.isValidQuery(query)) {
-			return Promise.reject(new InsightError("Query is not valid."));
+		const validator = new Validator();
+		const valid: any = validator.validateQuery(query);
+		if (!valid.valid) {
+			return Promise.reject(new InsightError("Query validation failed."));
 		}
-		// Step 2: Determine the dataset ID to query
-		const datasetId = this.extractDatasetId(query);
-		if (!datasetId || !this.datasets[datasetId]) {
-			return Promise.reject(new InsightError("Dataset ID is not found or not loaded."));
+		const datasetId = valid.id;
+		if (!datasetId) {
+			throw new InsightError("Dataset ID could not be determined from the query.");
 		}
-		// Load the dataset from disk or memory as needed
 		const dataset = await this.loadDataset(datasetId);
-		// Step 3: Parse the query to an intermediate representation (e.g., AST)
-		const parsedQuery = this.parseQuery(query);
-		// Step 4: Execute the query against the dataset
-		const results = this.executeQuery(dataset, parsedQuery);
-		// Step 5: Return the results
-		return Promise.resolve(results);
+		const filteredResults = this.filterByWhereClause(dataset, query.WHERE);
+		// Apply transformations (if any) and options to the filtered results
+		return this.applyOptions(filteredResults, query.OPTIONS);
+			// Continue with query processing on the loaded dataset...
+			// This would involve filtering the dataset based on the WHERE clause,
+			// applying any transformations, and then selecting/sorting based on OPTIONS.
 	}
 
-	private isValidQuery(query: any): boolean {
-		// Example: Check if the query has WHERE and OPTIONS sections
-		if (!query || !query.WHERE || !query.OPTIONS) {
-			return false;
-		}
-		// Add more specific validations based on your query format
-		return true;
-	}
 
-	private extractDatasetId(query: any): string | null {
-		// Example: Assuming dataset ID is specified in the OPTIONS section
-		if (query && query.OPTIONS && query.OPTIONS.datasetId) {
-			return query.OPTIONS.datasetId;
-		}
-		return null;
+	private filterByWhereClause(dataset: Section[], whereClause: any): Section[] {
+		// Explicit typing for operator and conditions helps with code clarity and type checking
+		// MADE ESLINT SUPRESSIONS
+		// if (Object.keys(whereClause).length === 0) {
+		// 	return dataset;
+		// }
+		// const operator: string = Object.keys(whereClause)[0];
+		// const conditions: any = whereClause[operator]; // Consider defining a type for conditions
+		// switch (operator) {
+		// 	case "AND":
+		// 		// Here, TypeScript knows conditions must be an array, so we can avoid explicit 'any' typing
+		// 		return conditions.reduce((result: Section[], condition: any) =>
+		// 			this.filterByWhereClause(result, condition), dataset);
+		// 	case "OR":
+		// 		let orResults: Section[] = [];
+		// 		conditions.forEach((condition: any) => {
+		// 			const conditionResults: Section[] = this.filterByWhereClause(dataset, condition);
+		// 			orResults = [...orResults, ...conditionResults.filter((item) => !orResults.includes(item))];
+		// 		});
+		// 		return orResults;
+		// 	case "NOT":
+		// 		const notResults: Section[] = this.filterByWhereClause(dataset, conditions);
+		// 		return dataset.filter((item) => !notResults.includes(item));
+		// 	default:
+		// 		return this.handleComparisonOperations(dataset, operator, conditions);
+		// }
+		return [];
+	}
+	//
+	// private handleComparisonOperations(dataset: any[], operator: string, condition: any): any[] {
+	// 	const field = Object.keys(condition)[0];
+	// 	const value = condition[field];
+	//
+	// 	return dataset.filter((section) => {
+	// 		switch (operator) {
+	// 			case "GT": return section[field] > value;
+	// 			case "LT": return section[field] < value;
+	// 			case "EQ": return section[field] === value;
+	// 			case "IS": return new RegExp(`^${value.replace(/\*/g, ".*")}$`).test(section[field]);
+	// 			default: return true; // Or handle invalid operator
+	// 		}
+	// 	});
+	// }
+
+	private applyOptions(filteredResults: any[], options: any): InsightResult[] {
+		// Project specified columns
+		// const projectedResults = filteredResults.map((item) => {
+		// 	const projectedItem = {};
+		// 	options.COLUMNS.forEach((column) => {
+		// 		projectedItem[column] = item[column];
+		// 	});
+		// 	return projectedItem;
+		// });
+		// // Sort results if ORDER is specified
+		// if (options.ORDER) {
+		// 	const orderKey = options.ORDER;
+		// 	projectedResults.sort((a, b) => a[orderKey] - b[orderKey]);
+		// }
+		return [];
 	}
 
 	private async loadDataset(datasetId: string): Promise<any> {
-		// Load and return the dataset from disk or memory
-		// This assumes datasets are stored as JSON files in a `dataDir` directory
+		// loads the dataset in
+		const datasetPath = this.dataDir + datasetId + ".json"; // Assuming this.dataDir is './data/'
 		try {
-			const datasetPath = `${this.dataDir}/${datasetId}.json`;
-			return await fs.readJson(datasetPath);
+			const dataset = await fs.readJson(datasetPath);
+			return dataset;
 		} catch (error) {
+			console.error(`Failed to load dataset ${datasetId}: ${error}`);
 			throw new InsightError(`Failed to load dataset ${datasetId}: ${error}`);
 		}
 	}
 
-	private parseQuery(query: any): any {
-		// Convert the query to an intermediate form, such as an Abstract Syntax Tree (AST)
-		// This is highly dependent on your query format and requirements
-		return {}; // Placeholder
-	}
-
-	private executeQuery(dataset: any, parsedQuery: any): InsightResult[] {
-		// Execute the parsed query against the dataset
-		// You'll need to implement the logic for filtering data based on the query
-		return []; // Placeholder
-	}
 
 	public async listDatasets(): Promise<InsightDataset[]> {
-		// made with chatgpt
 		// and an object with kind and numRows as the value
 		const datasetList: InsightDataset[] = Object.keys(this.datasets).map((id) => {
 			const dataset = this.datasets[id];
@@ -337,4 +361,52 @@ export default class InsightFacade implements IInsightFacade {
 		return Promise.resolve(datasetList);
 	}
 
+
 }
+
+// TODO: determine the dataset to query using ID
+//		1. dataset JSON files in./data/ are named with their ID
+//			a. can iterate through all files in ./data/ to find a JSON file with name == ID
+//		2. load that JSON file
+// takes in an already parsed JSON object
+// makes sure that the query is valid
+
+// TODO: query through dataset to find data that matches query
+//		1. this will be done recursively
+//			a. idea is that we will recurse until a leaf clause (just a clause with no nested clauses)
+//			-> then filter through all sections using just the leaf clause
+//			-> then return the result of this filtering (array) to the callee
+//			-> this means that we pass filtered data to the higher level clauses
+//			-> then the higher level clauses will apply their own filter
+//			-> essentially layering filters on top of each other
+//			-> eventually we return back up to the WHERE clause which is when we finish querying
+//		2. need a function to handle every EBNF keyword
+//			a. ie: handleWhere would be the highest level function
+//				which calls the other filtering functions appropriately depending
+//				depending on what clauses are in the where (might need a switch statement to do this)
+//		3. we have a top level function which takes in a query obj
+//			handles any preprocessing needed, formatting, calling handlers, returning the final result etc
+//				will also need to handle test queries with an expected field in the JSON file
+//				^^^ this part might not be right and might be handled by the test suite actually
+//			a. should call handleWhere, handleOptions etc
+// TODO: validate Query recursively.
+//		 1. check if the query follows EBNF
+//			- all queries need to have a WHERE clause
+//			a. (ie: query has a WHERE clause, and looks like WHERE: {EQ: ubc.id is 1}} or something)
+//				- as we check through where and options we must check for db references
+//			b. need to check if current keyword is an EBNF keyword
+//			c. need to check if current word is being used correctly
+//				- ie: IS: {ubc.id: 1} is how you use the IS keyword
+//				      but IS: [{ubc.id: 1}, {ubc.id: 2}] isn't.
+//				- this part will have to be done recursively
+//					-> curr word is only valid of all children are valid
+//					-> need to check if chlidren are valid
+//					-> keep recursing until a leaf node (a clause with no nested clauses)
+//					-> return up the call stack until curr.
+//					-> if curr and all its children are valid then curr is valid
+//		 2. check if the query references 1 DB.
+//		 	a. (ie: ubc.id is 1 is fine but ubc.id is ubc2.id isn't)
+//			b. maybe we could have a dictionary with all the DBs seen so far and length should be < 2
+//				- then as we recurse through the query we can just check the length of this each time
+//		 3. cannot check for the 5000 result limit initially, so check it as we find results.
+//			a. put results into an array and at the end of performQuery if arr.length > 5000 then return invalid
