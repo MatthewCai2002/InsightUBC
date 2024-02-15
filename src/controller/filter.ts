@@ -88,11 +88,9 @@ export default class Filter {
 
 		const parts = key.split("_");
 		const field = parts[1];
-
 		// Convert wildcard pattern to regex for comparison
 		const pattern = value.replace(/\*/g, ".*"); // Convert wildcard (*) to regex equivalent (.*)
 		const regex = new RegExp(`^${pattern}$`, "i"); // 'i' for case-insensitive match
-
 		let res = dataset.filter((section: any) => {
 			const sectionValue = section.value[field];
 			// Ensure the value being compared is a string
@@ -105,7 +103,6 @@ export default class Filter {
 	private handleInequality(query: any, dataset: Section[]): Section[] {
 		const operator = Object.keys(query)[0];
 		const condition = query[operator];
-
 		const mKey = Object.keys(condition)[0];
 		const keyParts = mKey.split("_");
 		const field = keyParts[1];

@@ -36,6 +36,10 @@ export default class Validator {
 		const validWhere = this.validateWhere(query.WHERE, dbRefSet);
 		const validOpt = this.validateOptions(query.OPTIONS, dbRefSet);
 
+		if (dbRefSet.size === 0) {
+			throw new InsightError("No dataset specified in the query.");
+		}
+
 		let res = {
 			valid: validWhere && validOpt,
 			id: [...dbRefSet][0],
@@ -191,6 +195,9 @@ export default class Validator {
 		// Check for required components in OPTIONS
 		if (!options.COLUMNS || !Array.isArray(options.COLUMNS)) {
 			throw new InsightError("Invalid COLUMNS");
+		}
+		if (!("COLUMNS" in options) || !Array.isArray(options.COLUMNS) || options.COLUMNS.length === 0) {
+			throw new InsightError("OPTIONS must contain a non-empty COLUMNS array.");
 		}
 
 		// Optionally, validate ORDER if present

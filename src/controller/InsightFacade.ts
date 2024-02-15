@@ -297,13 +297,18 @@ export default class InsightFacade implements IInsightFacade {
 		});
 
 		// Sort results if ORDER is specified
-		// TODO: go over tomorrow
 		if (options.ORDER) {
-			const orderKey = options.ORDER as keyof InsightResult;
+			const orderField = `sections_${options.ORDER.split("_")[1]}` as keyof InsightResult;
 			projectedResults.sort((a, b) => {
-				// Assuming all sortable values are numbers for simplicity
-				// You may need additional logic here to handle different types
-				return (a[orderKey] as any) - (b[orderKey] as any);
+				const aValue = a[orderField];
+				const bValue = b[orderField];
+				// Check if the values are strings for localeCompare or numbers for subtraction
+				if (typeof aValue === "string" && typeof bValue === "string") {
+					return aValue.localeCompare(bValue);
+				} else if (typeof aValue === "number" && typeof bValue === "number") {
+					return aValue - bValue;
+				}
+				return 0; // Fallback in case of a type mismatch or undefined values
 			});
 		}
 		return projectedResults;
