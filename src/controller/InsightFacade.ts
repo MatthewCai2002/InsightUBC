@@ -266,9 +266,6 @@ export default class InsightFacade implements IInsightFacade {
 		const filterer: Filter = new Filter();
 
 		const valid: any = validator.validateQuery(query);
-		if (!valid.valid) {
-			return Promise.reject(new InsightError("Query validation failed."));
-		}
 		const datasetId = valid.id;
 		if (!datasetId) {
 			throw new InsightError("Dataset ID could not be determined from the query.");
@@ -279,8 +276,25 @@ export default class InsightFacade implements IInsightFacade {
 		// Continue with query processing on the loaded dataset...
 		// This would involve filtering the dataset based on the WHERE clause,
 		// applying any transformations, and then selecting/sorting based on OPTIONS.
+		// const res = this.transformToInsightResult(filteredResults);
 		return [];
 	}
+
+	// public transformToInsightResult(dataset: Section[]): InsightResult[] {
+	// 	return dataset.map((section: any) => {
+	// 		// Create a new object that conforms to the InsightResult interface
+	// 		let result: InsightResult = {};
+	//
+	// 		// Iterate over the properties of the section.value object
+	// 		for (const [key, value] of Object.entries(section.value)) {
+	// 			// Assign each key-value pair to the result object
+	// 			result[key] = value;
+	// 		}
+	//
+	// 		// Return the transformed result
+	// 		return result;
+	// 	});
+	// }
 
 	private async loadDataset(datasetId: string): Promise<any> {
 		// loads the dataset in

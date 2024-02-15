@@ -8,6 +8,7 @@ export default class Filter {
 		if (Object.keys(whereClause).length === 0) {
 			return dataset;
 		}
+
 		// const keyWord: string = Object.keys(whereClause)[0];
 		// const nestedQuery: any = whereClause[keyWord]; // Consider defining a type for conditions
 		// let results: Section[] = [];
@@ -96,20 +97,25 @@ export default class Filter {
 	private handleInequality(query: any, dataset: Section[]): Section[] {
 		const operator = Object.keys(query)[0];
 		const condition = query[operator];
-		const field = Object.keys(condition)[0];
-		const value = condition[field];
-		return dataset.filter((section: any) => {
+
+		const mKey = Object.keys(condition)[0];
+		const keyParts = mKey.split("_");
+		const field = keyParts[1];
+		const value = condition[mKey];
+		let res = dataset.filter((section: any) => {
 			switch (operator) {
 				case "GT":
-					return section[field] > value;
+					return section.value[field] > value;
 				case "LT":
-					return section[field] < value;
+					return section.value[field] < value;
 				case "EQ":
-					return section[field] === value;
+					return section.value[field] === value;
 				default:
 					return false;
 			}
 		});
+
+		return res;
 	}
 
 	private handleComparisonOperations(dataset: any[], operator: string, condition: any): any[] {
@@ -132,20 +138,20 @@ export default class Filter {
 		});
 	}
 
-	private applyOptions(filteredResults: any[], options: any): InsightResult[] {
-		// Project specified columns
-		// const projectedResults = filteredResults.map((item) => {
-		// 	const projectedItem = {};
-		// 	options.COLUMNS.forEach((column) => {
-		// 		projectedItem[column] = item[column];
-		// 	});
-		// 	return projectedItem;
-		// });
-		// // Sort results if ORDER is specified
-		// if (options.ORDER) {
-		// 	const orderKey = options.ORDER;
-		// 	projectedResults.sort((a, b) => a[orderKey] - b[orderKey]);
-		// }
-		return [];
-	}
+	// private applyOptions(filteredResults: any[], options: any): InsightResult[] {
+	// 	// Project specified columns
+	// 	const projectedResults = filteredResults.map((item) => {
+	// 		const projectedItem = {};
+	// 		options.COLUMNS.forEach((column: any) => {
+	// 			projectedItem[column] = item[column];
+	// 		});
+	// 		return projectedItem;
+	// 	});
+	// 	// Sort results if ORDER is specified
+	// 	if (options.ORDER) {
+	// 		const orderKey = options.ORDER;
+	// 		projectedResults.sort((a, b) => a[orderKey] - b[orderKey]);
+	// 	}
+	// 	return [];
+	// }
 }
