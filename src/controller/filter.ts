@@ -48,7 +48,7 @@ export default class Filter {
 				// Return the sections that are in the original dataset but not in the notConditionResult
 				return dataset.filter((section) => !notConditionResult.includes(section));
 			}
-				// return this.callFilter(query.NOT, dataset);
+			// return this.callFilter(query.NOT, dataset);
 
 			// these ones can't have nested filters (base case)
 			case "IS":
@@ -142,6 +142,4 @@ export default class Filter {
 			}
 		});
 	}
-
-
 }

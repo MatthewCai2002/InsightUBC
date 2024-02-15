@@ -1,7 +1,6 @@
-import {InsightError} from "./IInsightFacade";
-import {isArgumentsObject} from "node:util/types";
+import {InsightError} from "../src/controller/IInsightFacade";
 
-export default class Validator {
+export default class TestValidator {
 	private validKeywords: string[] = [
 		"WHERE",
 		"OPTIONS",
