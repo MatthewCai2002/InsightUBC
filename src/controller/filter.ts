@@ -1,5 +1,5 @@
 import Section from "./section";
-import {InsightResult} from "./IInsightFacade";
+import {InsightError, InsightResult} from "./IInsightFacade";
 
 export default class Filter {
 	public filterByWhereClause(dataset: Section[], whereClause: any): Section[] {
@@ -8,12 +8,11 @@ export default class Filter {
 		if (Object.keys(whereClause).length === 0) {
 			return dataset;
 		}
-
-		// const keyWord: string = Object.keys(whereClause)[0];
-		// const nestedQuery: any = whereClause[keyWord]; // Consider defining a type for conditions
-		// let results: Section[] = [];
-		// const notResults: Section[] = [];
-		return this.callFilter(whereClause, dataset);
+		const res = this.callFilter(whereClause, dataset);
+		if (res.length > 5000) {
+			throw new InsightError("Result too big, over 5000");
+		}
+		return res;
 		// switch (keyWord) {
 		// 	case "AND":
 		// 		// Here, TypeScript knows conditions must be an array, so we can avoid explicit 'any' typing
@@ -44,8 +43,12 @@ export default class Filter {
 				return this.handleListQuery(query.OR, dataset, "OR");
 
 			// this can have nested filters
-			case "NOT":
-				return this.callFilter(query.NOT, dataset);
+			case "NOT": {
+				const notConditionResult = this.callFilter(query.NOT, dataset);
+				// Return the sections that are in the original dataset but not in the notConditionResult
+				return dataset.filter((section) => !notConditionResult.includes(section));
+			}
+				// return this.callFilter(query.NOT, dataset);
 
 			// these ones can't have nested filters (base case)
 			case "IS":
@@ -80,18 +83,23 @@ export default class Filter {
 	}
 
 	private handleIs(query: any, dataset: Section[]): Section[] {
-		const field = Object.keys(query)[0] as keyof Section; // Safely access the property key
-		const value: string = query[field] as string; // Ensure the value is treated as a string
+		const key = Object.keys(query)[0] as keyof Section; // Safely access the property key
+		const value: string = query[key] as string; // Ensure the value is treated as a string
+
+		const parts = key.split("_");
+		const field = parts[1];
 
 		// Convert wildcard pattern to regex for comparison
 		const pattern = value.replace(/\*/g, ".*"); // Convert wildcard (*) to regex equivalent (.*)
 		const regex = new RegExp(`^${pattern}$`, "i"); // 'i' for case-insensitive match
 
-		return dataset.filter((section) => {
-			const sectionValue = section[field];
+		let res = dataset.filter((section: any) => {
+			const sectionValue = section.value[field];
 			// Ensure the value being compared is a string
 			return typeof sectionValue === "string" && regex.test(sectionValue);
 		});
+
+		return res;
 	}
 
 	private handleInequality(query: any, dataset: Section[]): Section[] {

@@ -311,7 +311,29 @@ describe("InsightFacade", function () {
 					return facade
 						.performQuery(test.input)
 						.then((result) => {
-							assert.fail("Write your assertions here!");
+							expect(result).to.deep.equal(test.expected);
+						})
+						.catch((err: any) => {
+							assert.fail(`performQuery threw unexpected error: ${err}`);
+						});
+				});
+			});
+		});
+
+		describe("EBNF queries", function () {
+			let validQueries: ITestQuery[];
+			try {
+				validQueries = readFileQueries("EBNF");
+			} catch (e: unknown) {
+				expect.fail(`Failed to read one or more test queries. ${e}`);
+			}
+
+			validQueries.forEach(function (test: any) {
+				it(`${test.title}`, function () {
+					return facade
+						.performQuery(test.input)
+						.then((result) => {
+							expect(result).to.deep.equal(test.expected);
 						})
 						.catch((err: any) => {
 							assert.fail(`performQuery threw unexpected error: ${err}`);
@@ -340,6 +362,7 @@ describe("InsightFacade", function () {
 							if (test.expected === "InsightError") {
 								expect(err).to.be.instanceOf(InsightError);
 							} else {
+								console.log(typeof err);
 								assert.fail("Query threw unexpected error");
 							}
 						});

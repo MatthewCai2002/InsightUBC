@@ -64,7 +64,7 @@ export default class InsightFacade implements IInsightFacade {
 			this.datasets[id] = dataset;
 
 			// return array of all added datasets
-			console.log(Object.keys(this.datasets));
+			// console.log(Object.keys(this.datasets));
 			return Promise.resolve(Object.keys(this.datasets));
 		} catch (error) {
 			return Promise.reject(new InsightError(`Failed to add dataset: ${error}`));
@@ -96,8 +96,6 @@ export default class InsightFacade implements IInsightFacade {
 
 		// for each course
 		for (let str of jsonStrings) {
-			// parse course into JSON object
-
 			// if string is empty then skip it
 			if (!str) {
 				continue;
@@ -277,27 +275,31 @@ export default class InsightFacade implements IInsightFacade {
 		// This would involve filtering the dataset based on the WHERE clause,
 		// applying any transformations, and then selecting/sorting based on OPTIONS.
 		// const res = this.transformToInsightResult(filteredResults);
+		console.log(insightResults);
 		return insightResults;
 	}
 
 	private applyOptions(filteredResults: Section[], options: QueryOptions): InsightResult[] {
-		const projectedResults: InsightResult[] = filteredResults.map((item) => {
+		const projectedResults: InsightResult[] = filteredResults.map((item: any) => {
 			const projectedItem: InsightResult = {};
 			options.COLUMNS.forEach((column) => {
+				const parts = column.split("_");
+				const field = parts[1];
 				// Make sure the column is a key of Section
-				if (column in item) {
-					const key = `sections_${column}` as keyof InsightResult;
+				if (field in item.value) {
+					const key = `sections_${field}` as keyof InsightResult;
 					// Use type assertion for column to be treated as keyof Section
-					const itemKey = column as keyof Section;
-					projectedItem[key] = item[itemKey];
+					const itemKey = field as keyof Section;
+					projectedItem[key] = item.value[itemKey];
 				}
 			});
 			return projectedItem;
 		});
 
 		// Sort results if ORDER is specified
+		// TODO: go over tomorrow
 		if (options.ORDER) {
-			const orderKey = `sections_${options.ORDER}` as keyof InsightResult;
+			const orderKey = options.ORDER as keyof InsightResult;
 			projectedResults.sort((a, b) => {
 				// Assuming all sortable values are numbers for simplicity
 				// You may need additional logic here to handle different types
