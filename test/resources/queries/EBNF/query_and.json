@@ -1,5 +1,5 @@
 {
-  "title": "SELECT id, course WHERE id = 51134 AND course = 544",
+  "title": "query and",
   "input": {
     "WHERE": {
       "AND": [

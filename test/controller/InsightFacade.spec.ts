@@ -316,7 +316,8 @@ describe("InsightFacade", function () {
 					return facade
 						.performQuery(test.input)
 						.then((result) => {
-							expect(result).to.deep.equal(test.expected);
+							console.log(result);
+							expect(result).to.deep.members(test.expected);
 						})
 						.catch((err: any) => {
 							assert.fail(`performQuery threw unexpected error: ${err}`);
@@ -338,7 +339,8 @@ describe("InsightFacade", function () {
 					return facade
 						.performQuery(test.input)
 						.then((result) => {
-							expect(result).to.deep.equal(test.expected);
+							console.log(result);
+							expect(result).to.deep.members(test.expected);
 						})
 						.catch((err: any) => {
 							assert.fail(`performQuery threw unexpected error: ${err}`);

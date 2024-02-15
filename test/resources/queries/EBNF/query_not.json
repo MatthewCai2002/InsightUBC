@@ -1,5 +1,5 @@
 {
-  "title": "SELECT pass WHERE NOT pass > 1",
+  "title": "query not",
   "input": {
     "WHERE": {
       "NOT": {

@@ -1,5 +1,5 @@
 {
-  "title": "SELECT title WHERE title = *op",
+  "title": "wildcard start",
   "input": {
     "WHERE": {
       "IS": {

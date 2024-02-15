@@ -1,9 +1,9 @@
 {
-	"title": "SELECT sections.dept, ubc.avg WHERE ubc.avg > 97",
+	"title": "invalid IS idstring",
 	"input": {
 		"WHERE": {
 			"IS": {
-				"sec_tions_uuid": 97
+				"sec_tions_uuid": "97"
 			}
 		},
 		"OPTIONS": {

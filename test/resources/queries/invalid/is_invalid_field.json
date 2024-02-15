@@ -1,9 +1,9 @@
 {
-	"title": "SELECT sections.dept, ubc.avg WHERE ubc.avg > 97",
+	"title": "invalid IS field",
 	"input": {
 		"WHERE": {
 			"IS": {
-				"sections_asdf": 97
+				"sections_asdf": "97"
 			}
 		},
 		"OPTIONS": {
