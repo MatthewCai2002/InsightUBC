@@ -1,0 +1,18 @@
+{
+	"title": "SELECT sections.dept, ubc.avg WHERE ubc.avg > 97",
+	"input": {
+		"WHERE": {
+			"GT": {
+				"sections_avg": "invalid"
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_avg"
+			],
+			"ORDER": "sections_avg"
+		}
+	},
+	"errorExpected": true,
+	"expected": "InsightError"
+}

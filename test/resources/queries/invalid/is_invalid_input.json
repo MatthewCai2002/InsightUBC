@@ -1,0 +1,18 @@
+{
+	"title": "SELECT sections.dept, ubc.avg WHERE ubc.avg > 97",
+	"input": {
+		"WHERE": {
+			"IS": {
+				"sections_uuid": 97
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_uuid"
+			],
+			"ORDER": "sections_uuid"
+		}
+	},
+	"errorExpected": true,
+	"expected": "InsightError"
+}

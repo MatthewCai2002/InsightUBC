@@ -6,6 +6,7 @@ import chaiAsPromised from "chai-as-promised";
 import {clearDisk, getContentFromArchives, readFileQueries} from "../TestUtil";
 import {before} from "mocha";
 import JSZip from "jszip";
+import Validator from "../../src/controller/validator";
 
 use(chaiAsPromised);
 
@@ -19,6 +20,8 @@ export interface ITestQuery {
 
 describe("InsightFacade", function () {
 	let facade: IInsightFacade;
+	let validator: Validator;
+
 	// Declare datasets used in tests. You should add more datasets like this!
 	let sections: string;
 	before(async function () {
@@ -200,6 +203,81 @@ describe("InsightFacade", function () {
 			}
 		});
 		// all of the removeDatasets were made using the first addDataset and keeping the same template
+	});
+
+	describe("Validator", function () {
+		before(async function () {
+			facade = new InsightFacade();
+			validator = new Validator();
+
+			// Add the datasets to InsightFacade once.
+			// Will *fail* if there is a problem reading ANY dataset.
+			const loadDatasetPromises = [facade.addDataset("sections", sections, InsightDatasetKind.Sections)];
+
+			try {
+				await Promise.all(loadDatasetPromises);
+			} catch (err) {
+				throw new Error(`In PerformQuery Before hook, dataset(s) failed to be added. \n${err}`);
+			}
+		});
+
+		after(async function () {
+			await clearDisk();
+		});
+
+		describe("validate valid queries", function () {
+			let validQueries: ITestQuery[];
+			try {
+				validQueries = readFileQueries("valid");
+			} catch (e: unknown) {
+				expect.fail(`Failed to read one or more test queries. ${e}`);
+			}
+
+			validQueries.forEach(function (test: any) {
+				it(`${test.title}`, function () {
+					const res = validator.validateQuery(test.input);
+					return expect(res.valid).to.equal(true);
+				});
+			});
+		});
+
+		describe("validate EBNF queries", function () {
+			let validQueries: ITestQuery[];
+			try {
+				validQueries = readFileQueries("EBNF");
+			} catch (e: unknown) {
+				expect.fail(`Failed to read one or more test queries. ${e}`);
+			}
+
+			validQueries.forEach(function (test: any) {
+				it(`${test.title}`, function () {
+					const res = validator.validateQuery(test.input);
+					return expect(res.valid).to.equal(true);
+				});
+			});
+		});
+
+		describe("validate invalid queries", function () {
+			let invalidQueries: ITestQuery[];
+			try {
+				invalidQueries = readFileQueries("invalid");
+			} catch (e: unknown) {
+				expect.fail(`Failed to read one or more test queries. ${e}`);
+			}
+
+			invalidQueries.forEach(function (test: any) {
+				it(`${test.title}`, function () {
+					try {
+						const res = validator.validateQuery(test.input);
+						expect.fail("Should have thrown InsightError");
+					} catch (error) {
+						console.log(error);
+						console.log(typeof error);
+						expect(error).to.be.instanceOf(InsightError);
+					}
+				});
+			});
+		});
 	});
 	describe("PerformQuery", function () {
 		before(async function () {
