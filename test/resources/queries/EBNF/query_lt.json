@@ -1,5 +1,5 @@
 {
-  "title": "SELECT avg WHERE avg < 50",
+  "title": "query less than",
   "input": {
     "WHERE": {
       "LT": {

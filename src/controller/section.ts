@@ -12,14 +12,14 @@ export default class Section {
 
 	constructor(sectionJSON: any) {
 		this.uuid = String(sectionJSON.id);
-		this.id = sectionJSON.Course;
-		this.title = sectionJSON.Title;
-		this.instructor = sectionJSON.Professor;
-		this.dept = sectionJSON.Subject;
+		this.id = String(sectionJSON.Course);
+		this.title = String(sectionJSON.Title);
+		this.instructor = String(sectionJSON.Professor);
+		this.dept = String(sectionJSON.Subject);
 		this.year = Number(sectionJSON.Year);
-		this.avg = sectionJSON.Avg;
-		this.pass = sectionJSON.Pass;
-		this.fail = sectionJSON.Fail;
-		this.audit = sectionJSON.Audit;
+		this.avg = Number(sectionJSON.Avg);
+		this.pass = Number(sectionJSON.Pass);
+		this.fail = Number(sectionJSON.Fail);
+		this.audit = Number(sectionJSON.Audit);
 	}
 }

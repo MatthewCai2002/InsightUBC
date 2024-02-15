@@ -1,5 +1,5 @@
 {
-  "title": "SELECT id WHERE id = 500",
+  "title": "query equal to",
   "input": {
     "WHERE": {
       "IS": {

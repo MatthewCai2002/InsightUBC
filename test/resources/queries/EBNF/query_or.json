@@ -1,5 +1,5 @@
 {
-  "title": "SELECT id, course WHERE id = 51134 OR course = 544",
+  "title": "query or",
   "input": {
     "WHERE": {
       "OR": [

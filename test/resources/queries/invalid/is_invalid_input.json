@@ -1,5 +1,5 @@
 {
-	"title": "SELECT sections.dept, ubc.avg WHERE ubc.avg > 97",
+	"title": "invalid IS input",
 	"input": {
 		"WHERE": {
 			"IS": {
