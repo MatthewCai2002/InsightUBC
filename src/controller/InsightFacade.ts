@@ -191,7 +191,7 @@ export default class InsightFacade implements IInsightFacade {
 
 		// if every course is invalid then dataset is invalid
 		if (validCourses.every((course) => !course)) {
-			console.log("invalid dataset");
+			// console.log("invalid dataset");
 			return false;
 		}
 		return true;
@@ -271,11 +271,7 @@ export default class InsightFacade implements IInsightFacade {
 		const dataset = await this.loadDataset(datasetId);
 		const filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
 		const insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
-		// Continue with query processing on the loaded dataset...
-		// This would involve filtering the dataset based on the WHERE clause,
-		// applying any transformations, and then selecting/sorting based on OPTIONS.
-		// const res = this.transformToInsightResult(filteredResults);
-		console.log(insightResults);
+		// console.log(insightResults);
 		return insightResults;
 	}
 

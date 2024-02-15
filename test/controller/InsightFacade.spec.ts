@@ -5,8 +5,7 @@ import {assert, expect, use} from "chai";
 import chaiAsPromised from "chai-as-promised";
 import {clearDisk, getContentFromArchives, readFileQueries} from "../TestUtil";
 import {before} from "mocha";
-import JSZip from "jszip";
-import Validator from "../../src/controller/validator";
+import TestValidator from "../testValidator";
 
 use(chaiAsPromised);
 
@@ -20,7 +19,7 @@ export interface ITestQuery {
 
 describe("InsightFacade", function () {
 	let facade: IInsightFacade;
-	let validator: Validator;
+	let validator: TestValidator;
 
 	// Declare datasets used in tests. You should add more datasets like this!
 	let sections: string;
@@ -208,7 +207,7 @@ describe("InsightFacade", function () {
 	describe("Validator", function () {
 		before(async function () {
 			facade = new InsightFacade();
-			validator = new Validator();
+			validator = new TestValidator();
 
 			// Add the datasets to InsightFacade once.
 			// Will *fail* if there is a problem reading ANY dataset.
@@ -235,8 +234,12 @@ describe("InsightFacade", function () {
 
 			validQueries.forEach(function (test: any) {
 				it(`${test.title}`, function () {
-					const res = validator.validateQuery(test.input);
-					return expect(res.valid).to.equal(true);
+					try {
+						const res = validator.validateQuery(test.input);
+						return expect(res.valid).to.equal(true);
+					} catch (e) {
+						expect.fail("should not have thrown error");
+					}
 				});
 			});
 		});
@@ -251,8 +254,12 @@ describe("InsightFacade", function () {
 
 			validQueries.forEach(function (test: any) {
 				it(`${test.title}`, function () {
-					const res = validator.validateQuery(test.input);
-					return expect(res.valid).to.equal(true);
+					try {
+						const res = validator.validateQuery(test.input);
+						return expect(res.valid).to.equal(true);
+					} catch (e) {
+						expect.fail("should not have thrown error");
+					}
 				});
 			});
 		});
@@ -271,8 +278,6 @@ describe("InsightFacade", function () {
 						const res = validator.validateQuery(test.input);
 						expect.fail("Should have thrown InsightError");
 					} catch (error) {
-						console.log(error);
-						console.log(typeof error);
 						expect(error).to.be.instanceOf(InsightError);
 					}
 				});
