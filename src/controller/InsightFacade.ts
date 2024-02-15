@@ -64,7 +64,7 @@ export default class InsightFacade implements IInsightFacade {
 			this.datasets[id] = dataset;
 
 			// return array of all added datasets
-			console.log(Object.keys(this.datasets));
+			// console.log(Object.keys(this.datasets));
 			return Promise.resolve(Object.keys(this.datasets));
 		} catch (error) {
 			return Promise.reject(new InsightError(`Failed to add dataset: ${error}`));
@@ -96,8 +96,6 @@ export default class InsightFacade implements IInsightFacade {
 
 		// for each course
 		for (let str of jsonStrings) {
-			// parse course into JSON object
-
 			// if string is empty then skip it
 			if (!str) {
 				continue;
@@ -264,23 +262,68 @@ export default class InsightFacade implements IInsightFacade {
 	public async performQuery(query: any): Promise<InsightResult[]> {
 		const validator: Validator = new Validator();
 		const filterer: Filter = new Filter();
-
+		const options: QueryOptions = query.OPTIONS;
 		const valid: any = validator.validateQuery(query);
-		if (!valid.valid) {
-			return Promise.reject(new InsightError("Query validation failed."));
-		}
 		const datasetId = valid.id;
 		if (!datasetId) {
 			throw new InsightError("Dataset ID could not be determined from the query.");
 		}
 		const dataset = await this.loadDataset(datasetId);
 		const filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
-		// Apply transformations (if any) and options to the filtered results
+		const insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
 		// Continue with query processing on the loaded dataset...
 		// This would involve filtering the dataset based on the WHERE clause,
 		// applying any transformations, and then selecting/sorting based on OPTIONS.
-		return [];
+		// const res = this.transformToInsightResult(filteredResults);
+		console.log(insightResults);
+		return insightResults;
 	}
+
+	private applyOptions(filteredResults: Section[], options: QueryOptions): InsightResult[] {
+		const projectedResults: InsightResult[] = filteredResults.map((item: any) => {
+			const projectedItem: InsightResult = {};
+			options.COLUMNS.forEach((column) => {
+				const parts = column.split("_");
+				const field = parts[1];
+				// Make sure the column is a key of Section
+				if (field in item.value) {
+					const key = `sections_${field}` as keyof InsightResult;
+					// Use type assertion for column to be treated as keyof Section
+					const itemKey = field as keyof Section;
+					projectedItem[key] = item.value[itemKey];
+				}
+			});
+			return projectedItem;
+		});
+
+		// Sort results if ORDER is specified
+		// TODO: go over tomorrow
+		if (options.ORDER) {
+			const orderKey = options.ORDER as keyof InsightResult;
+			projectedResults.sort((a, b) => {
+				// Assuming all sortable values are numbers for simplicity
+				// You may need additional logic here to handle different types
+				return (a[orderKey] as any) - (b[orderKey] as any);
+			});
+		}
+		return projectedResults;
+	}
+
+	// public transformToInsightResult(dataset: Section[]): InsightResult[] {
+	// 	return dataset.map((section: any) => {
+	// 		// Create a new object that conforms to the InsightResult interface
+	// 		let result: InsightResult = {};
+	//
+	// 		// Iterate over the properties of the section.value object
+	// 		for (const [key, value] of Object.entries(section.value)) {
+	// 			// Assign each key-value pair to the result object
+	// 			result[key] = value;
+	// 		}
+	//
+	// 		// Return the transformed result
+	// 		return result;
+	// 	});
+	// }
 
 	private async loadDataset(datasetId: string): Promise<any> {
 		// loads the dataset in
