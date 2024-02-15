@@ -1,4 +1,5 @@
 import {InsightError} from "./IInsightFacade";
+import {isArgumentsObject} from "node:util/types";
 
 export default class Validator {
 	private validKeywords: string[] = [
@@ -34,10 +35,7 @@ export default class Validator {
 		// Validate WHERE and OPTIONS clauses
 		const validWhere = this.validateWhere(query.WHERE, dbRefSet);
 		const validOpt = this.validateOptions(query.OPTIONS, dbRefSet);
-		// Check if the query references one or fewer datasets
-		if (dbRefSet.size > 1) {
-			return false; // Invalid if multiple datasets are referenced
-		}
+
 		let res = {
 			valid: validWhere && validOpt,
 			id: [...dbRefSet][0],
@@ -51,12 +49,20 @@ export default class Validator {
 
 		// check if it's a valid keyword
 		if (!this.validKeywords.includes(key)) {
-			return false;
+			throw new InsightError("Invalid keyword");
+		}
+
+		if (Object.keys(currQuery).length > 1) {
+			throw new InsightError("invalid WHERE");
 		}
 
 		// WHERE only has 1 nested obj
 		// just call appropriate validator for the nested obj
-		return this.callValidator(currQuery, dbRefSet);
+		let valid: boolean = this.callValidator(currQuery, dbRefSet);
+		if (dbRefSet.size > 1) {
+			throw new InsightError("References to multiple Datasets");
+		}
+		return valid;
 	}
 
 	public callValidator(query: any, dbRefSet: Set<string>): boolean {
@@ -82,9 +88,8 @@ export default class Validator {
 			default:
 				// can't have string just on it's own in a where
 				// must be nested inside one of the above filters
-				return false;
+				throw new InsightError("Invalid keyword");
 		}
-		return false;
 	}
 
 	private validateInequality(query: any, dbRefSet: Set<string>) {
@@ -96,22 +101,22 @@ export default class Validator {
 
 		const keyParts: string[] = mKey.split("_");
 
+		// if length > 2 then underscore must be in idStr
+		if (keyParts.length > 2) {
+			throw new InsightError("Invalid ID String");
+		}
+
 		// get mKey components
 		const idStr = keyParts[0];
 		const mField = keyParts[1];
 
-		// need to check if ID string is valid (a string of 0+ characters except _)
-		if (idStr.includes("_")) {
-			return false;
-		}
-
-		// check if sField is valid (sField is inside valid sField)
+		// check if mfield is valid
 		if (!this.mFields.includes(mField)) {
-			return false;
+			throw new InsightError("invalid field");
 		}
 
 		if (!(typeof nestedObj[mKey] === "number")) {
-			return false;
+			throw new InsightError("invalid input");
 		}
 
 		dbRefSet.add(idStr);
@@ -122,7 +127,7 @@ export default class Validator {
 		// check if value is a list
 		let validQueries: boolean[] = [];
 		if (!Array.isArray(queryArray)) {
-			return false;
+			throw new InsightError("Invalid query string");
 		}
 
 		// for each query in queryArrays
@@ -134,7 +139,7 @@ export default class Validator {
 		if (validQueries.every((valid) => valid)) {
 			return true;
 		}
-		return false;
+		throw new InsightError("Invalid query string");
 	}
 
 	public validateIs(query: any, dbRefSet: Set<string>): boolean {
@@ -147,20 +152,20 @@ export default class Validator {
 		const idStr = keyParts[0];
 		const sField = keyParts[1];
 
-		// need to check if ID string is valid (a string of 0+ characters except _)
-		if (idStr.includes("_")) {
-			return false;
+		// if length > 2 then underscore must be in idStr
+		if (keyParts.length > 2) {
+			throw new InsightError("Invalid ID String");
 		}
 
 		// check if sField is valid (sField is inside valid sField)
 		if (!this.sFields.includes(sField)) {
-			return false;
+			throw new InsightError("invalid sField");
 		}
 
 		// check if val is a string
 		// need to check for wild cards too
 		if (typeof val !== "string") {
-			return false;
+			throw new InsightError("Invalid query string");
 		} else {
 			// check if it has wildcards
 			let inputString = val;
@@ -174,7 +179,7 @@ export default class Validator {
 
 			// input string has * then invalid
 			if (inputString.includes("*")) {
-				return false;
+				throw new InsightError("invalid inputs tring");
 			}
 		}
 		// update dbRefSet with the dataset this is referencing (id string)
@@ -185,12 +190,12 @@ export default class Validator {
 	public validateOptions(options: any, dbRefSet: Set<string>): boolean {
 		// Check for required components in OPTIONS
 		if (!options.COLUMNS || !Array.isArray(options.COLUMNS)) {
-			return false; // Invalid if COLUMNS is missing or not an array
+			throw new InsightError("Invalid COLUMNS");
 		}
 
 		// Optionally, validate ORDER if present
 		if (options.ORDER && !options.COLUMNS.includes(options.ORDER)) {
-			return false; // Invalid if ORDER references a field not in COLUMNS
+			throw new InsightError("references in ORDER missing in WHERE");
 		}
 
 		// check all fields in columns
@@ -198,42 +203,48 @@ export default class Validator {
 		for (let key of options.COLUMNS) {
 			const keyParts: string[] = key.split("_");
 
-			// get sKey components
+			// get key components
 			const idStr = keyParts[0];
 			const field = keyParts[1];
 
-			// need to check if ID string is valid (a string of 0+ characters except _)
-			if (idStr.includes("_")) {
-				return false;
+			// if length > 2 then underscore must be in idStr
+			if (keyParts.length > 2) {
+				throw new InsightError("Invalid ID String");
 			}
 
 			// check if field is a valid field
 			if (!validFields.includes(field)) {
-				return false;
+				throw new InsightError("Invalid field");
 			}
 
 			dbRefSet.add(idStr);
 		}
 
+		// check key in ORDER
 		if (options.ORDER) {
 			const key = options.ORDER;
 			const keyParts: string[] = key.split("_");
+
+			// if length > 2 then underscore must be in idStr
+			if (keyParts.length > 2) {
+				throw new InsightError("Invalid ID String");
+			}
+
 			// get sKey components
 			const idStr = keyParts[0];
 			const field = keyParts[1];
-			// need to check if ID string is valid (a string of 0+ characters except _)
-			if (idStr.includes("_")) {
-				return false;
-			}
+
 			// check if field is a valid field
 			if (!validFields.includes(field)) {
-				return false;
+				throw new InsightError("Invalid ID field");
 			}
 
 			dbRefSet.add(idStr);
 		}
-		// Ensure all fields in COLUMNS are valid and potentially check against dbRefSet
-		// Placeholder for field validation logic
+		if (dbRefSet.size > 1) {
+			throw new InsightError("References to multiple Datasets");
+		}
+
 		return true;
 	}
 }

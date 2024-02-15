@@ -1,0 +1,18 @@
+{
+	"title": "SELECT sections.dept, ubc.avg WHERE ubc.avg > 97",
+	"input": {
+		"WHERE": {
+			"AND": {
+				"sections_avg": 97
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_avg"
+			],
+			"ORDER": "sections_avg"
+		}
+	},
+	"errorExpected": true,
+	"expected": "InsightError"
+}
