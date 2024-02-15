@@ -264,7 +264,7 @@ export default class InsightFacade implements IInsightFacade {
 	public async performQuery(query: any): Promise<InsightResult[]> {
 		const validator: Validator = new Validator();
 		const filterer: Filter = new Filter();
-
+		const options: QueryOptions = query.OPTIONS;
 		const valid: any = validator.validateQuery(query);
 		const datasetId = valid.id;
 		if (!datasetId) {
@@ -272,12 +272,39 @@ export default class InsightFacade implements IInsightFacade {
 		}
 		const dataset = await this.loadDataset(datasetId);
 		const filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
-		// Apply transformations (if any) and options to the filtered results
+		const insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
 		// Continue with query processing on the loaded dataset...
 		// This would involve filtering the dataset based on the WHERE clause,
 		// applying any transformations, and then selecting/sorting based on OPTIONS.
 		// const res = this.transformToInsightResult(filteredResults);
-		return [];
+		return insightResults;
+	}
+
+	private applyOptions(filteredResults: Section[], options: QueryOptions): InsightResult[] {
+		const projectedResults: InsightResult[] = filteredResults.map((item) => {
+			const projectedItem: InsightResult = {};
+			options.COLUMNS.forEach((column) => {
+				// Make sure the column is a key of Section
+				if (column in item) {
+					const key = `sections_${column}` as keyof InsightResult;
+					// Use type assertion for column to be treated as keyof Section
+					const itemKey = column as keyof Section;
+					projectedItem[key] = item[itemKey];
+				}
+			});
+			return projectedItem;
+		});
+
+		// Sort results if ORDER is specified
+		if (options.ORDER) {
+			const orderKey = `sections_${options.ORDER}` as keyof InsightResult;
+			projectedResults.sort((a, b) => {
+				// Assuming all sortable values are numbers for simplicity
+				// You may need additional logic here to handle different types
+				return (a[orderKey] as any) - (b[orderKey] as any);
+			});
+		}
+		return projectedResults;
 	}
 
 	// public transformToInsightResult(dataset: Section[]): InsightResult[] {

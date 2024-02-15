@@ -138,20 +138,5 @@ export default class Filter {
 		});
 	}
 
-	// private applyOptions(filteredResults: any[], options: any): InsightResult[] {
-	// 	// Project specified columns
-	// 	const projectedResults = filteredResults.map((item) => {
-	// 		const projectedItem = {};
-	// 		options.COLUMNS.forEach((column: any) => {
-	// 			projectedItem[column] = item[column];
-	// 		});
-	// 		return projectedItem;
-	// 	});
-	// 	// Sort results if ORDER is specified
-	// 	if (options.ORDER) {
-	// 		const orderKey = options.ORDER;
-	// 		projectedResults.sort((a, b) => a[orderKey] - b[orderKey]);
-	// 	}
-	// 	return [];
-	// }
+
 }
