@@ -1,16 +1,15 @@
 import Section from "./section";
-import {InsightError, InsightResult} from "./IInsightFacade";
+import {InsightError, InsightResult, ResultTooLargeError} from "./IInsightFacade";
 
 export default class Filter {
 	public filterByWhereClause(dataset: Section[], whereClause: any): Section[] {
 		// Explicit typing for operator and conditions helps with code clarity and type checking
-		// MADE ESLINT SUPRESSIONS
 		if (Object.keys(whereClause).length === 0) {
 			return dataset;
 		}
 		const res = this.callFilter(whereClause, dataset);
 		if (res.length > 5000) {
-			throw new InsightError("Result too big, over 5000");
+			throw new ResultTooLargeError("result has over 5000 items");
 		}
 		return res;
 	}
@@ -103,25 +102,5 @@ export default class Filter {
 		});
 
 		return res;
-	}
-
-	private handleComparisonOperations(dataset: any[], operator: string, condition: any): any[] {
-		const field = Object.keys(condition)[0];
-		const value = condition[field];
-
-		return dataset.filter((section) => {
-			switch (operator) {
-				case "GT":
-					return section[field] > value;
-				case "LT":
-					return section[field] < value;
-				case "EQ":
-					return section[field] === value;
-				case "IS":
-					return new RegExp(`^${value.replace(/\*/g, ".*")}$`).test(section[field]);
-				default:
-					return true; // Or handle invalid operator
-			}
-		});
 	}
 }

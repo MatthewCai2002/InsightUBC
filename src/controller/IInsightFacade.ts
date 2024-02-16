@@ -115,5 +115,4 @@ export interface IInsightFacade {
 	 */
 	listDatasets(): Promise<InsightDataset[]>;
 
-	loadDataset(datasetId: string): Promise<any>;
 }
