@@ -1,0 +1,20 @@
+{
+	"title": "Query successfully on a numeric field (average)",
+	"input": {
+		"WHERE": {
+			"AND": [
+				{"GT": {"sections_avg": 99}},
+				{"IS": {"sections_dept": "math"}}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": ["sections_avg", "sections_dept"],
+			"ORDER": "sections_avg"
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+		{ "sections_dept": "math", "sections_avg": 99.78 },
+		{ "sections_dept": "math", "sections_avg": 99.78 }
+	]
+}

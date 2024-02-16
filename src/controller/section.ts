@@ -16,7 +16,8 @@ export default class Section {
 		this.title = String(sectionJSON.Title);
 		this.instructor = String(sectionJSON.Professor);
 		this.dept = String(sectionJSON.Subject);
-		this.year = Number(sectionJSON.Year);
+		// Check if the section should be marked as occurring in 1900
+		this.year = sectionJSON.Section === "overall" ? 1900 : Number(sectionJSON.Year);
 		this.avg = Number(sectionJSON.Avg);
 		this.pass = Number(sectionJSON.Pass);
 		this.fail = Number(sectionJSON.Fail);

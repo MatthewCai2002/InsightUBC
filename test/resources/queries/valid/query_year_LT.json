@@ -1,0 +1,19 @@
+{
+	"title": "SELECT WHERE year > 1900",
+	"input": {
+		"WHERE": {
+			"LT": {
+				"sections_year": 1900
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_year"
+			],
+			"ORDER": "sections_year"
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+	]
+}

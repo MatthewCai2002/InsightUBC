@@ -1,0 +1,35 @@
+{
+	"title": "Or dept",
+	"input": {
+		"WHERE": {
+			"OR": [
+				{"GT": {"sections_avg": 98.9}},
+				{"GT": {"sections_avg": 99}}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_dept",
+				"sections_avg"
+			],
+			"ORDER": "sections_avg"
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+		{
+			"sections_dept": "spph",
+			"sections_avg": 98.98
+		},
+		{ "sections_dept": "spph",
+			"sections_avg": 98.98
+		},
+		{ "sections_dept": "cnps",
+			"sections_avg": 99.19
+		},
+		{ "sections_dept": "math",
+			"sections_avg": 99.78 },
+		{ "sections_dept": "math",
+			"sections_avg": 99.78 }
+	]
+}

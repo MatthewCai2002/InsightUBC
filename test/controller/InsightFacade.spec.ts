@@ -20,7 +20,6 @@ export interface ITestQuery {
 describe("InsightFacade", function () {
 	let facade: IInsightFacade;
 	let validator: TestValidator;
-
 	// Declare datasets used in tests. You should add more datasets like this!
 	let sections: string;
 	before(async function () {

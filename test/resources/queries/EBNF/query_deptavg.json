@@ -1,0 +1,23 @@
+{
+	"title": "Contains dept",
+	"input": {
+		"WHERE": {
+			"AND": [
+				{"GT": {"sections_avg": 99}},
+				{"IS": {"sections_dept": "*mat*"}}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_dept",
+				"sections_avg"
+			],
+			"ORDER": "sections_avg"
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+		{ "sections_dept": "math", "sections_avg": 99.78 },
+		{ "sections_dept": "math", "sections_avg": 99.78 }
+	]
+}
