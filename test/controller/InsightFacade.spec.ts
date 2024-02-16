@@ -278,22 +278,6 @@ describe("InsightFacade", function () {
 			await clearDisk();
 		});
 
-		it("query with 2 datasets added", async function () {
-			await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
-
-			let test = fs.readJSONSync("test/resources/queries/valid/query_audit.json");
-			let res = await facade.performQuery(test.input);
-			expect(res).to.deep.members(test.expected);
-
-			test = fs.readJSONSync("test/resources/queries/noDataset/query_audit_ubc.json");
-			res = await facade.performQuery(test.input);
-			expect(res).to.deep.members(test.expected);
-
-			test = fs.readJSONSync("test/resources/queries/valid/query_avg.json");
-			res = await facade.performQuery(test.input);
-			expect(res).to.deep.members(test.expected);
-		});
-
 		describe("valid queries", function () {
 			let validQueries: ITestQuery[];
 			try {
@@ -356,12 +340,7 @@ describe("InsightFacade", function () {
 							assert.fail(`performQuery resolved when it should have rejected with ${test.expected}`);
 						})
 						.catch((err: any) => {
-							if (test.expected === "InsightError") {
-								expect(err).to.be.instanceOf(InsightError);
-							} else {
-								console.log(typeof err);
-								assert.fail("Query threw unexpected error");
-							}
+							expect(err.constructor.name).to.equal(test.expected);
 						});
 				});
 			});

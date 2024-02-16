@@ -4,7 +4,7 @@ import {
 	InsightDatasetKind,
 	InsightError,
 	InsightResult,
-	NotFoundError,
+	NotFoundError, ResultTooLargeError,
 } from "./IInsightFacade";
 import * as fs from "fs-extra";
 import JSZip from "jszip";
@@ -271,10 +271,7 @@ export default class InsightFacade implements IInsightFacade {
 		const dataset = await this.loadDataset(datasetId);
 		const filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
 		const insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
-		// console.log(insightResults);
-		if (insightResults.length > 5000) {
-			throw new InsightError("result has over 5000 items");
-		}
+
 		return insightResults;
 	}
 
@@ -283,10 +280,11 @@ export default class InsightFacade implements IInsightFacade {
 			const projectedItem: InsightResult = {};
 			options.COLUMNS.forEach((column) => {
 				const parts = column.split("_");
+				const datasetID = parts[0];
 				const field = parts[1];
 				// Make sure the column is a key of Section
 				if (field in item.value) {
-					const key = `sections_${field}` as keyof InsightResult;
+					const key = `${datasetID}_${field}` as keyof InsightResult;
 					// Use type assertion for column to be treated as keyof Section
 					const itemKey = field as keyof Section;
 					projectedItem[key] = item.value[itemKey];
@@ -297,7 +295,10 @@ export default class InsightFacade implements IInsightFacade {
 
 		// Sort results if ORDER is specified
 		if (options.ORDER) {
-			const orderField = `sections_${options.ORDER.split("_")[1]}` as keyof InsightResult;
+			const parts = options.ORDER.split("_");
+			const datasetID = parts[0];
+			const field = parts[1];
+			const orderField = `${datasetID}_${field}` as keyof InsightResult;
 			projectedResults.sort((a, b) => {
 				const aValue = a[orderField];
 				const bValue = b[orderField];
@@ -313,28 +314,28 @@ export default class InsightFacade implements IInsightFacade {
 		return projectedResults;
 	}
 
-	// public async loadDataset(datasetId: string): Promise<any> {
-	// 	// loads the dataset in
-	// 	try {
-	// 		let dataset = await fs.readJSON(`././data/${datasetId}.json`, {throws: false});
-	// 		return Object.entries(dataset).map(([key, value]) => ({key, value}));
-	// 	} catch (error) {
-	// 		console.error(`Failed to load dataset ${datasetId}: ${error}`);
-	// 		throw new InsightError(`Failed to load dataset ${datasetId}: ${error}`);
-	// 	}
-	// }
-
 	public async loadDataset(datasetId: string): Promise<any> {
 		// loads the dataset in
-		const datasetPath = this.dataDir + datasetId + ".json"; // Assuming this.dataDir is './data/'
 		try {
-			const dataset = await fs.readJson(datasetPath);
+			let dataset = await fs.readJSON(`././data/${datasetId}.json`, {throws: false});
 			return Object.entries(dataset).map(([key, value]) => ({key, value}));
 		} catch (error) {
 			console.error(`Failed to load dataset ${datasetId}: ${error}`);
 			throw new InsightError(`Failed to load dataset ${datasetId}: ${error}`);
 		}
 	}
+
+	// public async loadDataset(datasetId: string): Promise<any> {
+	// 	// loads the dataset in
+	// 	const datasetPath = this.dataDir + datasetId + ".json"; // Assuming this.dataDir is './data/'
+	// 	try {
+	// 		const dataset = await fs.readJson(datasetPath);
+	// 		return Object.entries(dataset).map(([key, value]) => ({key, value}));
+	// 	} catch (error) {
+	// 		console.error(`Failed to load dataset ${datasetId}: ${error}`);
+	// 		throw new InsightError(`Failed to load dataset ${datasetId}: ${error}`);
+	// 	}
+	// }
 
 	public async listDatasets(): Promise<InsightDataset[]> {
 		// and an object with kind and numRows as the value
