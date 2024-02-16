@@ -13,24 +13,6 @@ export default class Filter {
 			throw new InsightError("Result too big, over 5000");
 		}
 		return res;
-		// switch (keyWord) {
-		// 	case "AND":
-		// 		// Here, TypeScript knows conditions must be an array, so we can avoid explicit 'any' typing
-		// 		return nestedQuery.reduce(
-		// 			(result: Section[], condition: any) => this.filterByWhereClause(result, condition),
-		// 			dataset
-		// 		);
-		// 	case "OR":
-		// 		nestedQuery.forEach((condition: any) => {
-		// 			const conditionResults: Section[] = this.filterByWhereClause(dataset, condition);
-		// 			results = [...results, ...conditionResults.filter((item) => !results.includes(item))];
-		// 		});
-		// 		return results;
-		// 	case "NOT":
-		// 		return dataset.filter((item) => !notResults.includes(item));
-		// 	default:
-		// 		return this.handleComparisonOperations(dataset, keyWord, nestedQuery);
-		// }
 	}
 
 	private callFilter(query: any, dataset: Section[]): Section[] {
