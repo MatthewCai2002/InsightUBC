@@ -272,6 +272,9 @@ export default class InsightFacade implements IInsightFacade {
 		const filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
 		const insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
 		// console.log(insightResults);
+		if (insightResults.length > 5000) {
+			throw new InsightError("result has over 5000 items");
+		}
 		return insightResults;
 	}
 

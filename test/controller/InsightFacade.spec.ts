@@ -338,7 +338,6 @@ describe("InsightFacade", function () {
 					return facade
 						.performQuery(test.input)
 						.then((result) => {
-							console.log(result);
 							expect(result).to.deep.members(test.expected);
 						})
 						.catch((err: any) => {
