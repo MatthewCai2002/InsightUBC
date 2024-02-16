@@ -1,5 +1,5 @@
 {
-	"title": "SELECT WHERE year > 1900",
+	"title": "SELECT WHERE year < 1900",
 	"input": {
 		"WHERE": {
 			"LT": {

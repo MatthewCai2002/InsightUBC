@@ -1,0 +1,18 @@
+{
+	"title": "SELECT audit WHERE audit < 1",
+	"input": {
+		"WHERE": {
+			"LT": {
+				"sections_audit": 0
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_audit"
+			],
+			"ORDER": "sections_audit"
+		}
+	},
+	"errorExpected": false,
+	"expected": []
+}

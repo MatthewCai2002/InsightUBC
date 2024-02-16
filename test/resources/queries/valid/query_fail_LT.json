@@ -1,0 +1,18 @@
+{
+	"title": "SELECT fail WHERE fail < 0",
+	"input": {
+		"WHERE": {
+			"LT": {
+				"sections_fail": 0
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_fail"
+			],
+			"ORDER": "sections_fail"
+		}
+	},
+	"errorExpected": false,
+	"expected": []
+}

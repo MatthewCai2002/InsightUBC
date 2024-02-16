@@ -1,0 +1,18 @@
+{
+	"title": "SELECT pass WHERE pass < 1",
+	"input": {
+		"WHERE": {
+			"LT": {
+				"sections_pass": 1
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_pass"
+			],
+			"ORDER": "sections_pass"
+		}
+	},
+	"errorExpected": false,
+	"expected":[{"sections_pass":0},{"sections_pass":0},{"sections_pass":0},{"sections_pass":0},{"sections_pass":0},{"sections_pass":0},{"sections_pass":0}]
+}

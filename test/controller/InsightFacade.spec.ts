@@ -4,8 +4,9 @@ import InsightFacade from "../../src/controller/InsightFacade";
 import {assert, expect, use} from "chai";
 import chaiAsPromised from "chai-as-promised";
 import {clearDisk, getContentFromArchives, readFileQueries} from "../TestUtil";
-import {before} from "mocha";
+import {after, before} from "mocha";
 import TestValidator from "../testValidator";
+import * as fs from "fs-extra";
 
 use(chaiAsPromised);
 
@@ -37,6 +38,11 @@ describe("InsightFacade", function () {
 		beforeEach(async function () {
 			await clearDisk();
 			facade = new InsightFacade();
+			sections = await getContentFromArchives("pair.zip");
+		});
+
+		afterEach(async function () {
+			await clearDisk();
 		});
 
 		it("reject with  an empty dataset id", async function () {
@@ -76,7 +82,57 @@ describe("InsightFacade", function () {
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
+
+		it("Accept adding valid dataset", async function () {
+			const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+
+			return expect(result).to.deep.equal(["ubc"]);
+		});
 	});
+
+	// describe("Add dataset, no clearDisk", function () {
+	// 	before(async function () {
+	// 		await clearDisk();
+	// 		sections = await getContentFromArchives("pair.zip");
+	// 	});
+	//
+	// 	beforeEach(async function () {
+	// 		facade = new InsightFacade();
+	// 	});
+	//
+	// 	after(async function () {
+	// 		await clearDisk();
+	// 	});
+	//
+	// 	it("add 2 datasets", async function () {
+	// 		await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+	// 		const result = await facade.addDataset("ubc2", sections, InsightDatasetKind.Sections);
+	//
+	// 		return expect(result).to.deep.equal(["ubc", "ubc2"]);
+	// 	});
+	// });
+	//
+	// describe("loadDataset", function () {
+	// 	before(async function () {
+	// 		await clearDisk();
+	// 		sections = await getContentFromArchives("pair.zip");
+	// 	});
+	//
+	// 	beforeEach(async function () {
+	// 		facade = new InsightFacade();
+	// 	});
+	//
+	// 	it("add 2 datasets, load 1", async function () {
+	// 		await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+	// 		await facade.addDataset("ubc2", sections, InsightDatasetKind.Sections);
+	//
+	// 		const  res = await facade.loadDataset("ubc");
+	// 		let dataset = await fs.readJSON("././data/ubc.json", {throws: false});
+	// 		let expeceted = Object.entries(dataset).map(([key, value]) => ({key, value}));
+	// 		return expect(res).to.deep.equal(expeceted);
+	//
+	// 	});
+	// });
 
 	/*
 	 * This test suite dynamically generates tests from the JSON files in test/resources/queries.
@@ -203,86 +259,6 @@ describe("InsightFacade", function () {
 		// all of the removeDatasets were made using the first addDataset and keeping the same template
 	});
 
-	// describe("Validator", function () {
-	// 	before(async function () {
-	// 		facade = new InsightFacade();
-	// 		validator = new TestValidator();
-	//
-	// 		// Add the datasets to InsightFacade once.
-	// 		// Will *fail* if there is a problem reading ANY dataset.
-	// 		const loadDatasetPromises = [facade.addDataset("sections", sections, InsightDatasetKind.Sections)];
-	//
-	// 		try {
-	// 			await Promise.all(loadDatasetPromises);
-	// 		} catch (err) {
-	// 			throw new Error(`In PerformQuery Before hook, dataset(s) failed to be added. \n${err}`);
-	// 		}
-	// 	});
-	//
-	// 	after(async function () {
-	// 		await clearDisk();
-	// 	});
-	//
-	// 	describe("validate valid queries", function () {
-	// 		let validQueries: ITestQuery[];
-	// 		try {
-	// 			validQueries = readFileQueries("valid");
-	// 		} catch (e: unknown) {
-	// 			expect.fail(`Failed to read one or more test queries. ${e}`);
-	// 		}
-	//
-	// 		validQueries.forEach(function (test: any) {
-	// 			it(`${test.title}`, function () {
-	// 				try {
-	// 					const res = validator.validateQuery(test.input);
-	// 					return expect(res.valid).to.equal(true);
-	// 				} catch (e) {
-	// 					expect.fail("should not have thrown error");
-	// 				}
-	// 			});
-	// 		});
-	// 	});
-	//
-	// 	describe("validate EBNF queries", function () {
-	// 		let validQueries: ITestQuery[];
-	// 		try {
-	// 			validQueries = readFileQueries("EBNF");
-	// 		} catch (e: unknown) {
-	// 			expect.fail(`Failed to read one or more test queries. ${e}`);
-	// 		}
-	//
-	// 		validQueries.forEach(function (test: any) {
-	// 			it(`${test.title}`, function () {
-	// 				try {
-	// 					const res = validator.validateQuery(test.input);
-	// 					return expect(res.valid).to.equal(true);
-	// 				} catch (e) {
-	// 					expect.fail("should not have thrown error");
-	// 				}
-	// 			});
-	// 		});
-	// 	});
-	//
-	// 	describe("validate invalid queries", function () {
-	// 		let invalidQueries: ITestQuery[];
-	// 		try {
-	// 			invalidQueries = readFileQueries("invalid");
-	// 		} catch (e: unknown) {
-	// 			expect.fail(`Failed to read one or more test queries. ${e}`);
-	// 		}
-	//
-	// 		invalidQueries.forEach(function (test: any) {
-	// 			it(`${test.title}`, function () {
-	// 				try {
-	// 					const res = validator.validateQuery(test.input);
-	// 					expect.fail("Should have thrown InsightError");
-	// 				} catch (error) {
-	// 					expect(error).to.be.instanceOf(InsightError);
-	// 				}
-	// 			});
-	// 		});
-	// 	});
-	// });
 	describe("PerformQuery", function () {
 		before(async function () {
 			facade = new InsightFacade();
@@ -300,6 +276,22 @@ describe("InsightFacade", function () {
 
 		after(async function () {
 			await clearDisk();
+		});
+
+		it("query with 2 datasets added", async function () {
+			await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+
+			let test = fs.readJSONSync("test/resources/queries/valid/query_audit.json");
+			let res = await facade.performQuery(test.input);
+			expect(res).to.deep.members(test.expected);
+
+			test = fs.readJSONSync("test/resources/queries/noDataset/query_audit_ubc.json");
+			res = await facade.performQuery(test.input);
+			expect(res).to.deep.members(test.expected);
+
+			test = fs.readJSONSync("test/resources/queries/valid/query_avg.json");
+			res = await facade.performQuery(test.input);
+			expect(res).to.deep.members(test.expected);
 		});
 
 		describe("valid queries", function () {

@@ -1,0 +1,18 @@
+{
+	"title": "SELECT pass WHERE pass > 2500",
+	"input": {
+		"WHERE": {
+			"GT": {
+				"sections_pass": 2500
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_pass"
+			],
+			"ORDER": "sections_pass"
+		}
+	},
+	"errorExpected": false,
+	"expected":[{"sections_pass":2502},{"sections_pass":2557},{"sections_pass":2655},{"sections_pass":2698},{"sections_pass":2994}]
+}

@@ -313,7 +313,18 @@ export default class InsightFacade implements IInsightFacade {
 		return projectedResults;
 	}
 
-	private async loadDataset(datasetId: string): Promise<any> {
+	// public async loadDataset(datasetId: string): Promise<any> {
+	// 	// loads the dataset in
+	// 	try {
+	// 		let dataset = await fs.readJSON(`././data/${datasetId}.json`, {throws: false});
+	// 		return Object.entries(dataset).map(([key, value]) => ({key, value}));
+	// 	} catch (error) {
+	// 		console.error(`Failed to load dataset ${datasetId}: ${error}`);
+	// 		throw new InsightError(`Failed to load dataset ${datasetId}: ${error}`);
+	// 	}
+	// }
+
+	public async loadDataset(datasetId: string): Promise<any> {
 		// loads the dataset in
 		const datasetPath = this.dataDir + datasetId + ".json"; // Assuming this.dataDir is './data/'
 		try {
