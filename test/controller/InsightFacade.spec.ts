@@ -20,7 +20,6 @@ export interface ITestQuery {
 describe("InsightFacade", function () {
 	let facade: IInsightFacade;
 	let validator: TestValidator;
-
 	// Declare datasets used in tests. You should add more datasets like this!
 	let sections: string;
 	before(async function () {
@@ -339,7 +338,6 @@ describe("InsightFacade", function () {
 					return facade
 						.performQuery(test.input)
 						.then((result) => {
-							console.log(result);
 							expect(result).to.deep.members(test.expected);
 						})
 						.catch((err: any) => {

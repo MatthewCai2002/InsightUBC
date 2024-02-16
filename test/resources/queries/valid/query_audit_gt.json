@@ -1,0 +1,26 @@
+{
+	"title": "SELECT audit WHERE audit > 18",
+	"input": {
+		"WHERE": {
+			"GT": {
+				"sections_audit": 18
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_audit"
+			],
+			"ORDER": "sections_audit"
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+		{"sections_audit":19},
+		{"sections_audit":19},
+		{"sections_audit":19},
+		{"sections_audit":19},
+		{"sections_audit":19},
+		{"sections_audit":20},
+		{"sections_audit":21},
+		{"sections_audit":21},{"sections_audit":23}]
+}

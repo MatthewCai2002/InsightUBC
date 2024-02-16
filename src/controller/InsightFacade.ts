@@ -272,6 +272,9 @@ export default class InsightFacade implements IInsightFacade {
 		const filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
 		const insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
 		// console.log(insightResults);
+		if (insightResults.length > 5000) {
+			throw new InsightError("result has over 5000 items");
+		}
 		return insightResults;
 	}
 
@@ -309,22 +312,6 @@ export default class InsightFacade implements IInsightFacade {
 		}
 		return projectedResults;
 	}
-
-	// public transformToInsightResult(dataset: Section[]): InsightResult[] {
-	// 	return dataset.map((section: any) => {
-	// 		// Create a new object that conforms to the InsightResult interface
-	// 		let result: InsightResult = {};
-	//
-	// 		// Iterate over the properties of the section.value object
-	// 		for (const [key, value] of Object.entries(section.value)) {
-	// 			// Assign each key-value pair to the result object
-	// 			result[key] = value;
-	// 		}
-	//
-	// 		// Return the transformed result
-	// 		return result;
-	// 	});
-	// }
 
 	private async loadDataset(datasetId: string): Promise<any> {
 		// loads the dataset in
