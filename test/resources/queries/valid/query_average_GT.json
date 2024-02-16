@@ -1,0 +1,16 @@
+{
+	"title": "SELECT avg > 99",
+	"input": {
+		"WHERE": {
+			"GT": {
+				"sections_avg": 99
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": ["sections_avg"],
+			"ORDER": "sections_avg"
+		}
+	},
+	"errorExpected": false,
+	"expected":[{"sections_avg":99.19},{"sections_avg":99.78},{"sections_avg":99.78}]
+}
