@@ -39,9 +39,15 @@ export default class InsightFacade implements IInsightFacade {
 		if (!id.trim() || id.includes("_")) {
 			return Promise.reject(new InsightError("Invalid dataset ID"));
 		}
-		await this.writeDict();
-		let datasets = await fs.readJSON("././data/datasets.json", {throws: false});
-		if (id in datasets) {
+
+		try {
+			await fs.promises.access(this.dataDir + "datasets.json");
+			this.datasets = await fs.readJSON("././data/datasets.json", {throws: false});
+		} catch (e) {
+			// doesn't matter
+		}
+
+		if (id in this.datasets) {
 			return Promise.reject(new InsightError("Dataset with the same ID already exists"));
 		}
 
@@ -171,7 +177,7 @@ export default class InsightFacade implements IInsightFacade {
 			const datasetJSONString = JSON.stringify(this.datasets, null, 2);
 
 			// Write the file
-			await fs.promises.writeFile(this.dataDir + "datasets.json", datasetJSONString, "utf-8");
+			await fs.promises.writeFile("./data/datasets.json", datasetJSONString, "utf-8");
 			console.log("File has been written successfully.");
 		} catch (e) {
 			console.error("Error writing to file or creating directory:", e);

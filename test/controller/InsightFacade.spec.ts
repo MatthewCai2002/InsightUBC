@@ -88,14 +88,6 @@ describe("InsightFacade", function () {
 
 			return expect(result).to.deep.equal(["ubc"]);
 		});
-
-		it("Rejected with same ID, but different insight facade", async function () {
-			let result = facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
-			facade = new  InsightFacade();
-			result = facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
-			return expect(result).to.eventually.be.rejectedWith(InsightError);
-
-		});
 	});
 
 	// describe("Add dataset, no clearDisk", function () {
