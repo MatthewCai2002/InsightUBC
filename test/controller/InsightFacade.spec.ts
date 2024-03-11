@@ -100,37 +100,15 @@ describe("InsightFacade", function () {
 	// 		facade = new InsightFacade();
 	// 	});
 	//
-	// 	after(async function () {
-	// 		await clearDisk();
-	// 	});
+	// 	// after(async function () {
+	// 	// 	await clearDisk();
+	// 	// });
 	//
 	// 	it("add 2 datasets", async function () {
 	// 		await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
 	// 		const result = await facade.addDataset("ubc2", sections, InsightDatasetKind.Sections);
 	//
 	// 		return expect(result).to.deep.equal(["ubc", "ubc2"]);
-	// 	});
-	// });
-	//
-	// describe("loadDataset", function () {
-	// 	before(async function () {
-	// 		await clearDisk();
-	// 		sections = await getContentFromArchives("pair.zip");
-	// 	});
-	//
-	// 	beforeEach(async function () {
-	// 		facade = new InsightFacade();
-	// 	});
-	//
-	// 	it("add 2 datasets, load 1", async function () {
-	// 		await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
-	// 		await facade.addDataset("ubc2", sections, InsightDatasetKind.Sections);
-	//
-	// 		const  res = await facade.loadDataset("ubc");
-	// 		let dataset = await fs.readJSON("././data/ubc.json", {throws: false});
-	// 		let expeceted = Object.entries(dataset).map(([key, value]) => ({key, value}));
-	// 		return expect(res).to.deep.equal(expeceted);
-	//
 	// 	});
 	// });
 
