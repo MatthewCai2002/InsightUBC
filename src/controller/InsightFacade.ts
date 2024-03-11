@@ -96,36 +96,11 @@ export default class InsightFacade implements IInsightFacade {
 		let jsonStrings = await Promise.all(promises);
 
 		// validate Dataset
-		if (!this.isValidDataset(jsonStrings)) {
+		// add valid sections to dataset
+		let datasetObj: any = {};
+		if (!this.isValidDataset(jsonStrings, datasetObj)) {
 			// console.log("invalid dataset");
 			throw new InsightError("Invalid Dataset");
-		}
-		// console.log("valid dataset");
-
-		let datasetObj: any = {};
-		// setup dataset JSON obj to write later
-
-		// for each course
-		for (let str of jsonStrings) {
-			// if string is empty then skip it
-			if (!str) {
-				continue;
-			}
-
-			let course: any = {};
-
-			try {
-				course = JSON.parse(str);
-			} catch (e) {
-				// if not a JSON file then throw error
-				throw new InsightError("unsupported file type");
-			}
-
-			// convert all sections of a course to TS classes
-			let sections = this.createSections(course);
-
-			// add sections to dataset JSON object to be written later
-			this.updateDatasetObj(datasetObj, sections);
 		}
 
 		// write datasetOBJ to json file in ./src/controller/data/ dir
@@ -185,10 +160,8 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	// adds sections to a dataset JSON obj
-	private updateDatasetObj(datasetObj: any, sections: Section[]): void {
-		for (let section of sections) {
-			datasetObj[section.uuid] = section;
-		}
+	private updateDatasetObj(datasetObj: any, section: Section): void {
+		datasetObj[section.uuid] = section;
 	}
 
 	// INPUT: course JSON object
@@ -207,7 +180,7 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	// validates dataset
-	private isValidDataset(jsonStrings: string[]): boolean {
+	private isValidDataset(jsonStrings: string[], dataset: any): boolean {
 		let validCourses: boolean[] = [];
 
 		// go through each course and validate it
@@ -217,7 +190,7 @@ export default class InsightFacade implements IInsightFacade {
 				continue;
 			}
 			let course = JSON.parse(str);
-			let validCourse = this.isValidCourse(course);
+			let validCourse = this.isValidCourse(course, dataset);
 			validCourses.push(validCourse);
 		}
 
@@ -235,7 +208,7 @@ export default class InsightFacade implements IInsightFacade {
 	// immediately returns false if "result" section is empty
 	// OUTPUT: returns false if it is an invalid section
 	//		   returns true for a valid section
-	private isValidCourse(course: any): boolean {
+	private isValidCourse(course: any, dataset: any): boolean {
 		// sections are contained within results
 		let validSections: boolean[] = [];
 		const results: any[] = course.result;
@@ -245,9 +218,8 @@ export default class InsightFacade implements IInsightFacade {
 			return false;
 		}
 		// check if all sections of a course are valid or not
-		// for each section check if it's valid
 		results.forEach((section: any) => {
-			let validSection = this.isValidSection(section);
+			let validSection = this.isValidSection(section, dataset);
 			validSections.push(validSection);
 		});
 		// if all sections of a course are invalid then course is invalid
@@ -259,12 +231,16 @@ export default class InsightFacade implements IInsightFacade {
 
 	// validate a single section
 	// checks to see if a section has all validFields
-	private isValidSection(section: any): boolean {
+	private isValidSection(section: any, dataset: any): boolean {
 		this.fileFields.forEach((field: string) => {
 			if (!(field in section)) {
 				return false;
 			}
 		});
+
+		// add valid section to dataset
+		let sectionObj = new Section(section);
+		this.updateDatasetObj(dataset, sectionObj);
 		return true;
 	}
 
