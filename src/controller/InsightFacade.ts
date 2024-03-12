@@ -11,6 +11,7 @@ import JSZip from "jszip";
 import Section from "./section";
 import Validator from "./validator";
 import Filter from "./filter";
+import {parse} from "parse5";
 
 // Assuming the structure of your options object based on the provided code
 interface QueryOptions {
@@ -64,6 +65,9 @@ export default class InsightFacade implements IInsightFacade {
 				case InsightDatasetKind.Sections:
 					dataset = await this.processCoursesDataset(id, unzippedContent);
 					break;
+				case InsightDatasetKind.Rooms:
+					dataset = await this.processRoomsDataset(id, unzippedContent);
+					break;
 				default:
 					return Promise.reject(new InsightError("Unsupported dataset kind."));
 			}
@@ -80,6 +84,59 @@ export default class InsightFacade implements IInsightFacade {
 		} catch (error) {
 			return Promise.reject(new InsightError(`Failed to add dataset: ${error}`));
 		}
+	}
+
+	private async processRoomsDataset(id: string, zip: JSZip): Promise<InsightDataset> {
+		// check if index.htm is here
+		let jsonPromise;
+		const indexFile = zip.file("index.htm");
+		if (indexFile) {
+			jsonPromise = await indexFile.async("text");
+		} else {
+			throw new InsightError("File 'index.htm' not found in the ZIP archive.");
+		}
+		let indexDocument = parse(jsonPromise);
+		let element = this.findElementById(indexDocument, "view");
+		// organiziation of saved data will be like courses
+		// json file for each building
+		// in each file each object will be a room which has all the data that can be queried
+		// use parse 5 on index.htm to get all buildings
+		// use returned object to find all <td> with href's that link to rooms
+		// iterate over each <td>
+		//	get href
+		//	pass this file to parse5 to get building room page
+		//  find valid rooms table. if can't find then doesn't exist
+		//  save this room data to a building's json file
+		//
+		let datasetObj: any = {};
+
+
+		await this.writeDataset(datasetObj, id);
+
+		const dataset: InsightDataset = {
+			id,
+			kind: InsightDatasetKind.Sections,
+			numRows: Object.keys(datasetObj).length,
+		};
+
+		return dataset;
+	}
+
+	private findElementById(node: any, id: string): Document | null {
+		if (node.attrs && node.attrs.find((attr: any) => attr.name === "id" && attr.value === id)) {
+			return node;
+		}
+
+		if (node.childNodes) {
+			for (const childNode of node.childNodes) {
+				const result = this.findElementById(childNode, id);
+				if (result) {
+					return result;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	private async processCoursesDataset(id: string, zip: JSZip): Promise<InsightDataset> {
