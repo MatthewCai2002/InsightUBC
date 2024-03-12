@@ -11,7 +11,7 @@ import JSZip from "jszip";
 import Section from "./section";
 import Validator from "./validator";
 import Filter from "./filter";
-import {parse} from "parse5";
+import * as parse5 from "parse5";
 
 // Assuming the structure of your options object based on the provided code
 interface QueryOptions {
@@ -87,7 +87,7 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	private async processRoomsDataset(id: string, zip: JSZip): Promise<InsightDataset> {
-		// check if index.htm is here
+		// check if index.htm is here, if it is open it, if not error
 		let jsonPromise;
 		const indexFile = zip.file("index.htm");
 		if (indexFile) {
@@ -95,13 +95,19 @@ export default class InsightFacade implements IInsightFacade {
 		} else {
 			throw new InsightError("File 'index.htm' not found in the ZIP archive.");
 		}
-		let indexDocument = parse(jsonPromise);
-		let element = this.findElementById(indexDocument, "view");
+
+		// use parsed object to find all <td> with href's that link to rooms
+		let elements: any[] = [];
+		let indexDocument = parse5.parse(jsonPromise);
+		this.findAllElementsByClassAndTag(indexDocument, "views-field-title", "td", elements);
+		if (elements.length === 0) {
+			throw new InsightError("Invalid index.htm");
+		}
+
+
 		// organiziation of saved data will be like courses
 		// json file for each building
 		// in each file each object will be a room which has all the data that can be queried
-		// use parse 5 on index.htm to get all buildings
-		// use returned object to find all <td> with href's that link to rooms
 		// iterate over each <td>
 		//	get href
 		//	pass this file to parse5 to get building room page
@@ -122,14 +128,16 @@ export default class InsightFacade implements IInsightFacade {
 		return dataset;
 	}
 
-	private findElementById(node: any, id: string): Document | null {
-		if (node.attrs && node.attrs.find((attr: any) => attr.name === "id" && attr.value === id)) {
+	private findElementByClassAndTag(node: any, className: string, tag: string): Document | null {
+		if (node.attrs &&
+			node.attrs.find((attr: any) => attr.name === "class" && attr.value.includes(className)) &&
+			node.nodeName === tag) {
 			return node;
 		}
 
 		if (node.childNodes) {
 			for (const childNode of node.childNodes) {
-				const result = this.findElementById(childNode, id);
+				const result = this.findElementByClassAndTag(childNode, className, tag);
 				if (result) {
 					return result;
 				}
@@ -137,6 +145,20 @@ export default class InsightFacade implements IInsightFacade {
 		}
 
 		return null;
+	}
+
+	private findAllElementsByClassAndTag(node: any, className: string, tag: string, elements: any[]): void {
+		if (node.attrs &&
+			node.attrs.find((attr: any) => attr.name === "class" && attr.value.includes(className)) &&
+			node.nodeName === tag) {
+			elements.push(node);
+		}
+
+		if (node.childNodes) {
+			for (const childNode of node.childNodes) {
+				this.findAllElementsByClassAndTag(childNode, className, tag, elements);
+			}
+		}
 	}
 
 	private async processCoursesDataset(id: string, zip: JSZip): Promise<InsightDataset> {
