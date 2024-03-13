@@ -4,7 +4,7 @@ import {
 	InsightDatasetKind,
 	InsightError,
 	InsightResult,
-	NotFoundError, ResultTooLargeError,
+	NotFoundError,
 } from "./IInsightFacade";
 import * as fs from "fs-extra";
 import JSZip from "jszip";
@@ -13,6 +13,7 @@ import Validator from "./validator";
 import HTMLHandler from "./htmlHandler";
 import Filter from "./filter";
 import RoomProcessor from "./roomProcessor";
+import Writer from "./writer";
 import * as parse5 from "parse5";
 
 // Assuming the structure of your options object based on the provided code
@@ -21,7 +22,7 @@ interface QueryOptions {
 	ORDER?: string; // Optional
 }
 
-export default class InsightFacade implements IInsightFacade {
+export default class InsightFacade  implements IInsightFacade {
 	private fileFields: string[] = [
 		"id",
 		"Course",
@@ -35,20 +36,25 @@ export default class InsightFacade implements IInsightFacade {
 		"Audit",
 	];
 
+	protected readonly dataDir = "./data/";
 	private datasets: {[id: string]: InsightDataset} = {};
-	private readonly dataDir = "./data/";
+	private writer: Writer = new Writer(this.dataDir, this.datasets);
 
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		if (!id.trim() || id.includes("_")) {
 			return Promise.reject(new InsightError("Invalid dataset ID"));
 		}
 
+		// check for previous datasets
 		try {
 			await fs.promises.access(this.dataDir + "datasets.json");
 			this.datasets = await fs.readJSON("././data/datasets.json", {throws: false});
 		} catch (e) {
 			// doesn't matter
 		}
+
+		// init writer
+		this.writer.setDatasets(this.datasets);
 
 		if (id in this.datasets) {
 			return Promise.reject(new InsightError("Dataset with the same ID already exists"));
@@ -68,7 +74,7 @@ export default class InsightFacade implements IInsightFacade {
 					dataset = await this.processCoursesDataset(id, unzippedContent);
 					break;
 				case InsightDatasetKind.Rooms:
-					dataset = await this.processRoomsDataset(id, unzippedContent);
+					dataset = await RoomProcessor.processRoomsDataset(id, unzippedContent, this.writer);
 					break;
 				default:
 					return Promise.reject(new InsightError("Unsupported dataset kind."));
@@ -78,72 +84,13 @@ export default class InsightFacade implements IInsightFacade {
 			this.datasets[id] = dataset;
 
 			// write dataset dict to folder for persistence on crash
-			await this.writeDict();
+			await this.writer.writeDict();
 
 			// return array of all added datasets
-			// console.log(Object.keys(this.datasets));
 			return Promise.resolve(Object.keys(this.datasets));
 		} catch (error) {
 			return Promise.reject(new InsightError(`Failed to add dataset: ${error}`));
 		}
-	}
-
-	private async processRoomsDataset(id: string, zip: JSZip): Promise<InsightDataset> {
-		// check if index.htm is here, if it is open it, if not error
-		let jsonPromise: string;
-		const indexFile = zip.file("index.htm");
-		if (indexFile) {
-			jsonPromise = await indexFile.async("text");
-		} else {
-			throw new InsightError("File 'index.htm' not found in the ZIP archive.");
-		}
-
-		// use parsed object to find all <td> with href's that link to rooms
-		let indexDocument = parse5.parse(jsonPromise);
-		let elements: any[] = [];
-		HTMLHandler.findAllElementsByClassAndTag(indexDocument, "views-field-title", "td", elements);
-		if (elements.length <= 0) {
-			throw new InsightError("Invalid index.htm");
-		}
-
-		// iterate over each room and process them
-		let nullCount = 0;
-		elements.forEach(async (element) => {
-			let href = HTMLHandler.getHref(element);
-			// console.log(href);
-
-			if (href === null) {
-				nullCount++;
-				return;
-			}
-
-			let test = await RoomProcessor.readBuildingFile(href, zip);
-		});
-
-		if (nullCount === elements.length) {
-			throw new InsightError("Invalid rooms dataset");
-		}
-		// organiziation of saved data will be like courses
-		// json file for each building
-		// in each file each object will be a room which has all the data that can be queried
-		// iterate over each <td>
-		//	get href
-		//	pass this file to parse5 to get building room page
-		//  find valid rooms table. if can't find then doesn't exist
-		//  save this room data to a building's json file
-		//
-		let datasetObj: any = {};
-
-
-		await this.writeDataset(datasetObj, id);
-
-		const dataset: InsightDataset = {
-			id,
-			kind: InsightDatasetKind.Sections,
-			numRows: Object.keys(datasetObj).length,
-		};
-
-		return dataset;
 	}
 
 	private async processCoursesDataset(id: string, zip: JSZip): Promise<InsightDataset> {
@@ -168,7 +115,7 @@ export default class InsightFacade implements IInsightFacade {
 		}
 
 		// write datasetOBJ to json file in ./src/controller/data/ dir
-		await this.writeDataset(datasetObj, id);
+		await this.writer.writeDataset(datasetObj, id);
 
 		// create InsightDataset obj and fill in proper values
 		const dataset: InsightDataset = {
@@ -178,49 +125,6 @@ export default class InsightFacade implements IInsightFacade {
 		};
 
 		return dataset;
-	}
-
-	// writes a dataset to a JSON file
-	private async writeDataset(datasetObj: any, id: string) {
-		// check if data directory exists
-		try {
-			// Check if the directory exists; if not, try to create it
-			await fs.promises.stat(this.dataDir).catch(async () => {
-				console.log(`Directory '${this.dataDir}' does not exist.`);
-				await fs.promises.mkdir(this.dataDir);
-				console.log(`Directory '${this.dataDir}' created successfully.`);
-			});
-
-			// Prepare the dataset JSON string
-			const datasetJSONString = JSON.stringify(datasetObj, null, 2);
-
-			// Write the file
-			await fs.promises.writeFile(this.dataDir + id + ".json", datasetJSONString, "utf-8");
-			console.log("File has been written successfully.");
-		} catch (e) {
-			console.error("Error writing to file or creating directory:", e);
-		}
-	}
-
-	private async writeDict() {
-		// check if data directory exists
-		try {
-			// Check if the directory exists; if not, try to create it
-			await fs.promises.stat(this.dataDir).catch(async () => {
-				console.log(`Directory '${this.dataDir}' does not exist.`);
-				await fs.promises.mkdir(this.dataDir);
-				console.log(`Directory '${this.dataDir}' created successfully.`);
-			});
-
-			// Prepare the dataset JSON string
-			const datasetJSONString = JSON.stringify(this.datasets, null, 2);
-
-			// Write the file
-			await fs.promises.writeFile("./data/datasets.json", datasetJSONString, "utf-8");
-			console.log("File has been written successfully.");
-		} catch (e) {
-			console.error("Error writing to file or creating directory:", e);
-		}
 	}
 
 	// adds sections to a dataset JSON obj

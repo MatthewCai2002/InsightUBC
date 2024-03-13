@@ -28,7 +28,7 @@ export default class HTMLHandler {
 
 		if (node.childNodes) {
 			for (const childNode of node.childNodes) {
-				const result = this.findElementByClassAndTag(childNode, className, tag);
+				const result: Document | null = this.findElementByClassAndTag(childNode, className, tag);
 				if (result) {
 					return result;
 				}
