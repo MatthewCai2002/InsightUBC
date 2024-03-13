@@ -32,31 +32,32 @@ export default class RoomProcessor {
 		// use parsed object to find all <td> with href's that link to rooms
 		let elements: any[] = [];
 		let indexDocument: any = parse5.parse(jsonPromise);
-		//
+		// the building Name
 		HTMLHandler.findAllElementsByClassAndTag(indexDocument, "views-field-title", "td", elements);
-		HTMLHandler.findAllElementsByClassAndTag(indexDocument, "views-field-title", "td", elements);
-		// the ROOM
+		// the Code
+		HTMLHandler.findAllElementsByClassAndTag(indexDocument, "views-field-field-building-code", "td", elements);
+		// the address
 		HTMLHandler.
-			findAllElementsByClassAndTag(indexDocument, "views-field views-field-field-room-number", "th", elements);
+			findAllElementsByClassAndTag(indexDocument, "views-field-field-building-address", "td", elements);
+		HTMLHandler.
+			findAllElementsByClassAndTag(indexDocument, "views-field views-field-nothing", "td", elements);
 		// the ROOM capacity
-		HTMLHandler.
-			findAllElementsByClassAndTag(indexDocument, "views-field views-field-field-room-capacity", "th", elements);
-		// the ROOM Furniture Type
-		HTMLHandler.
-			findAllElementsByClassAndTag(indexDocument, "views-field views-field-field-room-furniture", "th", elements);
-		// the ROOm type
-		HTMLHandler.
-			findAllElementsByClassAndTag(indexDocument, "views-field views-field-field-room-type", "th", elements);
+		// HTMLHandler.
+		// 	findAllElementsByClassAndTag(indexDocument, "views-field views-field-field-room-capacity", "th", elements);
+		// // the ROOM Furniture Type
+		// HTMLHandler.
+		// 	findAllElementsByClassAndTag(indexDocument, "views-field views-field-field-room-furniture", "th", elements);
+		// // the ROOm type
+		// HTMLHandler.
+		// 	findAllElementsByClassAndTag(indexDocument, "views-field views-field-field-room-type", "th", elements);
 		if (elements.length <= 0) {
 			throw new InsightError("Invalid index.htm");
 		}
 		let datasetObj: any = {};
-
 		// iterate over each room and process them
 		let nullCount = 0;
 		for (const element of elements) {
 			let href = HTMLHandler.getHref(element);
-
 			if (href === null) {
 				nullCount++;
 				continue;
