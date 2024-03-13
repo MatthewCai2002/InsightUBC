@@ -3,10 +3,22 @@ import {InsightDataset, InsightDatasetKind, InsightError} from "./IInsightFacade
 import HTMLHandler from "./htmlHandler";
 import * as parse5 from "parse5";
 import Writer from "./writer";
+// TODO:
+// Change room.ts so its not cooked
+// write invalid tests in Insight.spec.ts
+// call the geolocator
+// get the elements that are not td
+// get span fild content
+// get div field content
+// get the room number
+// get the capacity
+// the furtnite type
+// room type
+// save the link for more info. Grab the Href and sve that
+//
 
 
 export default class RoomProcessor {
-
 	public static async processRoomsDataset(id: string, zip: JSZip, writer: Writer): Promise<InsightDataset> {
 		// check if index.htm is here, if it is open it, if not error
 		let jsonPromise: string;
@@ -20,7 +32,21 @@ export default class RoomProcessor {
 		// use parsed object to find all <td> with href's that link to rooms
 		let elements: any[] = [];
 		let indexDocument: any = parse5.parse(jsonPromise);
+		//
 		HTMLHandler.findAllElementsByClassAndTag(indexDocument, "views-field-title", "td", elements);
+		HTMLHandler.findAllElementsByClassAndTag(indexDocument, "views-field-title", "td", elements);
+		// the ROOM
+		HTMLHandler.
+			findAllElementsByClassAndTag(indexDocument, "views-field views-field-field-room-number", "th", elements);
+		// the ROOM capacity
+		HTMLHandler.
+			findAllElementsByClassAndTag(indexDocument, "views-field views-field-field-room-capacity", "th", elements);
+		// the ROOM Furniture Type
+		HTMLHandler.
+			findAllElementsByClassAndTag(indexDocument, "views-field views-field-field-room-furniture", "th", elements);
+		// the ROOm type
+		HTMLHandler.
+			findAllElementsByClassAndTag(indexDocument, "views-field views-field-field-room-type", "th", elements);
 		if (elements.length <= 0) {
 			throw new InsightError("Invalid index.htm");
 		}
@@ -67,6 +93,7 @@ export default class RoomProcessor {
 		let elements: any[] = [];
 		let buildingDocument = parse5.parse(building);
 		HTMLHandler.findAllElementsByClassAndTag(buildingDocument, "views-field-title", "td", elements);
+		// change this
 		if (elements.length <= 0) {
 			return;
 		}

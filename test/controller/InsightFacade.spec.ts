@@ -91,9 +91,7 @@ describe("InsightFacade", function () {
 
 		it("Accept adding valid rooms", async function () {
 			sections = await getContentFromArchives("campus.zip");
-
 			const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Rooms);
-
 			return expect(result).to.deep.equal(["ubc"]);
 		});
 	});

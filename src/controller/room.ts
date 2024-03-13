@@ -18,7 +18,7 @@ export default class Section {
 		this.name = String(roomJSON.Professor);
 		this.address = String(roomJSON.Subject);
 		// Check if the section should be marked as occurring in 1900
-		this.lat = roomJSON.Section === "overall" ? 1900 : Number(roomJSON.Year);
+		this.lat = Number(roomJSON.Year);
 		this.lon = Number(roomJSON.Avg);
 		this.seats = Number(roomJSON.Pass);
 		this.type = String(roomJSON.Fail);
