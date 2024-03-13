@@ -10,7 +10,9 @@ import * as fs from "fs-extra";
 import JSZip from "jszip";
 import Section from "./section";
 import Validator from "./validator";
+import HTMLHandler from "./htmlHandler";
 import Filter from "./filter";
+import RoomProcessor from "./roomProcessor";
 import * as parse5 from "parse5";
 
 // Assuming the structure of your options object based on the provided code
@@ -88,7 +90,7 @@ export default class InsightFacade implements IInsightFacade {
 
 	private async processRoomsDataset(id: string, zip: JSZip): Promise<InsightDataset> {
 		// check if index.htm is here, if it is open it, if not error
-		let jsonPromise;
+		let jsonPromise: string;
 		const indexFile = zip.file("index.htm");
 		if (indexFile) {
 			jsonPromise = await indexFile.async("text");
@@ -97,14 +99,30 @@ export default class InsightFacade implements IInsightFacade {
 		}
 
 		// use parsed object to find all <td> with href's that link to rooms
-		let elements: any[] = [];
 		let indexDocument = parse5.parse(jsonPromise);
-		this.findAllElementsByClassAndTag(indexDocument, "views-field-title", "td", elements);
-		if (elements.length === 0) {
+		let elements: any[] = [];
+		HTMLHandler.findAllElementsByClassAndTag(indexDocument, "views-field-title", "td", elements);
+		if (elements.length <= 0) {
 			throw new InsightError("Invalid index.htm");
 		}
 
+		// iterate over each room and process them
+		let nullCount = 0;
+		elements.forEach(async (element) => {
+			let href = HTMLHandler.getHref(element);
+			// console.log(href);
 
+			if (href === null) {
+				nullCount++;
+				return;
+			}
+
+			let test = await RoomProcessor.readBuildingFile(href, zip);
+		});
+
+		if (nullCount === elements.length) {
+			throw new InsightError("Invalid rooms dataset");
+		}
 		// organiziation of saved data will be like courses
 		// json file for each building
 		// in each file each object will be a room which has all the data that can be queried
@@ -126,39 +144,6 @@ export default class InsightFacade implements IInsightFacade {
 		};
 
 		return dataset;
-	}
-
-	private findElementByClassAndTag(node: any, className: string, tag: string): Document | null {
-		if (node.attrs &&
-			node.attrs.find((attr: any) => attr.name === "class" && attr.value.includes(className)) &&
-			node.nodeName === tag) {
-			return node;
-		}
-
-		if (node.childNodes) {
-			for (const childNode of node.childNodes) {
-				const result = this.findElementByClassAndTag(childNode, className, tag);
-				if (result) {
-					return result;
-				}
-			}
-		}
-
-		return null;
-	}
-
-	private findAllElementsByClassAndTag(node: any, className: string, tag: string, elements: any[]): void {
-		if (node.attrs &&
-			node.attrs.find((attr: any) => attr.name === "class" && attr.value.includes(className)) &&
-			node.nodeName === tag) {
-			elements.push(node);
-		}
-
-		if (node.childNodes) {
-			for (const childNode of node.childNodes) {
-				this.findAllElementsByClassAndTag(childNode, className, tag, elements);
-			}
-		}
 	}
 
 	private async processCoursesDataset(id: string, zip: JSZip): Promise<InsightDataset> {
