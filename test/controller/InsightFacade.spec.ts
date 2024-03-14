@@ -77,13 +77,43 @@ describe("InsightFacade", function () {
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
-		it("Reject with invalid Kind", function () {
+		it("Reject with miss matching kind", function () {
 			const result = facade.addDataset("1", sections, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("Reject with miss matching section", async function () {
+			let rooms = await getContentFromArchives("campus.zip");
+			const result = facade.addDataset("1", rooms, InsightDatasetKind.Sections);
+
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("Reject with missing index.htm", async function () {
+			let rooms = await getContentFromArchives("invalid_campus.zip");
+			const result = facade.addDataset("1", rooms, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("Reject with index missing table", async function () {
+			let rooms = await getContentFromArchives("index_missing_table.zip");
+			const result = facade.addDataset("1", rooms, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("Reject with building missing rooms", async function () {
+			let rooms = await getContentFromArchives("missing_rooms.zip");
+			const result = facade.addDataset("1", rooms, InsightDatasetKind.Rooms);
+
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("Accept adding valid dataset", async function () {
 			const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+
 			return expect(result).to.deep.equal(["ubc"]);
 		});
 
@@ -92,15 +122,22 @@ describe("InsightFacade", function () {
 			const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Rooms);
 			return expect(result).to.deep.equal(["ubc"]);
 		});
-		it("Reject adding a room with a missing table", async function () {
-			sections = await getContentFromArchives("invalid_campus.zip");
-			const result = await facade.addDataset("ACU", sections, InsightDatasetKind.Rooms);
-			return expect(result).to.eventually.be.rejectedWith(InsightError);
+
+		it("Accept adding valid rooms and sections", async function () {
+			await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+
+			sections = await getContentFromArchives("campus.zip");
+			const result = await facade.addDataset("ubc2", sections, InsightDatasetKind.Rooms);
+			return expect(result).to.deep.equal(["ubc", "ubc2"]);
 		});
-		// one test for a valid dataset,
-		// one test for an invalid dataset. Change the index.html file.
-		// invalid index.htm file. NO table with all the buildings.
-		// make one where it is missing a column.
+
+		it("Accept adding 2 valid rooms", async function () {
+			sections = await getContentFromArchives("campus.zip");
+			await facade.addDataset("ubc", sections, InsightDatasetKind.Rooms);
+			const result = await facade.addDataset("ubc2", sections, InsightDatasetKind.Rooms);
+			return expect(result).to.deep.equal(["ubc", "ubc2"]);
+		});
+
 	});
 
 	// describe("Add dataset, no clearDisk", function () {
@@ -123,6 +160,28 @@ describe("InsightFacade", function () {
 	//
 	// 		return expect(result).to.deep.equal(["ubc", "ubc2"]);
 	// 	});
+	//
+	// 	it("Accept adding valid rooms", async function () {
+	// 		sections = await getContentFromArchives("campus.zip");
+	// 		const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Rooms);
+	// 		return expect(result).to.deep.equal(["ubc"]);
+	// 	});
+	//
+	// 	it("Accept adding valid rooms and sections", async function () {
+	// 		await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+	//
+	// 		sections = await getContentFromArchives("campus.zip");
+	// 		const result = await facade.addDataset("ubc2", sections, InsightDatasetKind.Rooms);
+	// 		return expect(result).to.deep.equal(["ubc", "ubc2"]);
+	// 	});
+	//
+	// 	it("Accept adding 2 valid rooms", async function () {
+	// 		sections = await getContentFromArchives("campus.zip");
+	// 		await facade.addDataset("ubc", sections, InsightDatasetKind.Rooms);
+	// 		const result = await facade.addDataset("ubc2", sections, InsightDatasetKind.Rooms);
+	// 		return expect(result).to.deep.equal(["ubc", "ubc2"]);
+	// 	});
+	//
 	// });
 
 	/*

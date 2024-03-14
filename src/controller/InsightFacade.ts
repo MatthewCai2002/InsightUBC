@@ -10,11 +10,9 @@ import * as fs from "fs-extra";
 import JSZip from "jszip";
 import Section from "./section";
 import Validator from "./validator";
-import HTMLHandler from "./htmlHandler";
 import Filter from "./filter";
 import RoomProcessor from "./roomProcessor";
 import Writer from "./writer";
-import * as parse5 from "parse5";
 import Decimal from "decimal.js";
 import Room from "./room";
 import GroupandAppy from "./groupandAppy";
@@ -47,6 +45,7 @@ export default class InsightFacade  implements IInsightFacade {
 	protected readonly dataDir = "./data/";
 	private datasets: {[id: string]: InsightDataset} = {};
 	private writer: Writer = new Writer(this.dataDir, this.datasets);
+	private roomsProcessor = new RoomProcessor();
 
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		if (!id.trim() || id.includes("_")) {
@@ -82,7 +81,7 @@ export default class InsightFacade  implements IInsightFacade {
 					dataset = await this.processCoursesDataset(id, unzippedContent);
 					break;
 				case InsightDatasetKind.Rooms:
-					dataset = await RoomProcessor.processRoomsDataset(id, unzippedContent, this.writer);
+					dataset = await this.roomsProcessor.processRoomsDataset(id, unzippedContent, this.writer);
 					break;
 				default:
 					return Promise.reject(new InsightError("Unsupported dataset kind."));
@@ -97,13 +96,13 @@ export default class InsightFacade  implements IInsightFacade {
 			// return array of all added datasets
 			return Promise.resolve(Object.keys(this.datasets));
 		} catch (error) {
+			console.log(error);
 			return Promise.reject(new InsightError(`Failed to add dataset: ${error}`));
 		}
 	}
 
 	private async processCoursesDataset(id: string, zip: JSZip): Promise<InsightDataset> {
 		const promises: Array<Promise<string>> = [];
-
 		// for each course file, read its contents
 		// and push it onto an array of promises
 		zip.forEach((relativePath, file) => {
@@ -118,7 +117,6 @@ export default class InsightFacade  implements IInsightFacade {
 		// add valid sections to dataset
 		let datasetObj: any = {};
 		if (!this.isValidDataset(jsonStrings, datasetObj)) {
-			// console.log("invalid dataset");
 			throw new InsightError("Invalid Dataset");
 		}
 
@@ -140,21 +138,6 @@ export default class InsightFacade  implements IInsightFacade {
 		datasetObj[section.uuid] = section;
 	}
 
-	// INPUT: course JSON object
-	// DOES: goes through each section and turns it into a section TS class
-	// 		 then puts section into array of sections for the course
-	// OUTPUT: returns the array of sections for a course
-	private createSections(course: any): Section[] {
-		let sections: Section[] = [];
-
-		for (let section of course.result) {
-			let sectionObject = new Section(section);
-			sections.push(sectionObject);
-		}
-
-		return sections;
-	}
-
 	// validates dataset
 	private isValidDataset(jsonStrings: string[], dataset: any): boolean {
 		let validCourses: boolean[] = [];
@@ -165,7 +148,13 @@ export default class InsightFacade  implements IInsightFacade {
 			if (!str) {
 				continue;
 			}
-			let course = JSON.parse(str);
+
+			let course;
+			try {
+				course = JSON.parse(str);
+			} catch (e) {
+				throw new InsightError("not sections dataset");
+			}
 			let validCourse = this.isValidCourse(course, dataset);
 			validCourses.push(validCourse);
 		}
