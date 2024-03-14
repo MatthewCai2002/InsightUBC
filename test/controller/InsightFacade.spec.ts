@@ -79,13 +79,11 @@ describe("InsightFacade", function () {
 
 		it("Reject with invalid Kind", function () {
 			const result = facade.addDataset("1", sections, InsightDatasetKind.Rooms);
-
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
 		it("Accept adding valid dataset", async function () {
 			const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
-
 			return expect(result).to.deep.equal(["ubc"]);
 		});
 
@@ -93,6 +91,11 @@ describe("InsightFacade", function () {
 			sections = await getContentFromArchives("campus.zip");
 			const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Rooms);
 			return expect(result).to.deep.equal(["ubc"]);
+		});
+		it("Reject adding a room with a missing table", async function () {
+			sections = await getContentFromArchives("invalid_campus.zip");
+			const result = await facade.addDataset("ACU", sections, InsightDatasetKind.Rooms);
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 		// one test for a valid dataset,
 		// one test for an invalid dataset. Change the index.html file.
