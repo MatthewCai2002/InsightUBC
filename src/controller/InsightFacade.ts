@@ -252,14 +252,17 @@ export default class InsightFacade  implements IInsightFacade {
 			throw new InsightError("Dataset ID could not be determined from the query.");
 		}
 		const dataset = await this.loadDataset(datasetId);
-		const filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
+		let filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
 		let insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
 		if (query.TRANSFORMATIONS) {
 			const groupKeys = query.TRANSFORMATIONS.GROUP;
 			const applyRules = query.TRANSFORMATIONS.APPLY;
-			// Assume groupData and transform are implemented correctly
-			const groups = query.groupData(filteredResults, groupKeys);
-			const transform = query.transform(filteredResults, applyRules);
+			const groups = InsightFacade.groupData(insightResults as [], groupKeys);
+			// const transformedResults = InsightFacade.transform(groups, applyRules);
+		}
+		// Apply ORDER (sort results)
+		if (options.ORDER) {
+			insightResults = this.sortResults(insightResults, options.ORDER);
 		}
 		return insightResults;
 	}
