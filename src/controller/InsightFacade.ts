@@ -95,7 +95,6 @@ export default class InsightFacade  implements IInsightFacade {
 
 	private async processCoursesDataset(id: string, zip: JSZip): Promise<InsightDataset> {
 		const promises: Array<Promise<string>> = [];
-
 		// for each course file, read its contents
 		// and push it onto an array of promises
 		zip.forEach((relativePath, file) => {
@@ -110,7 +109,6 @@ export default class InsightFacade  implements IInsightFacade {
 		// add valid sections to dataset
 		let datasetObj: any = {};
 		if (!this.isValidDataset(jsonStrings, datasetObj)) {
-			// console.log("invalid dataset");
 			throw new InsightError("Invalid Dataset");
 		}
 
@@ -142,7 +140,13 @@ export default class InsightFacade  implements IInsightFacade {
 			if (!str) {
 				continue;
 			}
-			let course = JSON.parse(str);
+
+			let course;
+			try {
+				course = JSON.parse(str);
+			} catch (e) {
+				throw new InsightError("not sections dataset");
+			}
 			let validCourse = this.isValidCourse(course, dataset);
 			validCourses.push(validCourse);
 		}
