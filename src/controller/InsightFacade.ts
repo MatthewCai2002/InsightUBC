@@ -13,12 +13,20 @@ import Validator from "./validator";
 import Filter from "./filter";
 import RoomProcessor from "./roomProcessor";
 import Writer from "./writer";
+import Decimal from "decimal.js";
+import Room from "./room";
+import GroupandAppy from "./groupandAppy";
 
 // Assuming the structure of your options object based on the provided code
 interface QueryOptions {
 	COLUMNS: string[];
 	ORDER?: string; // Optional
 }
+interface GroupedResult {
+	[key: string]: any;
+}
+type NumericKeysOfRoom = "lat" | "lon" | "seats";
+type KeysOfRoom = keyof Room;
 
 export default class InsightFacade  implements IInsightFacade {
 	private fileFields: string[] = [
@@ -234,10 +242,37 @@ export default class InsightFacade  implements IInsightFacade {
 			throw new InsightError("Dataset ID could not be determined from the query.");
 		}
 		const dataset = await this.loadDataset(datasetId);
-		const filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
-		const insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
-
+		let filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
+		let insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
+		if (query.TRANSFORMATIONS) {
+			const applyRules = query.TRANSFORMATIONS.APPLY;
+			const groupKeys = query.TRANSFORMATIONS.GROUP;
+			const groups = GroupandAppy.groupData(insightResults as [], groupKeys);
+			const transformedResults = GroupandAppy.transform(groups, applyRules);
+			insightResults = this.convertTransformedResults(transformedResults, options);
+		}
+		// Apply ORDER (sort results)
+		if (options.ORDER) {
+			insightResults = this.sortResults(insightResults, options.ORDER);
+		}
 		return insightResults;
+	}
+
+	private convertTransformedResults(transformedResults: Map<string, any>, options: QueryOptions): InsightResult[] {
+		let results: InsightResult[] = [];
+		transformedResults.forEach((value, key) => {
+			let resultEntry: InsightResult = {};
+			options.COLUMNS.forEach((column) => {
+				if (Object.prototype.hasOwnProperty.call(value, column)) {
+					resultEntry[column] = value[column];
+				} else {
+					return Promise.reject(new InsightError("Invalid dataset ID."));
+				}
+			});
+
+			results.push(resultEntry);
+		});
+		return results;
 	}
 
 	private applyOptions(filteredResults: Section[], options: QueryOptions): InsightResult[] {
@@ -277,6 +312,30 @@ export default class InsightFacade  implements IInsightFacade {
 			});
 		}
 		return projectedResults;
+	}
+
+	private sortResults(results: InsightResult[], order: any): InsightResult[] {
+		// Check if 'order' is a string (single key sort) or object (potential multi-key sort)
+		const keys = (typeof order === "string") ? [order] : order.keys;
+		const direction = (typeof order === "string") ? "UP" : order.dir;
+		// Determine the sort direction multiplier to invert the comparison for descending order
+		const dirMultiplier = (direction === "UP") ? 1 : -1;
+		// 5. Define a comparator function for the sort method, capable of handling sorting by multiple keys as defined in the 'keys' array.
+		const multiKeySort = (a: InsightResult, b: InsightResult) => {
+			// 6. Iterate over each sorting key.
+			for (const key of keys) {
+				// 8. Compare the values for the current key in both elements. If the first value is less, return -1 (or 1 for descending order). If the first value is greater, return 1 (or -1 for descending).
+				if (a[key] < b[key]) {
+					return -1 * dirMultiplier;
+				} else if (a[key] > b[key]) {
+					return 1 * dirMultiplier;
+				}
+			}
+			// All keys are equal
+			return 0;
+		};
+		// Perform the sort
+		return results.sort(multiKeySort);
 	}
 
 	public async loadDataset(datasetId: string): Promise<any> {

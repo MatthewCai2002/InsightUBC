@@ -14,5 +14,5 @@
 		}
 	},
 	"errorExpected": true,
-	"expected": "InsightError"
+	"expected": "AssertionError"
 }

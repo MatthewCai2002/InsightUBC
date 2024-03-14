@@ -1,6 +1,8 @@
 import {InsightError} from "./IInsightFacade";
 import {isArgumentsObject} from "node:util/types";
 
+// In the columns, only see "maxseats, max", at what point do you know what dataset
+
 export default class Validator {
 	private validKeywords: string[] = [
 		"WHERE",
@@ -16,35 +18,32 @@ export default class Validator {
 		"EQ",
 	];
 
-	private mFields: string[] = ["year", "avg", "pass", "fail", "audit"];
-	private sFields: string[] = ["uuid", "id", "title", "instructor", "dept"];
+	private mFields: string[] = ["year", "avg", "pass", "fail", "audit", "lat", "lon", "seats"];
+	private sFields: string[] = ["uuid", "id", "title", "instructor", "dept", "fullname", "shortname", "number",
+		"name", "dept" , "address", "type", "furniture", "href"];
 
 	public validateQuery(query: any): any {
-		// Initialize a dictionary for tracking dataset references
+		if (!query || !query.WHERE || !query.OPTIONS) {
+			throw new InsightError("Query must contain WHERE and OPTIONS.");
+		}
+
 		let dbRefSet: Set<string> = new Set<string>();
+		let applyKeys: Set<string> = new Set<string>();
 
-		// Ensure the query contains both WHERE and OPTIONS clauses
-		if (!("WHERE" in query)) {
-			throw new InsightError("Query must contain WHERE.");
+		this.validateWhere(query.WHERE, dbRefSet);
+		if (query.TRANSFORMATIONS) {
+			applyKeys = this.validateTransformations(query.TRANSFORMATIONS, dbRefSet);
+		}
+		this.validateOptions(query.OPTIONS, applyKeys, dbRefSet);
+
+		if (dbRefSet.size !== 1) {
+			throw new InsightError("Query must reference exactly one dataset.");
 		}
 
-		if (!("OPTIONS" in query)) {
-			throw new InsightError("Query must contain OPTIONS.");
-		}
-
-		// Validate WHERE and OPTIONS clauses
-		const validWhere = this.validateWhere(query.WHERE, dbRefSet);
-		const validOpt = this.validateOptions(query.OPTIONS, dbRefSet);
-
-		if (dbRefSet.size === 0) {
-			throw new InsightError("No dataset specified in the query.");
-		}
-
-		let res = {
-			valid: validWhere && validOpt,
+		return {
+			valid: true,
 			id: [...dbRefSet][0],
 		};
-		return res;
 	}
 
 	public validateWhere(currQuery: any, dbRefSet: Set<string>): boolean {
@@ -67,6 +66,51 @@ export default class Validator {
 			throw new InsightError("References to multiple Datasets");
 		}
 		return valid;
+	}
+
+	private validateTransformations(transformations: any, dbRefSet: Set<string>): Set<string> {
+		if (!transformations.GROUP || !Array.isArray(transformations.GROUP)) {
+			throw new InsightError("TRANSFORMATIONS must contain a GROUP array.");
+		}
+		if (!transformations.APPLY || !Array.isArray(transformations.APPLY)) {
+			throw new InsightError("TRANSFORMATIONS must contain an APPLY array.");
+		}
+
+		transformations.GROUP.forEach((groupKey: string) => {
+			if (!this.isValidField(groupKey, dbRefSet)) {
+				throw new InsightError(`Invalid GROUP key: ${groupKey}`);
+			}
+		});
+
+		let applyKeys = new Set<string>();
+		transformations.APPLY.forEach((rule: any) => {
+			const applyKey = Object.keys(rule)[0];
+			console.log(applyKey);
+			if (applyKeys.has(applyKey)) {
+				throw new InsightError(`Duplicate APPLY key: ${applyKey}`);
+			}
+			applyKeys.add(applyKey);
+			// Further APPLY rule validation logic can be added here.
+		});
+
+		return applyKeys;
+	}
+
+	private isValidField(field: string, dbRefSet: Set<string>): boolean {
+		// Split the field into components (id and field name) and validate them.
+		// Update dbRefSet with the dataset ID if the field is valid.
+		// Return true if the field is valid, false otherwise.
+		const parts = field.split("_");
+		if (parts.length === 2) {
+			const [id, fieldName] = parts;
+			const isValidMField = this.mFields.includes(fieldName);
+			const isValidSField = this.sFields.includes(fieldName);
+			if (isValidMField || isValidSField) {
+				dbRefSet.add(id);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public callValidator(query: any, dbRefSet: Set<string>): boolean {
@@ -190,66 +234,68 @@ export default class Validator {
 		return true;
 	}
 
-	public validateOptions(options: any, dbRefSet: Set<string>): boolean {
-		// Check for required components in OPTIONS
+	private validateOptions(options: any, applyKeys: Set<string>, dbRefSet: Set<string>): boolean {
+		if (!options.COLUMNS || !Array.isArray(options.COLUMNS)) {
+			throw new InsightError("OPTIONS must contain a COLUMNS array.");
+		}
 		if (!options.COLUMNS || !Array.isArray(options.COLUMNS)) {
 			throw new InsightError("Invalid COLUMNS");
 		}
+		options.COLUMNS.forEach((column: string) => {
+			if (!this.isValidField(column, dbRefSet) && !applyKeys.has(column)) {
+				throw new InsightError(`Invalid field in COLUMNS: ${column}`);
+			}
+		});
 		if (!("COLUMNS" in options) || !Array.isArray(options.COLUMNS) || options.COLUMNS.length === 0) {
 			throw new InsightError("OPTIONS must contain a non-empty COLUMNS array.");
 		}
-
-		// Optionally, validate ORDER if present
-		if (options.ORDER && !options.COLUMNS.includes(options.ORDER)) {
-			throw new InsightError("references in ORDER missing in WHERE");
-		}
-
-		// check all fields in columns
-		let validFields = this.sFields.concat(this.mFields);
+		const validFields = new Set([...this.sFields, ...this.mFields, ...applyKeys]);
+		// need to pass in the new name into the fields?
 		for (let key of options.COLUMNS) {
+			let idStr: string | null = null; // Use null or empty string '' as appropriate for your logic
+			let field: string = ""; // Assume empty string, adjust based on your handling
 			const keyParts: string[] = key.split("_");
-
-			// get key components
-			const idStr = keyParts[0];
-			const field = keyParts[1];
-
-			// if length > 2 then underscore must be in idStr
-			if (keyParts.length > 2) {
-				throw new InsightError("Invalid ID String");
+			// If the key is a single word (alias from APPLY or a direct field name)
+			if (keyParts.length === 1) {
+				field = keyParts[0]; // Treat the single word as a field name or alias
+			} else if (keyParts.length === 2) {
+				// Standard case with datasetId_fieldName
+				idStr = keyParts[0];
+				field = keyParts[1];
 			}
-
 			// check if field is a valid field
-			if (!validFields.includes(field)) {
+			if (!validFields.has(field)) {
 				throw new InsightError("Invalid field");
 			}
-
-			dbRefSet.add(idStr);
-		}
-
-		// check key in ORDER
-		if (options.ORDER) {
-			const key = options.ORDER;
-			const keyParts: string[] = key.split("_");
-
-			// if length > 2 then underscore must be in idStr
-			if (keyParts.length > 2) {
-				throw new InsightError("Invalid ID String");
+			if (idStr) {
+				dbRefSet.add(idStr);
 			}
-
-			// get sKey components
-			const idStr = keyParts[0];
-			const field = keyParts[1];
-
-			// check if field is a valid field
-			if (!validFields.includes(field)) {
-				throw new InsightError("Invalid ID field");
-			}
-
-			dbRefSet.add(idStr);
 		}
-		if (dbRefSet.size > 1) {
-			throw new InsightError("References to multiple Datasets");
-		}
+
+		// // check key in ORDER
+		// if (options.ORDER) {
+		// 	const key = options.ORDER;
+		// 	// currentlly having key= Object {dir = "DOWN", heys: Array{1}}
+		// 	const keyParts: string[] = key;
+		//
+		// 	// if length > 2 then underscore must be in idStr
+		// 	if (keyParts.length > 2) {
+		// 		throw new InsightError("Invalid ID String");
+		// 	}
+		//
+		// 	// get sKey components
+		// 	const idStr = keyParts[0];
+		// 	const field = keyParts[1];
+		//
+		// 	// check if field is a valid field
+		// 	if (!validFields.has(field)) {
+		// 		throw new InsightError("Invalid ID field");
+		// 	}
+		// 	dbRefSet.add(idStr);
+		// }
+		// // if (dbRefSet.size > 1) {
+		// // 	throw new InsightError("References to multiple Datasets");
+		// // }
 
 		return true;
 	}

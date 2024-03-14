@@ -22,7 +22,6 @@ export default class Filter {
 				return this.handleListQuery(query.AND, dataset, "AND");
 			case "OR":
 				return this.handleListQuery(query.OR, dataset, "OR");
-
 			// this can have nested filters
 			case "NOT": {
 				const notConditionResult = this.callFilter(query.NOT, dataset);
@@ -66,7 +65,6 @@ export default class Filter {
 	private handleIs(query: any, dataset: Section[]): Section[] {
 		const key = Object.keys(query)[0] as keyof Section; // Safely access the property key
 		const value: string = query[key] as string; // Ensure the value is treated as a string
-
 		const parts = key.split("_");
 		const field = parts[1];
 		// Convert wildcard pattern to regex for comparison

@@ -312,7 +312,6 @@ describe("InsightFacade", function () {
 	describe("PerformQuery", function () {
 		before(async function () {
 			facade = new InsightFacade();
-
 			// Add the datasets to InsightFacade once.
 			// Will *fail* if there is a problem reading ANY dataset.
 			const loadDatasetPromises = [facade.addDataset("sections", sections, InsightDatasetKind.Sections)];
