@@ -15,12 +15,19 @@ import Filter from "./filter";
 import RoomProcessor from "./roomProcessor";
 import Writer from "./writer";
 import * as parse5 from "parse5";
+import Decimal from "decimal.js";
+import Room from "./room";
 
 // Assuming the structure of your options object based on the provided code
 interface QueryOptions {
 	COLUMNS: string[];
 	ORDER?: string; // Optional
 }
+interface GroupedResult {
+	[key: string]: any;
+}
+type NumericKeysOfRoom = "lat" | "lon" | "seats";
+type KeysOfRoom = keyof Room;
 
 export default class InsightFacade  implements IInsightFacade {
 	private fileFields: string[] = [
@@ -246,8 +253,10 @@ export default class InsightFacade  implements IInsightFacade {
 		}
 		const dataset = await this.loadDataset(datasetId);
 		const filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
-		const insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
-
+		let insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
+		// if (query.OPTIONS.ORDER) {
+		// 	insightResults = this.sortResults(insightResults, query.OPTIONS.ORDER);
+		// }
 		return insightResults;
 	}
 
@@ -288,6 +297,88 @@ export default class InsightFacade  implements IInsightFacade {
 			});
 		}
 		return projectedResults;
+	}
+
+
+	public static groupData(rooms: Room[], keys: KeysOfRoom[]): Map<string, Room[]> {
+		const groups = new Map<string, Room[]>();
+		rooms.forEach((room) => {
+			const groupKey = keys.map((key) => `${key}:${room[key]}`).join("|");
+			if (!groups.has(groupKey)) {
+				groups.set(groupKey, []);
+			}
+			groups.get(groupKey)?.push(room);
+		});
+		return groups;
+	}
+
+
+	// Transform grouped data based on operations
+	public static transform(groups: Map<string, Room[]>, operations: {[key: string]:
+			{operation: string, field: KeysOfRoom}}): Map<string, any> {
+		let result = new Map<string, any>();
+
+		groups.forEach((rooms, groupKey) => {
+			let groupResult: {[alias: string]: any} = {};
+			for (const [alias, {operation, field}] of Object.entries(operations)) {
+				switch (operation) {
+					case "max":
+						groupResult[alias] = Math.max(...rooms.map((room) => room[field] as number));
+						break;
+					case "min":
+						groupResult[alias] = Math.min(...rooms.map((room) => room[field] as number));
+						break;
+					case "avg": {
+						const avg = rooms.reduce((acc, room) => acc +
+							(room[field] as number), 0) / rooms.length;
+						groupResult[alias] = Number(avg.toFixed(2));
+						break;
+					}
+					case "sum": {
+						const sum = rooms.reduce((acc, room) => acc + (room[field] as number), 0);
+						groupResult[alias] = Number(sum.toFixed(2));
+						break;
+					}
+					case "count": {
+						const uniqueValues = new Set(rooms.map((room) => room[field]));
+						groupResult[alias] = uniqueValues.size;
+						break;
+					}
+					default:
+						throw new Error(`Unsupported operation: ${operation}`);
+				}
+			}
+
+			result.set(groupKey, groupResult);
+		});
+
+		return result;
+	}
+
+	private sortResults(results: InsightResult[], order: any): InsightResult[] {
+		// Check if 'order' is a string (single key sort) or object (potential multi-key sort)
+		const keys = (typeof order === "string") ? [order] : order.keys;
+		const direction = (typeof order === "string") ? "UP" : order.dir;
+
+		// Determine the sort direction multiplier to invert the comparison for descending order
+		const dirMultiplier = (direction === "UP") ? 1 : -1;
+		// Sorting function that can handle multiple keys
+		const multiKeySort = (a: InsightResult, b: InsightResult) => {
+			for (const key of keys) {
+				// In case of nested properties, you may need to modify this accessor
+				if (a[key] < b[key]) {
+					return -1 * dirMultiplier;
+				} else if (a[key] > b[key]) {
+					return 1 * dirMultiplier;
+				}
+				// If values are equal, continue to the next key
+			}
+			// All keys are equal
+			return 0;
+		};
+
+		// Perform the sort
+		return results.sort(multiKeySort);
 	}
 
 	public async loadDataset(datasetId: string): Promise<any> {
