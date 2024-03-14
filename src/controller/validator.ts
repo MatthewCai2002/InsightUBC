@@ -16,8 +16,9 @@ export default class Validator {
 		"EQ",
 	];
 
-	private mFields: string[] = ["year", "avg", "pass", "fail", "audit"];
-	private sFields: string[] = ["uuid", "id", "title", "instructor", "dept"];
+	private mFields: string[] = ["year", "avg", "pass", "fail", "audit", "lat", "lon", "seats"];
+	private sFields: string[] = ["uuid", "id", "title", "instructor", "dept", "fullname", "shortname", "number",
+		"name", "dept" , "address", "type", "furniture", "href"];
 
 	public validateQuery(query: any): any {
 		// Initialize a dictionary for tracking dataset references
@@ -199,16 +200,16 @@ export default class Validator {
 			throw new InsightError("OPTIONS must contain a non-empty COLUMNS array.");
 		}
 
-		// Optionally, validate ORDER if present
-		if (options.ORDER && !options.COLUMNS.includes(options.ORDER)) {
-			throw new InsightError("references in ORDER missing in WHERE");
-		}
+		// // Optionally, validate ORDER if present
+		// if (options.ORDER && !options.COLUMNS.includes(options.ORDER)) {
+		// 	throw new InsightError("references in ORDER missing in WHERE");
+		// }
+
 
 		// check all fields in columns
 		let validFields = this.sFields.concat(this.mFields);
 		for (let key of options.COLUMNS) {
 			const keyParts: string[] = key.split("_");
-
 			// get key components
 			const idStr = keyParts[0];
 			const field = keyParts[1];

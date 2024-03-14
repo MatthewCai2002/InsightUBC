@@ -2,58 +2,76 @@ import Room from "./room";
 type NumericKeysOfRoom = "lat" | "lon" | "seats";
 type KeysOfRoom = keyof Room;
 
-export default class GroupandAppy {
-	public static groupData(rooms: Room[], keys: KeysOfRoom[]): Map<string, Room[]> {
-		const groups = new Map<string, Room[]>();
-		rooms.forEach((room) => {
-			const groupKey = keys.map((key) => `${key}:${room[key]}`).join("|");
+// make this work with sections as well.
+interface IGroupable {
+	[key: string]: string | number;
+}
+export default class GroupAndApply {
+	public static groupData<T extends IGroupable>(items: T[], keys: Array<keyof T>): Map<string, T[]> {
+		// Takes in an array of items, of type T (room/specs), and an array of keys with them.
+		const groups = new Map<string, T[]>();
+		// has an empty map to hold the items here. Each key is a string. Store the grouped items based off the keys
+		items.forEach((item) => {
+			// goes through each item
+			const groupKey = keys.map((key) => `${String(key)}:${item[key]}`).join("|");
+			// based off the specifc key, makes a ne identifier of groupKey, and they convert each key into a string.
 			if (!groups.has(groupKey)) {
 				groups.set(groupKey, []);
 			}
-			groups.get(groupKey)?.push(room);
+			// if there is one already, then it makes a new one. if not, it adds it to the current group.
+			groups.get(groupKey)?.push(item);
+			// finds the array that has the required groupKey and adds the current item to it.
 		});
 		return groups;
+		// return the group that we want.
 	}
 
-// Transform grouped data based on operations
-	public static transform(groups: Map<string, Room[]>, operations: {
-		[key: string]:
-			{operation: string, field: KeysOfRoom}
+	public static transform<T extends IGroupable>(groups: Map<string, T[]>, operations: {
+		[NewName: string]: {operation: string, field: keyof T}
+		// along with the one above, takes in a string/numer so it can work for rooms and sections
+		// the groups: Map takes in a group from before, and the operation is the one below. It does the operation below
+		// to the group
 	}): Map<string, any> {
 		let result = new Map<string, any>();
-		groups.forEach((rooms, groupKey) => {
-			let groupResult: {[alias: string]: any} = {};
-			for (const [alias, {operation, field}] of Object.entries(operations)) {
+		// new map that stores the final resuls that will be returned
+		groups.forEach((items, groupKey) => {
+			let groupResult: {[NewName: string]: any} = {};
+			// goes through for each item.
+			for (const NewName in operations) {
+				// for the current operation happening
+				const {operation, field} = operations[NewName];
+				let values = items.map((item) => item[field] as number); //
+				let operationResult: number;
 				switch (operation) {
 					case "max":
-						groupResult[alias] = Math.max(...rooms.map((room) => room[field] as number));
+						operationResult = Math.max(...values);
 						break;
 					case "min":
-						groupResult[alias] = Math.min(...rooms.map((room) => room[field] as number));
+						operationResult = Math.min(...values);
 						break;
-					case "avg": {
-						const avg = rooms.reduce((acc, room) => acc +
-							(room[field] as number), 0) / rooms.length;
-						groupResult[alias] = Number(avg.toFixed(2));
+					case "avg":
+						operationResult = values.reduce((acc, value) => acc + value, 0) / items.length;
+						groupResult[NewName] = Number(operationResult.toFixed(2));
+						// find the average
 						break;
-					}
-					case "sum": {
-						const sum = rooms.reduce((acc, room) => acc + (room[field] as number), 0);
-						groupResult[alias] = Number(sum.toFixed(2));
+					case "sum":
+						operationResult = values.reduce((acc, value) => acc + value, 0);
+						groupResult[NewName] = Number(operationResult.toFixed(2));
+						// find the sum
 						break;
-					}
-					case "count": {
-						const uniqueValues = new Set(rooms.map((room) => room[field]));
-						groupResult[alias] = uniqueValues.size;
+					case "count":
+						operationResult = new Set(values).size;
+						groupResult[NewName] = operationResult;
 						break;
-					}
 					default:
 						throw new Error(`Unsupported operation: ${operation}`);
 				}
 			}
 			result.set(groupKey, groupResult);
+			// stores whatever we have in the result
 		});
 
 		return result;
 	}
 }
+

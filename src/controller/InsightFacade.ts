@@ -275,11 +275,9 @@ export default class InsightFacade  implements IInsightFacade {
 			let resultEntry: InsightResult = {};
 			options.COLUMNS.forEach((column) => {
 				if (Object.prototype.hasOwnProperty.call(value, column)) {
-					// This approach safely checks for the property
 					resultEntry[column] = value[column];
 				} else {
-					// Handling group columns or other cases as necessary
-					// Adjust based on your specific implementation details
+					return Promise.reject(new InsightError("Invalid dataset ID."));
 				}
 			});
 
@@ -331,24 +329,22 @@ export default class InsightFacade  implements IInsightFacade {
 		// Check if 'order' is a string (single key sort) or object (potential multi-key sort)
 		const keys = (typeof order === "string") ? [order] : order.keys;
 		const direction = (typeof order === "string") ? "UP" : order.dir;
-
 		// Determine the sort direction multiplier to invert the comparison for descending order
 		const dirMultiplier = (direction === "UP") ? 1 : -1;
-		// Sorting function that can handle multiple keys
+		// 5. Define a comparator function for the sort method, capable of handling sorting by multiple keys as defined in the 'keys' array.
 		const multiKeySort = (a: InsightResult, b: InsightResult) => {
+			// 6. Iterate over each sorting key.
 			for (const key of keys) {
-				// In case of nested properties, you may need to modify this accessor
+				// 8. Compare the values for the current key in both elements. If the first value is less, return -1 (or 1 for descending order). If the first value is greater, return 1 (or -1 for descending).
 				if (a[key] < b[key]) {
 					return -1 * dirMultiplier;
 				} else if (a[key] > b[key]) {
 					return 1 * dirMultiplier;
 				}
-				// If values are equal, continue to the next key
 			}
 			// All keys are equal
 			return 0;
 		};
-
 		// Perform the sort
 		return results.sort(multiKeySort);
 	}
