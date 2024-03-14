@@ -17,6 +17,7 @@ export default class GroupAndApply {
 			// based off the specifc key, makes a ne identifier of groupKey, and they convert each key into a string.
 			if (!groups.has(groupKey)) {
 				groups.set(groupKey, []);
+				// makes a new group
 			}
 			// if there is one already, then it makes a new one. if not, it adds it to the current group.
 			groups.get(groupKey)?.push(item);
@@ -71,6 +72,7 @@ export default class GroupAndApply {
 			// stores whatever we have in the result
 		});
 
+		// edge case with noNew Name
 		return result;
 	}
 }

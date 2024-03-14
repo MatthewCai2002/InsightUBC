@@ -244,7 +244,8 @@ export default class InsightFacade  implements IInsightFacade {
 	}
 
 	public async performQuery(query: any): Promise<InsightResult[]> {
-		const validator: Validator = new Validator();
+		const applyRules = query.TRANSFORMATIONS.APPLY;
+		const validator: Validator = new Validator(applyRules);
 		const filterer: Filter = new Filter();
 		const options: QueryOptions = query.OPTIONS;
 		const valid: any = validator.validateQuery(query);
@@ -257,7 +258,6 @@ export default class InsightFacade  implements IInsightFacade {
 		let insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
 		if (query.TRANSFORMATIONS) {
 			const groupKeys = query.TRANSFORMATIONS.GROUP;
-			const applyRules = query.TRANSFORMATIONS.APPLY;
 			const groups = GroupandAppy.groupData(insightResults as [], groupKeys);
 			const transformedResults = GroupandAppy.transform(groups, applyRules);
 			insightResults = this.convertTransformedResults(transformedResults, options);

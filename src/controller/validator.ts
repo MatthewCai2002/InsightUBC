@@ -16,9 +16,16 @@ export default class Validator {
 		"EQ",
 	];
 
+	private applyField: any = {};
+
 	private mFields: string[] = ["year", "avg", "pass", "fail", "audit", "lat", "lon", "seats"];
 	private sFields: string[] = ["uuid", "id", "title", "instructor", "dept", "fullname", "shortname", "number",
 		"name", "dept" , "address", "type", "furniture", "href"];
+
+	constructor (applyField: any) {
+		this.applyField = applyField;
+	}
+
 
 	public validateQuery(query: any): any {
 		// Initialize a dictionary for tracking dataset references
@@ -208,6 +215,7 @@ export default class Validator {
 
 		// check all fields in columns
 		let validFields = this.sFields.concat(this.mFields);
+		// need to pass in the new name into the fields?
 		for (let key of options.COLUMNS) {
 			const keyParts: string[] = key.split("_");
 			// get key components
