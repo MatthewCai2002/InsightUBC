@@ -1,4 +1,4 @@
-export default class Section {
+export default class Room {
 	public readonly fullname: string;
 	public readonly shortname: string;
 	public readonly number: string;
@@ -12,17 +12,16 @@ export default class Section {
 	public readonly href: string;
 
 	constructor(roomJSON: any) {
-		this.fullname = String(roomJSON.id);
-		this.shortname = String(roomJSON.Course);
-		this.number = String(roomJSON.Title);
-		this.name = String(roomJSON.Professor);
-		this.address = String(roomJSON.Subject);
-		// Check if the section should be marked as occurring in 1900
-		this.lat = Number(roomJSON.Year);
-		this.lon = Number(roomJSON.Avg);
-		this.seats = Number(roomJSON.Pass);
-		this.type = String(roomJSON.Fail);
-		this.furniture = String(roomJSON.Audit);
-		this.href = String(roomJSON.Audit);
+		this.fullname = String(roomJSON.fullname);
+		this.shortname = String(roomJSON.shortname);
+		this.number = String(roomJSON.number);
+		this.name = String(roomJSON.name);
+		this.address = String(roomJSON.address);
+		this.lat = Number(roomJSON.lat);
+		this.lon = Number(roomJSON.lon);
+		this.seats = Number(roomJSON.seats);
+		this.type = String(roomJSON.type);
+		this.furniture = String(roomJSON.furniture);
+		this.href = String(roomJSON.href);
 	}
 }
