@@ -254,9 +254,13 @@ export default class InsightFacade  implements IInsightFacade {
 		const dataset = await this.loadDataset(datasetId);
 		const filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
 		let insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
-		// if (query.OPTIONS.ORDER) {
-		// 	insightResults = this.sortResults(insightResults, query.OPTIONS.ORDER);
-		// }
+		if (query.TRANSFORMATIONS) {
+			const groupKeys = query.TRANSFORMATIONS.GROUP;
+			const applyRules = query.TRANSFORMATIONS.APPLY;
+			// Assume groupData and transform are implemented correctly
+			const groups = query.groupData(filteredResults, groupKeys);
+			const transform = query.transform(filteredResults, applyRules);
+		}
 		return insightResults;
 	}
 
@@ -312,12 +316,10 @@ export default class InsightFacade  implements IInsightFacade {
 		return groups;
 	}
 
-
 	// Transform grouped data based on operations
 	public static transform(groups: Map<string, Room[]>, operations: {[key: string]:
 			{operation: string, field: KeysOfRoom}}): Map<string, any> {
 		let result = new Map<string, any>();
-
 		groups.forEach((rooms, groupKey) => {
 			let groupResult: {[alias: string]: any} = {};
 			for (const [alias, {operation, field}] of Object.entries(operations)) {
@@ -334,11 +336,11 @@ export default class InsightFacade  implements IInsightFacade {
 						groupResult[alias] = Number(avg.toFixed(2));
 						break;
 					}
-					case "sum": {
-						const sum = rooms.reduce((acc, room) => acc + (room[field] as number), 0);
-						groupResult[alias] = Number(sum.toFixed(2));
-						break;
-					}
+					// case "sum": {
+					// 	const sum = rooms.reduce((acc, room) => acc + (room[field] as number), 0);
+					// 	groupResult[alias] = Number(sum.toFixed(2));
+					// 	break;
+					// }
 					case "count": {
 						const uniqueValues = new Set(rooms.map((room) => room[field]));
 						groupResult[alias] = uniqueValues.size;
@@ -348,7 +350,6 @@ export default class InsightFacade  implements IInsightFacade {
 						throw new Error(`Unsupported operation: ${operation}`);
 				}
 			}
-
 			result.set(groupKey, groupResult);
 		});
 
