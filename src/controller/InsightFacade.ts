@@ -10,11 +10,9 @@ import * as fs from "fs-extra";
 import JSZip from "jszip";
 import Section from "./section";
 import Validator from "./validator";
-import HTMLHandler from "./htmlHandler";
 import Filter from "./filter";
 import RoomProcessor from "./roomProcessor";
 import Writer from "./writer";
-import * as parse5 from "parse5";
 
 // Assuming the structure of your options object based on the provided code
 interface QueryOptions {

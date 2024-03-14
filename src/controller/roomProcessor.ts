@@ -5,7 +5,7 @@ import Room from "./room";
 import * as parse5 from "parse5";
 import Writer from "./writer";
 import {Document} from "parse5/dist/tree-adapters/default";
-import {throws} from "node:assert";
+import http from "http";
 
 // TODO:
 // Change room.ts so its not cooked
@@ -61,7 +61,7 @@ export default class RoomProcessor {
 		let datasetObj: any = {};
 		let geoLocations: any[];
 		try {
-			geoLocations = await this.getGeoLoctions(addresses);
+			geoLocations = await this.getGeoLocations(addresses);
 		} catch (e) {
 			throw new InsightError("invalid dataset");
 		}
@@ -209,10 +209,10 @@ export default class RoomProcessor {
 		return untrimmedString.trim();
 	}
 
-	private async getGeoLoctions(addresses: any[]) {
+	private async getGeoLocations(addresses: any[]) {
 		let fetches = [];
 		for (let address of addresses) {
-			let addressString: string | null = HTMLHandler.getTextFromElement(address);
+			let addressString: string | null = this.getText(address);
 
 			// check if null
 			if (addressString === null) {
@@ -220,22 +220,46 @@ export default class RoomProcessor {
 			}
 
 			// remove white space and other characters
-			addressString = addressString.trim();
 			let url = "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team175/" +
 				encodeURIComponent(addressString);
 
-			let res: Promise<Response> = fetch(url);
+			// let res: Promise<Response> = fetch(url);
+			let res = this.getGeoPromise(url);
 			fetches.push(res);
+
 		}
 
-		let responses: Response[] = await Promise.all(fetches);
-		let geoPromises: any[] = [];
+		let responses: string[] = await Promise.all(fetches);
+		let geoLocations: any[] = [];
 		responses.forEach((res: any) => {
-			const toJsonPromise = res.json();
-			geoPromises.push(toJsonPromise);
+			const toJson = JSON.parse(res);
+			geoLocations.push(toJson);
 		});
 
-		return await Promise.all(geoPromises);
+		return geoLocations;
+	}
+
+	private getGeoPromise(url: string) {
+		return new Promise<string>((resolve, reject) => {
+			const request = http.get(url, (response: http.IncomingMessage) => {
+				let data = "";
+
+				// A chunk of data has been received
+				response.on("data", (chunk) => {
+					data += chunk;
+				});
+
+				// The whole response has been received
+				response.on("end", () => {
+					resolve(data);
+				});
+			});
+
+			// Handle errors
+			request.on("error", (error) => {
+				reject(error);
+			});
+		});
 	}
 
 	private async extractIndexHTM(zip: JSZip) {
