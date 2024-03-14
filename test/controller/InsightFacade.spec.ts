@@ -94,6 +94,10 @@ describe("InsightFacade", function () {
 			const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Rooms);
 			return expect(result).to.deep.equal(["ubc"]);
 		});
+		// one test for a valid dataset,
+		// one test for an invalid dataset. Change the index.html file.
+		// invalid index.htm file. NO table with all the buildings.
+		// make one where it is missing a column.
 	});
 
 	// describe("Add dataset, no clearDisk", function () {

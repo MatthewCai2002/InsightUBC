@@ -30,33 +30,30 @@ export default class RoomProcessor {
 		}
 
 		// use parsed object to find all <td> with href's that link to rooms
-		let elements: any[] = [];
+		let title: any[] = [];
+		let buildingCode: any[] = [];
+		let address: any[] = [];
 		let indexDocument: any = parse5.parse(jsonPromise);
 		// the building Name
-		HTMLHandler.findAllElementsByClassAndTag(indexDocument, "views-field-title", "td", elements);
+		HTMLHandler.findAllElementsByClassAndTag(indexDocument, "views-field-title", "td", title);
 		// the Code
-		HTMLHandler.findAllElementsByClassAndTag(indexDocument, "views-field-field-building-code", "td", elements);
+		HTMLHandler.findAllElementsByClassAndTag(indexDocument, "views-field-field-building-code", "td", buildingCode);
 		// the address
 		HTMLHandler.
-			findAllElementsByClassAndTag(indexDocument, "views-field-field-building-address", "td", elements);
-		HTMLHandler.
-			findAllElementsByClassAndTag(indexDocument, "views-field views-field-nothing", "td", elements);
-		// the ROOM capacity
-		// HTMLHandler.
-		// 	findAllElementsByClassAndTag(indexDocument, "views-field views-field-field-room-capacity", "th", elements);
-		// // the ROOM Furniture Type
-		// HTMLHandler.
-		// 	findAllElementsByClassAndTag(indexDocument, "views-field views-field-field-room-furniture", "th", elements);
-		// // the ROOm type
-		// HTMLHandler.
-		// 	findAllElementsByClassAndTag(indexDocument, "views-field views-field-field-room-type", "th", elements);
-		if (elements.length <= 0) {
+			findAllElementsByClassAndTag(indexDocument, "views-field-field-building-address", "td", address);
+		if (title.length <= 0) {
+			throw new InsightError("Invalid index.htm");
+		}
+		if (buildingCode.length <= 0) {
+			throw new InsightError("Invalid index.htm");
+		}
+		if (address.length <= 0) {
 			throw new InsightError("Invalid index.htm");
 		}
 		let datasetObj: any = {};
 		// iterate over each room and process them
 		let nullCount = 0;
-		for (const element of elements) {
+		for (const element of title) {
 			let href = HTMLHandler.getHref(element);
 			if (href === null) {
 				nullCount++;
@@ -72,7 +69,7 @@ export default class RoomProcessor {
 
 		}
 
-		if (nullCount === elements.length) {
+		if (nullCount === title.length) {
 			throw new InsightError("Invalid rooms dataset");
 		}
 		// organiziation of saved data will be like courses
@@ -94,7 +91,6 @@ export default class RoomProcessor {
 		let elements: any[] = [];
 		let buildingDocument = parse5.parse(building);
 		HTMLHandler.findAllElementsByClassAndTag(buildingDocument, "views-field-title", "td", elements);
-		// change this
 		if (elements.length <= 0) {
 			return;
 		}
@@ -102,6 +98,7 @@ export default class RoomProcessor {
 		// find valid rooms table. if can't find then doesn't exist -> return
 		// create rooms object
 		// save rooms object to dataset
+
 	}
 
 	private static async readBuildingFile(href: string, zip: JSZip): Promise<string> {
