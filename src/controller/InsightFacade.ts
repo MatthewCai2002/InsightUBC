@@ -17,6 +17,7 @@ import Writer from "./writer";
 import * as parse5 from "parse5";
 import Decimal from "decimal.js";
 import Room from "./room";
+import GroupandAppy from "./groupandAppy";
 
 // Assuming the structure of your options object based on the provided code
 interface QueryOptions {
@@ -257,14 +258,34 @@ export default class InsightFacade  implements IInsightFacade {
 		if (query.TRANSFORMATIONS) {
 			const groupKeys = query.TRANSFORMATIONS.GROUP;
 			const applyRules = query.TRANSFORMATIONS.APPLY;
-			const groups = InsightFacade.groupData(insightResults as [], groupKeys);
-			// const transformedResults = InsightFacade.transform(groups, applyRules);
+			const groups = GroupandAppy.groupData(insightResults as [], groupKeys);
+			const transformedResults = GroupandAppy.transform(groups, applyRules);
+			insightResults = this.convertTransformedResults(transformedResults, options);
 		}
 		// Apply ORDER (sort results)
 		if (options.ORDER) {
 			insightResults = this.sortResults(insightResults, options.ORDER);
 		}
 		return insightResults;
+	}
+
+	private convertTransformedResults(transformedResults: Map<string, any>, options: QueryOptions): InsightResult[] {
+		let results: InsightResult[] = [];
+		transformedResults.forEach((value, key) => {
+			let resultEntry: InsightResult = {};
+			options.COLUMNS.forEach((column) => {
+				if (Object.prototype.hasOwnProperty.call(value, column)) {
+					// This approach safely checks for the property
+					resultEntry[column] = value[column];
+				} else {
+					// Handling group columns or other cases as necessary
+					// Adjust based on your specific implementation details
+				}
+			});
+
+			results.push(resultEntry);
+		});
+		return results;
 	}
 
 	private applyOptions(filteredResults: Section[], options: QueryOptions): InsightResult[] {
@@ -304,59 +325,6 @@ export default class InsightFacade  implements IInsightFacade {
 			});
 		}
 		return projectedResults;
-	}
-
-
-	public static groupData(rooms: Room[], keys: KeysOfRoom[]): Map<string, Room[]> {
-		const groups = new Map<string, Room[]>();
-		rooms.forEach((room) => {
-			const groupKey = keys.map((key) => `${key}:${room[key]}`).join("|");
-			if (!groups.has(groupKey)) {
-				groups.set(groupKey, []);
-			}
-			groups.get(groupKey)?.push(room);
-		});
-		return groups;
-	}
-
-	// Transform grouped data based on operations
-	public static transform(groups: Map<string, Room[]>, operations: {[key: string]:
-			{operation: string, field: KeysOfRoom}}): Map<string, any> {
-		let result = new Map<string, any>();
-		groups.forEach((rooms, groupKey) => {
-			let groupResult: {[alias: string]: any} = {};
-			for (const [alias, {operation, field}] of Object.entries(operations)) {
-				switch (operation) {
-					case "max":
-						groupResult[alias] = Math.max(...rooms.map((room) => room[field] as number));
-						break;
-					case "min":
-						groupResult[alias] = Math.min(...rooms.map((room) => room[field] as number));
-						break;
-					case "avg": {
-						const avg = rooms.reduce((acc, room) => acc +
-							(room[field] as number), 0) / rooms.length;
-						groupResult[alias] = Number(avg.toFixed(2));
-						break;
-					}
-					// case "sum": {
-					// 	const sum = rooms.reduce((acc, room) => acc + (room[field] as number), 0);
-					// 	groupResult[alias] = Number(sum.toFixed(2));
-					// 	break;
-					// }
-					case "count": {
-						const uniqueValues = new Set(rooms.map((room) => room[field]));
-						groupResult[alias] = uniqueValues.size;
-						break;
-					}
-					default:
-						throw new Error(`Unsupported operation: ${operation}`);
-				}
-			}
-			result.set(groupKey, groupResult);
-		});
-
-		return result;
 	}
 
 	private sortResults(results: InsightResult[], order: any): InsightResult[] {
