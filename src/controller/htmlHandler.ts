@@ -38,6 +38,23 @@ export default class HTMLHandler {
 		return null;
 	}
 
+	public static findElementByTag(node: any, tag: string): Document | null {
+		if (node.nodeName === tag) {
+			return node;
+		}
+
+		if (node.childNodes) {
+			for (const childNode of node.childNodes) {
+				const result: Document | null = this.findElementByTag(childNode, tag);
+				if (result) {
+					return result;
+				}
+			}
+		}
+
+		return null;
+	}
+
 	public static findAllElementsByClassAndTag(node: any, className: string, tag: string): any[] {
 		let elements: any = [];
 		this.findAllElementsHelper(node, className, tag, elements);
@@ -58,7 +75,7 @@ export default class HTMLHandler {
 		}
 	}
 
-	public static getTextFromTD(node: any): string | null {
+	public static getTextFromElement(node: any): string | null {
 		const tag: string = "#text";
 		if (node.nodeName === tag) {
 			return node.value;
@@ -66,7 +83,7 @@ export default class HTMLHandler {
 
 		if (node.childNodes) {
 			for (const childNode of node.childNodes) {
-				const result: string | null = this.getTextFromTD(childNode);
+				const result: string | null = this.getTextFromElement(childNode);
 				if (result) {
 					return result;
 				}

@@ -77,7 +77,13 @@ describe("InsightFacade", function () {
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
 		});
 
-		it("Reject with invalid Kind", function () {
+		it("Reject with miss matching kind", function () {
+			const result = facade.addDataset("1", sections, InsightDatasetKind.Rooms);
+
+			return expect(result).to.eventually.be.rejectedWith(InsightError);
+		});
+
+		it("Reject with miss matching kind", function () {
 			const result = facade.addDataset("1", sections, InsightDatasetKind.Rooms);
 
 			return expect(result).to.eventually.be.rejectedWith(InsightError);
@@ -94,29 +100,67 @@ describe("InsightFacade", function () {
 			const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Rooms);
 			return expect(result).to.deep.equal(["ubc"]);
 		});
+
+		it("Accept adding valid rooms and sections", async function () {
+			await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+
+			sections = await getContentFromArchives("campus.zip");
+			const result = await facade.addDataset("ubc2", sections, InsightDatasetKind.Rooms);
+			return expect(result).to.deep.equal(["ubc", "ubc2"]);
+		});
+
+		it("Accept adding 2 valid rooms", async function () {
+			sections = await getContentFromArchives("campus.zip");
+			await facade.addDataset("ubc", sections, InsightDatasetKind.Rooms);
+			const result = await facade.addDataset("ubc2", sections, InsightDatasetKind.Rooms);
+			return expect(result).to.deep.equal(["ubc", "ubc2"]);
+		});
+
 	});
 
-	// describe("Add dataset, no clearDisk", function () {
-	// 	before(async function () {
-	// 		await clearDisk();
-	// 		sections = await getContentFromArchives("pair.zip");
-	// 	});
-	//
-	// 	beforeEach(async function () {
-	// 		facade = new InsightFacade();
-	// 	});
-	//
-	// 	// after(async function () {
-	// 	// 	await clearDisk();
-	// 	// });
-	//
-	// 	it("add 2 datasets", async function () {
-	// 		await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
-	// 		const result = await facade.addDataset("ubc2", sections, InsightDatasetKind.Sections);
-	//
-	// 		return expect(result).to.deep.equal(["ubc", "ubc2"]);
-	// 	});
-	// });
+	describe("Add dataset, no clearDisk", function () {
+		before(async function () {
+			await clearDisk();
+			sections = await getContentFromArchives("pair.zip");
+		});
+
+		beforeEach(async function () {
+			facade = new InsightFacade();
+		});
+
+		// after(async function () {
+		// 	await clearDisk();
+		// });
+
+		it("add 2 datasets", async function () {
+			await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+			const result = await facade.addDataset("ubc2", sections, InsightDatasetKind.Sections);
+
+			return expect(result).to.deep.equal(["ubc", "ubc2"]);
+		});
+
+		it("Accept adding valid rooms", async function () {
+			sections = await getContentFromArchives("campus.zip");
+			const result = await facade.addDataset("ubc", sections, InsightDatasetKind.Rooms);
+			return expect(result).to.deep.equal(["ubc"]);
+		});
+
+		it("Accept adding valid rooms and sections", async function () {
+			await facade.addDataset("ubc", sections, InsightDatasetKind.Sections);
+
+			sections = await getContentFromArchives("campus.zip");
+			const result = await facade.addDataset("ubc2", sections, InsightDatasetKind.Rooms);
+			return expect(result).to.deep.equal(["ubc", "ubc2"]);
+		});
+
+		it("Accept adding 2 valid rooms", async function () {
+			sections = await getContentFromArchives("campus.zip");
+			await facade.addDataset("ubc", sections, InsightDatasetKind.Rooms);
+			const result = await facade.addDataset("ubc2", sections, InsightDatasetKind.Rooms);
+			return expect(result).to.deep.equal(["ubc", "ubc2"]);
+		});
+
+	});
 
 	/*
 	 * This test suite dynamically generates tests from the JSON files in test/resources/queries.

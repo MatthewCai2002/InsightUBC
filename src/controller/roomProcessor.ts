@@ -5,6 +5,7 @@ import Room from "./room";
 import * as parse5 from "parse5";
 import Writer from "./writer";
 import {Document} from "parse5/dist/tree-adapters/default";
+import {throws} from "node:assert";
 
 // TODO:
 // Change room.ts so its not cooked
@@ -39,31 +40,38 @@ export default class RoomProcessor {
 			throw new InsightError("Invalid index.htm");
 		}
 
-		let datasetObj: any = {};
+		const datasetObj = await this.processAllBuildings(links, codes, addresses, zip);
 
-		// iterate over each room and process them
-		let nullCount = await this.handleRooms(links, codes, addresses, zip, datasetObj);
-
-		if (nullCount === links.length || Object.keys(datasetObj).length === 0) {
+		if (Object.keys(datasetObj).length === 0) {
 			throw new InsightError("Invalid rooms dataset");
 		}
-		// organiziation of saved data will be like courses
-		// json file for each building
 
 		await writer.writeDataset(datasetObj, id);
 
 		const dataset: InsightDataset = {
 			id,
-			kind: InsightDatasetKind.Sections,
+			kind: InsightDatasetKind.Rooms,
 			numRows: Object.keys(datasetObj).length,
 		};
 
 		return dataset;
 	}
 
-	private async handleRooms(links: any[], codes: any[], addresses: any[], zip: JSZip, datasetObj: any) {
-		let nullCount = 0;
-		let geoLocations = await this.getGeoLoctions(addresses);
+	private async processAllBuildings(links: any[], codes: any[], addresses: any[], zip: JSZip): Promise<any> {
+		let datasetObj: any = {};
+		let geoLocations: any[];
+		try {
+			geoLocations = await this.getGeoLoctions(addresses);
+		} catch (e) {
+			throw new InsightError("invalid dataset");
+		}
+
+		if (geoLocations.length === 0) {
+			throw new InsightError("invalid dataset");
+		}
+
+		let buildingPromises: any[] = [];
+		let baseRooms: any[] = [];
 
 		for (let i = 0; i < links.length; i++) {
 			const link = links[i];
@@ -77,42 +85,37 @@ export default class RoomProcessor {
 
 			// get the href, code, and address
 			let href: string | null = HTMLHandler.getHref(link);
-			let codeString: string | null = HTMLHandler.getTextFromTD(code);
-			let addressString: string | null = HTMLHandler.getTextFromTD(address);
+			let codeString: string | null = this.getText(code);
+			let addressString: string | null = this.getText(address);
 
 			// check if null
 			if (codeString === null || href === null || addressString === null) {
-				nullCount++;
 				continue;
 			}
 
-			// remove white space and other characters
-			codeString = codeString.trim();
-			addressString = addressString.trim();
-
 			// create initial room obj
-			let initRoom: any = {};
-			initRoom["shortname"] = code;
-			initRoom["address"] = address;
-			initRoom["lat"] = geoLocation.lat;
-			initRoom["lon"] = geoLocation.lon;
+			let baseRoom: any = {};
+			baseRoom["shortname"] = codeString;
+			baseRoom["address"] = addressString;
+			baseRoom["lat"] = geoLocation.lat;
+			baseRoom["lon"] = geoLocation.lon;
 
-			this.readBuildingFile(href, zip)
-				.then((building: string) => {
-					const room: Room | null = this.processRoom(building, initRoom);
-					if (room === null) {
-						return;
-					}
-
-					this.updateDatasetObj(datasetObj, room);
-				}, (rejected) => {
-					// do other things
-				});
+			baseRooms.push(baseRoom);
+			buildingPromises.push(this.readBuildingFile(href, zip));
 		}
-		return nullCount;
+
+		let buildings = await Promise.all(buildingPromises);
+
+		for (let i = 0; i < baseRooms.length; i++) {
+			const building = buildings[i];
+			const baseRoom = baseRooms[i];
+			this.processBuilding(building, baseRoom, datasetObj);
+		}
+
+		return datasetObj;
 	}
 
-	private processRoom(building: string, room: any): Room | null{
+	private processBuilding(building: string, baseRoom: any, datasetObj: any): void{
 		//	pass this file to parse5 to get building room page
 		let buildingDocument = parse5.parse(building);
 
@@ -125,8 +128,6 @@ export default class RoomProcessor {
 			"views-field-field-room-furniture", "td");
 		let roomType: any[] = HTMLHandler.findAllElementsByClassAndTag(buildingDocument,
 			"views-field-field-room-type", "td");
-		let moreInfo: any[] = HTMLHandler.findAllElementsByClassAndTag(buildingDocument,
-			"views-field-nothing", "td");
 		let fullname: Document | null = HTMLHandler.findElementByClassAndTag(buildingDocument,
 			"field-content", "span");
 
@@ -135,26 +136,83 @@ export default class RoomProcessor {
 			capacity.length <= 0 ||
 			furnType.length <= 0 ||
 			roomType.length <= 0 ||
-			moreInfo.length <= 0) {
-			return null;
+			fullname === null) {
+			return;
 		}
+
 
 		if (roomNum.length !== capacity.length &&
 			roomNum.length !== furnType.length &&
-			roomNum.length !== roomType.length &&
-			roomNum.length !== moreInfo.length) {
+			roomNum.length !== roomType.length) {
+			return;
+		}
+
+		let fullnameString: string | null = this.getText(fullname);
+
+		if (fullnameString === null) {
+			return;
+		}
+
+		baseRoom["fullname"] = fullnameString;
+
+		// for each row create a rooms object
+		for (let i = 0; i < roomNum.length; i++) {
+			let roomObj = {...baseRoom};
+
+			// extract info
+			const roomNumDoc = roomNum[i];
+			const capacityDoc = capacity[i];
+			const furnTypeDoc = furnType[i];
+			const roomTypeDoc = roomType[i];
+
+			const capacityStr: string | null = this.getText(capacityDoc);
+			const furnTypeStr: string | null = this.getText(furnTypeDoc);
+			const roomTypeStr: string | null = this.getText(roomTypeDoc);
+
+			if (capacityStr === null || furnTypeStr === null || roomTypeStr === null) {
+				continue;
+			}
+
+			roomObj["type"] = roomTypeStr;
+			roomObj["furniture"] = furnTypeStr;
+			roomObj["seats"] = parseInt(capacityStr, 10);
+			this.handleRoomNum(roomNumDoc, roomObj);
+			roomObj["name"] = roomObj.shortname + "_" + roomObj.number;
+
+			// create new room
+			const room = new Room(roomObj);
+
+			// push into dataset
+			this.updateDatasetObj(datasetObj, room);
+		}
+	}
+
+
+	private handleRoomNum(roomNumDoc: Document, room: any): void {
+		const aTag = HTMLHandler.findElementByTag(roomNumDoc, "a");
+		const href = HTMLHandler.getHref(aTag);
+		const text = this.getText(aTag);
+
+		room["href"] = href;
+		room["number"] = text;
+	}
+
+	private getText(node: any): string | null{
+		let untrimmedString: string | null = HTMLHandler.getTextFromElement(node);
+
+		// propagate null
+		if ( untrimmedString === null) {
 			return null;
 		}
 
-		// for each row create a rooms object
-		// save rooms object to dataset
-		return new Room(room);
+		// remove white space and other characters
+		return untrimmedString.trim();
 	}
 
 	private async getGeoLoctions(addresses: any[]) {
 		let fetches = [];
 		for (let address of addresses) {
-			let addressString: string | null = HTMLHandler.getTextFromTD(address);
+			let addressString: string | null = HTMLHandler.getTextFromElement(address);
 
 			// check if null
 			if (addressString === null) {
@@ -216,6 +274,6 @@ export default class RoomProcessor {
 		if (room == null) {
 			return;
 		}
-		datasetObj[room.shortname] = room;
+		datasetObj[room.name] = room;
 	}
 }
