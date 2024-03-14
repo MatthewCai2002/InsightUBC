@@ -4,13 +4,15 @@ import {
 	InsightDatasetKind,
 	InsightError,
 	InsightResult,
-	NotFoundError, ResultTooLargeError,
+	NotFoundError,
 } from "./IInsightFacade";
 import * as fs from "fs-extra";
 import JSZip from "jszip";
 import Section from "./section";
 import Validator from "./validator";
 import Filter from "./filter";
+import RoomProcessor from "./roomProcessor";
+import Writer from "./writer";
 
 // Assuming the structure of your options object based on the provided code
 interface QueryOptions {
@@ -18,7 +20,7 @@ interface QueryOptions {
 	ORDER?: string; // Optional
 }
 
-export default class InsightFacade implements IInsightFacade {
+export default class InsightFacade  implements IInsightFacade {
 	private fileFields: string[] = [
 		"id",
 		"Course",
@@ -32,20 +34,26 @@ export default class InsightFacade implements IInsightFacade {
 		"Audit",
 	];
 
+	protected readonly dataDir = "./data/";
 	private datasets: {[id: string]: InsightDataset} = {};
-	private readonly dataDir = "./data/";
+	private writer: Writer = new Writer(this.dataDir, this.datasets);
+	private roomsProcessor = new RoomProcessor();
 
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		if (!id.trim() || id.includes("_")) {
 			return Promise.reject(new InsightError("Invalid dataset ID"));
 		}
 
+		// check for previous datasets
 		try {
 			await fs.promises.access(this.dataDir + "datasets.json");
 			this.datasets = await fs.readJSON("././data/datasets.json", {throws: false});
 		} catch (e) {
 			// doesn't matter
 		}
+
+		// init writer
+		this.writer.setDatasets(this.datasets);
 
 		if (id in this.datasets) {
 			return Promise.reject(new InsightError("Dataset with the same ID already exists"));
@@ -64,6 +72,9 @@ export default class InsightFacade implements IInsightFacade {
 				case InsightDatasetKind.Sections:
 					dataset = await this.processCoursesDataset(id, unzippedContent);
 					break;
+				case InsightDatasetKind.Rooms:
+					dataset = await this.roomsProcessor.processRoomsDataset(id, unzippedContent, this.writer);
+					break;
 				default:
 					return Promise.reject(new InsightError("Unsupported dataset kind."));
 			}
@@ -72,19 +83,18 @@ export default class InsightFacade implements IInsightFacade {
 			this.datasets[id] = dataset;
 
 			// write dataset dict to folder for persistence on crash
-			await this.writeDict();
+			await this.writer.writeDict();
 
 			// return array of all added datasets
-			// console.log(Object.keys(this.datasets));
 			return Promise.resolve(Object.keys(this.datasets));
 		} catch (error) {
+			console.log(error);
 			return Promise.reject(new InsightError(`Failed to add dataset: ${error}`));
 		}
 	}
 
 	private async processCoursesDataset(id: string, zip: JSZip): Promise<InsightDataset> {
 		const promises: Array<Promise<string>> = [];
-
 		// for each course file, read its contents
 		// and push it onto an array of promises
 		zip.forEach((relativePath, file) => {
@@ -99,12 +109,11 @@ export default class InsightFacade implements IInsightFacade {
 		// add valid sections to dataset
 		let datasetObj: any = {};
 		if (!this.isValidDataset(jsonStrings, datasetObj)) {
-			// console.log("invalid dataset");
 			throw new InsightError("Invalid Dataset");
 		}
 
 		// write datasetOBJ to json file in ./src/controller/data/ dir
-		await this.writeDataset(datasetObj, id);
+		await this.writer.writeDataset(datasetObj, id);
 
 		// create InsightDataset obj and fill in proper values
 		const dataset: InsightDataset = {
@@ -116,67 +125,9 @@ export default class InsightFacade implements IInsightFacade {
 		return dataset;
 	}
 
-	// writes a dataset to a JSON file
-	private async writeDataset(datasetObj: any, id: string) {
-		// check if data directory exists
-		try {
-			// Check if the directory exists; if not, try to create it
-			await fs.promises.stat(this.dataDir).catch(async () => {
-				console.log(`Directory '${this.dataDir}' does not exist.`);
-				await fs.promises.mkdir(this.dataDir);
-				console.log(`Directory '${this.dataDir}' created successfully.`);
-			});
-
-			// Prepare the dataset JSON string
-			const datasetJSONString = JSON.stringify(datasetObj, null, 2);
-
-			// Write the file
-			await fs.promises.writeFile(this.dataDir + id + ".json", datasetJSONString, "utf-8");
-			console.log("File has been written successfully.");
-		} catch (e) {
-			console.error("Error writing to file or creating directory:", e);
-		}
-	}
-
-	private async writeDict() {
-		// check if data directory exists
-		try {
-			// Check if the directory exists; if not, try to create it
-			await fs.promises.stat(this.dataDir).catch(async () => {
-				console.log(`Directory '${this.dataDir}' does not exist.`);
-				await fs.promises.mkdir(this.dataDir);
-				console.log(`Directory '${this.dataDir}' created successfully.`);
-			});
-
-			// Prepare the dataset JSON string
-			const datasetJSONString = JSON.stringify(this.datasets, null, 2);
-
-			// Write the file
-			await fs.promises.writeFile("./data/datasets.json", datasetJSONString, "utf-8");
-			console.log("File has been written successfully.");
-		} catch (e) {
-			console.error("Error writing to file or creating directory:", e);
-		}
-	}
-
 	// adds sections to a dataset JSON obj
 	private updateDatasetObj(datasetObj: any, section: Section): void {
 		datasetObj[section.uuid] = section;
-	}
-
-	// INPUT: course JSON object
-	// DOES: goes through each section and turns it into a section TS class
-	// 		 then puts section into array of sections for the course
-	// OUTPUT: returns the array of sections for a course
-	private createSections(course: any): Section[] {
-		let sections: Section[] = [];
-
-		for (let section of course.result) {
-			let sectionObject = new Section(section);
-			sections.push(sectionObject);
-		}
-
-		return sections;
 	}
 
 	// validates dataset
@@ -189,7 +140,13 @@ export default class InsightFacade implements IInsightFacade {
 			if (!str) {
 				continue;
 			}
-			let course = JSON.parse(str);
+
+			let course;
+			try {
+				course = JSON.parse(str);
+			} catch (e) {
+				throw new InsightError("not sections dataset");
+			}
 			let validCourse = this.isValidCourse(course, dataset);
 			validCourses.push(validCourse);
 		}
