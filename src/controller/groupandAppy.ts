@@ -63,6 +63,9 @@ export default class GroupAndApply {
 				const splitKey = fullKey.split("_");
 				const field = splitKey[1];
 				let values = items.map((item) => item.value[field]);
+				if (correctKey !== "COUNT") {
+					values = values.filter((value) => !isNaN(parseFloat(value)) && isFinite(value));
+				}
 				switch (correctKey) {
 					case "MAX":
 						operationResult = Math.max(...values);
