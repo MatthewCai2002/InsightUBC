@@ -1,0 +1,46 @@
+{
+	"title": "Sum RoomSeats",
+	"input": {
+		"WHERE": {
+			"AND": [
+				{
+					"IS": {
+						"rooms_furniture": "*Tables*"
+					}
+				},
+				{
+					"GT": {
+						"rooms_seats": 200
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"rooms_shortname",
+				"sumSeats"
+			],
+			"ORDER": {
+				"dir": "DOWN",
+				"keys": [
+					"sumSeats"
+				]
+			}
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"rooms_shortname"
+			],
+			"APPLY": [
+				{
+					"sumSeats": {
+						"SUM": "rooms_seats"
+					}
+				}
+			]
+		}
+	},
+	"errorExpected": false,
+	"expected": [{"rooms_shortname":"SRC","sumSeats":897},{"rooms_shortname":"LSC","sumSeats":700},
+		{"rooms_shortname":"OSBO","sumSeats":442},{"rooms_shortname":"HEBB","sumSeats":375},{"rooms_shortname":"ANGU","sumSeats":260},{"rooms_shortname":"PHRM","sumSeats":236},{"rooms_shortname":"LSK","sumSeats":205}]
+}

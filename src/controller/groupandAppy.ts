@@ -75,23 +75,20 @@ export default class GroupAndApply {
 					case "AVG":
 						operationResult = values.reduce((acc, value) => acc + value, 0) / items.length;
 						groupResult[resultKey] = Number(operationResult.toFixed(2));
-						// find the average
 						break;
 					case "SUM":
 						operationResult = values.reduce((acc, value) => acc + value, 0);
 						groupResult[resultKey] = Number(operationResult.toFixed(2));
-						// find the sum
 						break;
 					case "COUNT":
 						operationResult = new Set(values).size;
-						groupResult[groupKey] = operationResult;
+						groupResult[resultKey] = Number(operationResult.toFixed(2));
 						break;
 					default:
 						throw new Error(`Unsupported operation: ${correctKey}`);
 				}
 			}
 			result.set(groupKey, groupResult);
-			// stores whatever we have in the result
 		});
 
 		// edge case with noNew Name

@@ -1,0 +1,45 @@
+{
+	"title": "Count RoomSeats",
+	"input": {
+		"WHERE": {
+			"AND": [
+				{
+					"IS": {
+						"rooms_furniture": "*Tables*"
+					}
+				},
+				{
+					"GT": {
+						"rooms_seats": 200
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"rooms_shortname",
+				"countSeats"
+			],
+			"ORDER": {
+				"dir": "DOWN",
+				"keys": [
+					"countSeats"
+				]
+			}
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"rooms_shortname"
+			],
+			"APPLY": [
+				{
+					"countSeats": {
+						"COUNT": "countSeats"
+					}
+				}
+			]
+		}
+	},
+	"errorExpected": false,
+	"expected":[{"rooms_shortname":"HEBB","countSeats":1},{"rooms_shortname":"ANGU","countSeats":1},{"rooms_shortname":"LSK","countSeats":1},{"rooms_shortname":"LSC","countSeats":1},{"rooms_shortname":"PHRM","countSeats":1},{"rooms_shortname":"OSBO","countSeats":1},{"rooms_shortname":"SRC","countSeats":1}]
+	}
