@@ -1,6 +1,6 @@
 import Room from "./room";
 import Section from "./section";
-import {InsightResult} from "./IInsightFacade";
+import {InsightError, InsightResult} from "./IInsightFacade";
 type NumericKeysOfRoom = "lat" | "lon" | "seats";
 type KeysOfRoom = keyof Room;
 
@@ -59,8 +59,8 @@ export default class GroupAndApply {
 				const splitKey = fullKey.split("_");
 				const field = splitKey[1];
 				let values = items.map((item) => item.value[field]);
-				if (correctKey !== "COUNT") {
-					values = values.filter((value) => !isNaN(parseFloat(value)) && isFinite(value));
+				if (correctKey !== "COUNT" && values.some((value) => typeof value === "string")) {
+					throw new InsightError("Encountered a string value where a numeric value was expected.");
 				}
 				switch (correctKey) {
 					case "MAX":
