@@ -26,7 +26,7 @@ export default class GroupAndApply {
 				const correctKey = (key as string).split("_");
 				const field = correctKey[1];
 				return `${String(key)}:${item["value"][field]}`;
-			}).join("|");
+			}).join(":");
 			// if we are grouping two things, the value needs to be concatonated so its unique.
 			if (!groups.has(groupKey)) {
 				groups.set(groupKey, []);
@@ -93,7 +93,6 @@ export default class GroupAndApply {
 			}
 			result.set(groupKey, groupResult);
 		});
-
 		// edge case with noNew Name
 		return result;
 	}

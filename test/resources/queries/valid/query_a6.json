@@ -1,0 +1,29 @@
+{
+	"title": "AVG SEctions",
+	"input": {
+		"WHERE": {
+		"GT": {
+			"sections_avg": 99
+		}
+	},
+	"OPTIONS": {
+		"COLUMNS": [
+			"sections_title",
+			"overallAvg"
+		]
+	},
+	"TRANSFORMATIONS": {
+		"GROUP": [
+			"sections_title"
+		],
+		"APPLY": [
+			{
+				"overallAvg": {
+					"AVG": "sections_avg"
+				}
+			}
+		]
+	}
+},
+	"errorExpected": false,
+	"expected":[{"sections_title":"career planning","overallAvg":99.19},{"sections_title":"algb topology i","overallAvg":99.78}]}

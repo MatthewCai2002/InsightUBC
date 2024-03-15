@@ -171,12 +171,6 @@ export default class InsightFacade  implements IInsightFacade {
 		return true;
 	}
 
-	// INPUT: a course JSON object
-	// DOES: checks the "result" entry of the object and for each item:
-	// checks to see if it has all the keys needed to query a section
-	// immediately returns false if "result" section is empty
-	// OUTPUT: returns false if it is an invalid section
-	//		   returns true for a valid section
 	private isValidCourse(course: any, dataset: any): boolean {
 		// sections are contained within results
 		let validSections: boolean[] = [];
