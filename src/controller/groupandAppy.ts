@@ -1,6 +1,6 @@
 import Room from "./room";
 import Section from "./section";
-import {InsightResult} from "./IInsightFacade";
+import {InsightError, InsightResult} from "./IInsightFacade";
 type NumericKeysOfRoom = "lat" | "lon" | "seats";
 type KeysOfRoom = keyof Room;
 
@@ -26,7 +26,7 @@ export default class GroupAndApply {
 				const correctKey = (key as string).split("_");
 				const field = correctKey[1];
 				return `${String(key)}:${item["value"][field]}`;
-			}).join("|");
+			}).join(":");
 			// if we are grouping two things, the value needs to be concatonated so its unique.
 			if (!groups.has(groupKey)) {
 				groups.set(groupKey, []);
@@ -37,11 +37,6 @@ export default class GroupAndApply {
 		return groups;
 	}
 
-	// after grouping by, get a double array, then you find the maximum value, and then return an array of maximum values.
-
-	// map the names to the grouped values, when you are doing hte group by
-
-	//
 
 	public static transform<T extends IGroupable>(groups: Map<string, T[]>, operations: Array<{
 		[NewName: string]: {operation: string, field: keyof T}
@@ -55,16 +50,17 @@ export default class GroupAndApply {
 			// goes through for each item.
 			for (const NewName in operations) {
 				// for the current operation happening
-				let operationObject = operations[0][Object.keys(operations[0])[0]];
+				let keyObject = operations[NewName];
+				let operationObject = keyObject[Object.keys(operations[NewName])[0]];
 				let correctKey = Object.keys(operationObject)[0];
-				let resultKey = Object.keys(operations[0])[0];
+				let resultKey = Object.keys(operations[NewName])[0]; // have to fix
 				let operationResult: number;
 				let fullKey: any = Object.values(operationObject)[0];
 				const splitKey = fullKey.split("_");
 				const field = splitKey[1];
 				let values = items.map((item) => item.value[field]);
-				if (correctKey !== "COUNT") {
-					values = values.filter((value) => !isNaN(parseFloat(value)) && isFinite(value));
+				if (correctKey !== "COUNT" && values.some((value) => typeof value === "string")) {
+					throw new InsightError("Encountered a string value where a numeric value was expected.");
 				}
 				switch (correctKey) {
 					case "MAX":
@@ -93,7 +89,6 @@ export default class GroupAndApply {
 			}
 			result.set(groupKey, groupResult);
 		});
-
 		// edge case with noNew Name
 		return result;
 	}
