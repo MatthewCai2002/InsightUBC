@@ -1,4 +1,5 @@
 import Room from "./room";
+import Section from "./section";
 type NumericKeysOfRoom = "lat" | "lon" | "seats";
 type KeysOfRoom = keyof Room;
 
@@ -7,43 +8,54 @@ interface IGroupable {
 	[key: string]: string | number;
 }
 export default class GroupAndApply {
-	public static groupData<T extends IGroupable>(items: T[], keys: Array<keyof T>): Map<string, T[]> {
-		// Takes in an array of items, of type T (room/specs), and an array of keys with them.
-		const groups = new Map<string, T[]>();
-		// has an empty map to hold the items here. Each key is a string. Store the grouped items based off the keys
+	public static groupData<T extends IGroupable>(
+		items: any[],
+		keys: Array<keyof T>,
+	): Map<string, any[]> { // Adjust the return type accordingly
+		const groups = new Map<string, any[]>();
+		// the groups map is the keythat they all shhare. For example: room_shortname: LSC. The value is a list of
+		// everything that has that key. (for example the HEBB address etc)
 		items.forEach((item) => {
-			// goes through each item
-			const groupKey = keys.map((key) => `${String(key)}:${item[key]}`).join("|");
-			// based off the specifc key, makes a ne identifier of groupKey, and they convert each key into a string.
+			// iterates over all the values
+			const groupKey = keys.map((key ) => {
+				const correctKey = (key as string).split("_");
+				const field = correctKey[1];
+				return `${String(key)}:${item["value"][field]}`;
+			}).join("|");
+			// if we are grouping two things, the value needs to be concatonated so its unique.
 			if (!groups.has(groupKey)) {
 				groups.set(groupKey, []);
-				// makes a new group
 			}
-			// if there is one already, then it makes a new one. if not, it adds it to the current group.
+			// Add this new object to the appropriate group
 			groups.get(groupKey)?.push(item);
-			// finds the array that has the required groupKey and adds the current item to it.
 		});
 		return groups;
-		// return the group that we want.
 	}
 
-	public static transform<T extends IGroupable>(groups: Map<string, T[]>, operations: {
+	// after grouping by, get a double array, then you find the maximum value, and then return an array of maximum values.
+
+	// map the names to the grouped values, when you are doing hte group by
+
+	//
+
+	public static transform<T extends IGroupable>(groups: Map<string, T[]>, operations: Array<{
 		[NewName: string]: {operation: string, field: keyof T}
-		// along with the one above, takes in a string/numer so it can work for rooms and sections
-		// the groups: Map takes in a group from before, and the operation is the one below. It does the operation below
-		// to the group
-	}): Map<string, any> {
+
+	}>): Map<string, any> {
 		let result = new Map<string, any>();
 		// new map that stores the final resuls that will be returned
-		groups.forEach((items, groupKey) => {
+		// items is the list of courses
+		groups.forEach((items: any[], groupKey) => {
 			let groupResult: {[NewName: string]: any} = {};
 			// goes through for each item.
 			for (const NewName in operations) {
 				// for the current operation happening
-				const {operation, field} = operations[NewName];
-				let values = items.map((item) => item[field] as number); //
+				let operationObject = operations[0][Object.keys(operations[0])[0]];
+				let correctKey = Object.keys(operationObject)[0];
 				let operationResult: number;
-				switch (operation) {
+				let field = Object.values(operationObject)[0];
+				let values = items.map((item) => item[field] as number); //
+				switch (correctKey) {
 					case "MAX":
 						operationResult = Math.max(...values);
 						break;
@@ -65,7 +77,7 @@ export default class GroupAndApply {
 						groupResult[NewName] = operationResult;
 						break;
 					default:
-						throw new Error(`Unsupported operation: ${operation}`);
+						throw new Error(`Unsupported operation: ${correctKey}`);
 				}
 			}
 			result.set(groupKey, groupResult);

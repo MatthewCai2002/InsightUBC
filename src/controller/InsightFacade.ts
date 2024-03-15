@@ -16,12 +16,18 @@ import Writer from "./writer";
 import Decimal from "decimal.js";
 import Room from "./room";
 import GroupandAppy from "./groupandAppy";
+import GroupAndApply from "./groupandAppy";
 
 // Assuming the structure of your options object based on the provided code
 interface QueryOptions {
 	COLUMNS: string[];
 	ORDER?: string; // Optional
 }
+interface QueryTransformations {
+	GROUP: string[];
+	APPLY: string[]; // Optional
+}
+
 interface GroupedResult {
 	[key: string]: any;
 }
@@ -233,154 +239,158 @@ export default class InsightFacade  implements IInsightFacade {
 	}
 
 	public async performQuery(query: any): Promise<InsightResult[]> {
-		// const validator: Validator = new Validator();
-		// const filterer: Filter = new Filter();
-		// const options: QueryOptions = query.OPTIONS;
-		// const valid: any = validator.validateQuery(query);
-		// const datasetId = valid.id;
-		// if (!datasetId) {
-		// 	throw new InsightError("Dataset ID could not be determined from the query.");
-		// }
-		// const dataset = await this.loadDataset(datasetId);
-		// let filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
-		// let insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
-		// if (query.TRANSFORMATIONS) {
-		// 	const applyRules = query.TRANSFORMATIONS.APPLY;
-		// 	const groupKeys = query.TRANSFORMATIONS.GROUP;
-		// 	const groups = GroupandAppy.groupData(insightResults as [], groupKeys);
-		// 	const transformedResults = GroupandAppy.transform(groups, applyRules);
-		// 	insightResults = this.convertTransformedResults(transformedResults, options);
-		// }
-		// Apply ORDER (sort results)
-		// if (options.ORDER) {
-		// 	insightResults = this.sortResults(insightResults, options.ORDER);
-		// }
-		return [];
+		const validator: Validator = new Validator();
+		const filterer: Filter = new Filter();
+		const options: QueryOptions = query.OPTIONS;
+		const valid: any = validator.validateQuery(query);
+		const datasetId = valid.id;
+		if (!datasetId) {
+			throw new InsightError("Dataset ID could not be determined from the query.");
+		}
+		const dataset = await this.loadDataset(datasetId);
+		let filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
+		// in insightresult, we are only having the rooom_shortname after the change and the maxSeats. (from options)
+		// gets rid of the field that we want.
+		let groupedArray: InsightResult[] = [];
+		if (query.TRANSFORMATIONS) {
+			const applyRules = query.TRANSFORMATIONS.APPLY;
+			const groupKeys = query.TRANSFORMATIONS.GROUP;
+			const groups = GroupandAppy.groupData(filteredResults as [], groupKeys);
+			const transformedResults = GroupandAppy.transform(groups, applyRules);
+			groupedArray = this.convertTransformedResults(transformedResults, options);
+		}
+		let insightResults: InsightResult[] = this.applyOptions(groupedArray, options);
+		if (options.ORDER) {
+			insightResults = this.sortResults(insightResults, options.ORDER);
+		}
+		return insightResults;
 	}
 
-	// private convertTransformedResults(transformedResults: Map<string, any>, options: QueryOptions): InsightResult[] {
-	// 	let results: InsightResult[] = [];
-	// 	transformedResults.forEach((value, key) => {
-	// 		let resultEntry: InsightResult = {};
-	// 		options.COLUMNS.forEach((column) => {
-	// 			if (Object.prototype.hasOwnProperty.call(value, column)) {
-	// 				resultEntry[column] = value[column];
-	// 			} else {
-	// 				return Promise.reject(new InsightError("Invalid dataset ID."));
-	// 			}
-	// 		});
+	private convertTransformedResults(transformedResults: Map<string, any>, options: QueryOptions): InsightResult[] {
+		let results: InsightResult[] = [];
+		// transformedResults.forEach((value, key) => {
+		// 	let resultEntry: InsightResult = {};
+		// 	options.COLUMNS.forEach((column) => {
+		// 		if (Object.prototype.hasOwnProperty.call(value, column)) {
+		// 			resultEntry[column] = value[column];
+		// 		} else {
+		// 			return Promise.reject(new InsightError("Invalid dataset ID."));
+		// 		}
+		// 	});
+		//
+		// 	results.push(resultEntry);
+		// });
+		return results;
+	}
+
+	private applyOptions(filteredResults: any[], options: QueryOptions): InsightResult[] {
+		const projectedResults: InsightResult[] = filteredResults.map((item: any) => {
+			const projectedItem: InsightResult = {};
+			options.COLUMNS.forEach((column) => {
+				const parts = column.split("_");
+				const datasetID = parts[0];
+				const field = parts[1];
+				// Make sure the column is a key of Section
+				if (field in item.value) {
+					const key = `${datasetID}_${field}` as keyof InsightResult;
+					// Use type assertion for column to be treated as keyof Section
+					const itemKey = field as keyof Section;
+					projectedItem[key] = item.value[itemKey];
+				}
+			});
+			return projectedItem;
+		});
+
+		// Sort results if ORDER is specified
+		if (options.ORDER) {
+			// if array
+			if (typeof options.ORDER !== "string") {
+				let order: any = options.ORDER;
+				const keys = order.keys;
+				for (let key of keys) {
+					this.handleKey(key, projectedResults);
+				}
+			} else {
+				// if string
+				const parts = options.ORDER.split("_");
+				const datasetID = parts[0];
+				const field = parts[1];
+				const orderField = `${datasetID}_${field}` as keyof InsightResult;
+				projectedResults.sort((a, b) => {
+					const aValue = a[orderField];
+					const bValue = b[orderField];
+					// Check if the values are strings for localeCompare or numbers for subtraction
+					if (typeof aValue === "string" && typeof bValue === "string") {
+						return aValue.localeCompare(bValue);
+					} else if (typeof aValue === "number" && typeof bValue === "number") {
+						return aValue - bValue;
+					}
+					return 0; // Fallback in case of a type mismatch or undefined values
+				});
+			}
+		}
+		return projectedResults;
+	}
+
 	//
-	// 		results.push(resultEntry);
-	// 	});
-	// 	return results;
-	// }
+	private handleKey(key: any, projectedResults: InsightResult[]) {
+		const parts = key.split("_");
+		const datasetID = parts[0];
+		const field = parts[1];
+		let orderField: string | number;
+		if (field === undefined) {
+			orderField = `${datasetID}` as keyof InsightResult;
+		} else {
+			orderField = `${datasetID}_${field}` as keyof InsightResult;
+		}
+		projectedResults.sort((a, b) => {
+			const aValue = a[orderField];
+			const bValue = b[orderField];
+			// Check if the values are strings for localeCompare or numbers for subtraction
+			if (typeof aValue === "string" && typeof bValue === "string") {
+				return aValue.localeCompare(bValue);
+			} else if (typeof aValue === "number" && typeof bValue === "number") {
+				return aValue - bValue;
+			}
+			return 0; // Fallback in case of a type mismatch or undefined values
+		});
+	}
+
 	//
-	// private applyOptions(filteredResults: Section[], options: QueryOptions): InsightResult[] {
-	// 	const projectedResults: InsightResult[] = filteredResults.map((item: any) => {
-	// 		const projectedItem: InsightResult = {};
-	// 		options.COLUMNS.forEach((column) => {
-	// 			const parts = column.split("_");
-	// 			const datasetID = parts[0];
-	// 			const field = parts[1];
-	// 			// Make sure the column is a key of Section
-	// 			if (field in item.value) {
-	// 				const key = `${datasetID}_${field}` as keyof InsightResult;
-	// 				// Use type assertion for column to be treated as keyof Section
-	// 				const itemKey = field as keyof Section;
-	// 				projectedItem[key] = item.value[itemKey];
-	// 			}
-	// 		});
-	// 		return projectedItem;
-	// 	});
-	//
-	// 	// Sort results if ORDER is specified
-	// 	if (options.ORDER) {
-	// 		// if array
-	// 		if (typeof options.ORDER !== "string") {
-	// 			let order: any = options.ORDER;
-	// 			const keys = order.keys;
-	// 			for (let key of keys) {
-	// 				this.handleKey(key, projectedResults);
-	// 			}
-	// 		} else {
-	// 			// if string
-	// 			const parts = options.ORDER.split("_");
-	// 			const datasetID = parts[0];
-	// 			const field = parts[1];
-	// 			const orderField = `${datasetID}_${field}` as keyof InsightResult;
-	// 			projectedResults.sort((a, b) => {
-	// 				const aValue = a[orderField];
-	// 				const bValue = b[orderField];
-	// 				// Check if the values are strings for localeCompare or numbers for subtraction
-	// 				if (typeof aValue === "string" && typeof bValue === "string") {
-	// 					return aValue.localeCompare(bValue);
-	// 				} else if (typeof aValue === "number" && typeof bValue === "number") {
-	// 					return aValue - bValue;
-	// 				}
-	// 				return 0; // Fallback in case of a type mismatch or undefined values
-	// 			});
-	// 		}
-	// 	}
-	// 	return projectedResults;
-	// }
-	//
-	// private handleKey(key: any, projectedResults: InsightResult[]) {
-	// 	const parts = key.split("_");
-	// 	const datasetID = parts[0];
-	// 	const field = parts[1];
-	// 	let orderField: string | number;
-	// 	if (field === undefined) {
-	// 		orderField = `${datasetID}` as keyof InsightResult;
-	// 	} else {
-	// 		orderField = `${datasetID}_${field}` as keyof InsightResult;
-	// 	}
-	// 	projectedResults.sort((a, b) => {
-	// 		const aValue = a[orderField];
-	// 		const bValue = b[orderField];
-	// 		// Check if the values are strings for localeCompare or numbers for subtraction
-	// 		if (typeof aValue === "string" && typeof bValue === "string") {
-	// 			return aValue.localeCompare(bValue);
-	// 		} else if (typeof aValue === "number" && typeof bValue === "number") {
-	// 			return aValue - bValue;
-	// 		}
-	// 		return 0; // Fallback in case of a type mismatch or undefined values
-	// 	});
-	// }
-	//
-	// private sortResults(results: InsightResult[], order: any): InsightResult[] {
-	// 	// Check if 'order' is a string (single key sort) or object (potential multi-key sort)
-	// 	const keys = (typeof order === "string") ? [order] : order.keys;
-	// 	const direction = (typeof order === "string") ? "UP" : order.dir;
-	// 	// Determine the sort direction multiplier to invert the comparison for descending order
-	// 	const dirMultiplier = (direction === "UP") ? 1 : -1;
-	// 	// 5. Define a comparator function for the sort method, capable of handling sorting by multiple keys as defined in the 'keys' array.
-	// 	const multiKeySort = (a: InsightResult, b: InsightResult) => {
-	// 		// 6. Iterate over each sorting key.
-	// 		for (const key of keys) {
-	// 			// 8. Compare the values for the current key in both elements. If the first value is less, return -1 (or 1 for descending order). If the first value is greater, return 1 (or -1 for descending).
-	// 			if (a[key] < b[key]) {
-	// 				return -1 * dirMultiplier;
-	// 			} else if (a[key] > b[key]) {
-	// 				return 1 * dirMultiplier;
-	// 			}
-	// 		}
-	// 		// All keys are equal
-	// 		return 0;
-	// 	};
-	// 	// Perform the sort
-	// 	return results.sort(multiKeySort);
-	// }
-	//
-	// public async loadDataset(datasetId: string): Promise<any> {
-	// 	// loads the dataset in
-	// 	try {
-	// 		let dataset = await fs.readJSON(`././data/${datasetId}.json`, {throws: false});
-	// 		return Object.entries(dataset).map(([key, value]) => ({key, value}));
-	// 	} catch (error) {
-	// 		console.error(`Failed to load dataset ${datasetId}: ${error}`);
-	// 		throw new InsightError(`Failed to load dataset ${datasetId}: ${error}`);
-	// 	}
-	// }
+	private sortResults(results: InsightResult[], order: any): InsightResult[] {
+		// Check if 'order' is a string (single key sort) or object (potential multi-key sort)
+		const keys = (typeof order === "string") ? [order] : order.keys;
+		const direction = (typeof order === "string") ? "UP" : order.dir;
+		// Determine the sort direction multiplier to invert the comparison for descending order
+		const dirMultiplier = (direction === "UP") ? 1 : -1;
+		// 5. Define a comparator function for the sort method, capable of handling sorting by multiple keys as defined in the 'keys' array.
+		const multiKeySort = (a: InsightResult, b: InsightResult) => {
+			// 6. Iterate over each sorting key.
+			for (const key of keys) {
+				// 8. Compare the values for the current key in both elements. If the first value is less, return -1 (or 1 for descending order). If the first value is greater, return 1 (or -1 for descending).
+				if (a[key] < b[key]) {
+					return -1 * dirMultiplier;
+				} else if (a[key] > b[key]) {
+					return 1 * dirMultiplier;
+				}
+			}
+			// All keys are equal
+			return 0;
+		};
+		// Perform the sort
+		return results.sort(multiKeySort);
+	}
+
+	public async loadDataset(datasetId: string): Promise<any> {
+		// loads the dataset in
+		try {
+			let dataset = await fs.readJSON(`././data/${datasetId}.json`, {throws: false});
+			return Object.entries(dataset).map(([key, value]) => ({key, value}));
+		} catch (error) {
+			console.error(`Failed to load dataset ${datasetId}: ${error}`);
+			throw new InsightError(`Failed to load dataset ${datasetId}: ${error}`);
+		}
+	}
 
 	public async listDatasets(): Promise<InsightDataset[]> {
 		// and an object with kind and numRows as the value
