@@ -44,23 +44,23 @@ export default class GroupAndApply {
 				let values = items.map((item) => item[field] as number); //
 				let operationResult: number;
 				switch (operation) {
-					case "max":
+					case "MAX":
 						operationResult = Math.max(...values);
 						break;
-					case "min":
+					case "MIN":
 						operationResult = Math.min(...values);
 						break;
-					case "avg":
+					case "AVG":
 						operationResult = values.reduce((acc, value) => acc + value, 0) / items.length;
 						groupResult[NewName] = Number(operationResult.toFixed(2));
 						// find the average
 						break;
-					case "sum":
+					case "SUM":
 						operationResult = values.reduce((acc, value) => acc + value, 0);
 						groupResult[NewName] = Number(operationResult.toFixed(2));
 						// find the sum
 						break;
-					case "count":
+					case "COUNT":
 						operationResult = new Set(values).size;
 						groupResult[NewName] = operationResult;
 						break;

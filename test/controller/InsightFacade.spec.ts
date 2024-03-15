@@ -314,7 +314,11 @@ describe("InsightFacade", function () {
 			facade = new InsightFacade();
 			// Add the datasets to InsightFacade once.
 			// Will *fail* if there is a problem reading ANY dataset.
-			const loadDatasetPromises = [facade.addDataset("sections", sections, InsightDatasetKind.Sections)];
+			let room: string = await getContentFromArchives("campus.zip");
+			const loadDatasetPromises = [
+				facade.addDataset("sections", sections, InsightDatasetKind.Sections),
+				facade.addDataset("rooms", room, InsightDatasetKind.Rooms),
+			];
 
 			try {
 				await Promise.all(loadDatasetPromises);
