@@ -249,8 +249,6 @@ export default class InsightFacade  implements IInsightFacade {
 		}
 		const dataset = await this.loadDataset(datasetId);
 		let filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
-		// in insightresult, we are only having the rooom_shortname after the change and the maxSeats. (from options)
-		// gets rid of the field that we want.
 		let groupedArray: InsightResult[] = [];
 		if (query.TRANSFORMATIONS) {
 			const applyRules = query.TRANSFORMATIONS.APPLY;
@@ -259,7 +257,8 @@ export default class InsightFacade  implements IInsightFacade {
 			const transformedResults = GroupandAppy.transform(groups, applyRules);
 			groupedArray = this.convertTransformedResults(transformedResults, options);
 		}
-		let insightResults: InsightResult[] = this.applyOptions(groupedArray, options);
+		// replace with GroupedArray
+		let insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
 		if (options.ORDER) {
 			insightResults = this.sortResults(insightResults, options.ORDER);
 		}
