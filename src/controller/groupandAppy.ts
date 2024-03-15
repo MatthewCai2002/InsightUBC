@@ -37,11 +37,6 @@ export default class GroupAndApply {
 		return groups;
 	}
 
-	// after grouping by, get a double array, then you find the maximum value, and then return an array of maximum values.
-
-	// map the names to the grouped values, when you are doing hte group by
-
-	//
 
 	public static transform<T extends IGroupable>(groups: Map<string, T[]>, operations: Array<{
 		[NewName: string]: {operation: string, field: keyof T}
@@ -55,9 +50,10 @@ export default class GroupAndApply {
 			// goes through for each item.
 			for (const NewName in operations) {
 				// for the current operation happening
-				let operationObject = operations[0][Object.keys(operations[0])[0]];
+				let keyObject = operations[NewName];
+				let operationObject = keyObject[Object.keys(operations[NewName])[0]];
 				let correctKey = Object.keys(operationObject)[0];
-				let resultKey = Object.keys(operations[0])[0];
+				let resultKey = Object.keys(operations[NewName])[0]; // have to fix
 				let operationResult: number;
 				let fullKey: any = Object.values(operationObject)[0];
 				const splitKey = fullKey.split("_");
