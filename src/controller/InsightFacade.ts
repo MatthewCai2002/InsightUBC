@@ -13,7 +13,6 @@ import Validator from "./validator";
 import Filter from "./filter";
 import RoomProcessor from "./roomProcessor";
 import Writer from "./writer";
-import Decimal from "decimal.js";
 import Room from "./room";
 import GroupandAppy from "./groupandAppy";
 
@@ -22,6 +21,11 @@ interface QueryOptions {
 	COLUMNS: string[];
 	ORDER?: string; // Optional
 }
+interface QueryTransformations {
+	GROUP: string[];
+	APPLY: string[]; // Optional
+}
+
 interface GroupedResult {
 	[key: string]: any;
 }
@@ -243,39 +247,29 @@ export default class InsightFacade  implements IInsightFacade {
 		}
 		const dataset = await this.loadDataset(datasetId);
 		let filteredResults = filterer.filterByWhereClause(dataset, query.WHERE);
-		let insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
+		let groupedArray: InsightResult[] = [];
 		if (query.TRANSFORMATIONS) {
 			const applyRules = query.TRANSFORMATIONS.APPLY;
 			const groupKeys = query.TRANSFORMATIONS.GROUP;
-			const groups = GroupandAppy.groupData(insightResults as [], groupKeys);
+			const groups = GroupandAppy.groupData(filteredResults as [], groupKeys, );
 			const transformedResults = GroupandAppy.transform(groups, applyRules);
-			insightResults = this.convertTransformedResults(transformedResults, options);
+			groupedArray = GroupandAppy.convertTransformedResults(transformedResults);
 		}
-		// Apply ORDER (sort results)
+		// replace with GroupedArray
+		let insightResults: InsightResult[];
+		if (groupedArray.length > 0) {
+			insightResults = groupedArray;
+		} else {
+			insightResults = this.applyOptions(filteredResults, options);
+		}
 		if (options.ORDER) {
 			insightResults = this.sortResults(insightResults, options.ORDER);
 		}
 		return insightResults;
 	}
 
-	private convertTransformedResults(transformedResults: Map<string, any>, options: QueryOptions): InsightResult[] {
-		let results: InsightResult[] = [];
-		transformedResults.forEach((value, key) => {
-			let resultEntry: InsightResult = {};
-			options.COLUMNS.forEach((column) => {
-				if (Object.prototype.hasOwnProperty.call(value, column)) {
-					resultEntry[column] = value[column];
-				} else {
-					return Promise.reject(new InsightError("Invalid dataset ID."));
-				}
-			});
 
-			results.push(resultEntry);
-		});
-		return results;
-	}
-
-	private applyOptions(filteredResults: Section[], options: QueryOptions): InsightResult[] {
+	private applyOptions(filteredResults: any[], options: QueryOptions): InsightResult[] {
 		const projectedResults: InsightResult[] = filteredResults.map((item: any) => {
 			const projectedItem: InsightResult = {};
 			options.COLUMNS.forEach((column) => {
@@ -295,25 +289,60 @@ export default class InsightFacade  implements IInsightFacade {
 
 		// Sort results if ORDER is specified
 		if (options.ORDER) {
-			const parts = options.ORDER.split("_");
-			const datasetID = parts[0];
-			const field = parts[1];
-			const orderField = `${datasetID}_${field}` as keyof InsightResult;
-			projectedResults.sort((a, b) => {
-				const aValue = a[orderField];
-				const bValue = b[orderField];
-				// Check if the values are strings for localeCompare or numbers for subtraction
-				if (typeof aValue === "string" && typeof bValue === "string") {
-					return aValue.localeCompare(bValue);
-				} else if (typeof aValue === "number" && typeof bValue === "number") {
-					return aValue - bValue;
+			// if array
+			if (typeof options.ORDER !== "string") {
+				let order: any = options.ORDER;
+				const keys = order.keys;
+				for (let key of keys) {
+					this.handleKey(key, projectedResults);
 				}
-				return 0; // Fallback in case of a type mismatch or undefined values
-			});
+			} else {
+				// if string
+				const parts = options.ORDER.split("_");
+				const datasetID = parts[0];
+				const field = parts[1];
+				const orderField = `${datasetID}_${field}` as keyof InsightResult;
+				projectedResults.sort((a, b) => {
+					const aValue = a[orderField];
+					const bValue = b[orderField];
+					// Check if the values are strings for localeCompare or numbers for subtraction
+					if (typeof aValue === "string" && typeof bValue === "string") {
+						return aValue.localeCompare(bValue);
+					} else if (typeof aValue === "number" && typeof bValue === "number") {
+						return aValue - bValue;
+					}
+					return 0; // Fallback in case of a type mismatch or undefined values
+				});
+			}
 		}
 		return projectedResults;
 	}
 
+	//
+	private handleKey(key: any, projectedResults: InsightResult[]) {
+		const parts = key.split("_");
+		const datasetID = parts[0];
+		const field = parts[1];
+		let orderField: string | number;
+		if (field === undefined) {
+			orderField = `${datasetID}` as keyof InsightResult;
+		} else {
+			orderField = `${datasetID}_${field}` as keyof InsightResult;
+		}
+		projectedResults.sort((a, b) => {
+			const aValue = a[orderField];
+			const bValue = b[orderField];
+			// Check if the values are strings for localeCompare or numbers for subtraction
+			if (typeof aValue === "string" && typeof bValue === "string") {
+				return aValue.localeCompare(bValue);
+			} else if (typeof aValue === "number" && typeof bValue === "number") {
+				return aValue - bValue;
+			}
+			return 0; // Fallback in case of a type mismatch or undefined values
+		});
+	}
+
+	//
 	private sortResults(results: InsightResult[], order: any): InsightResult[] {
 		// Check if 'order' is a string (single key sort) or object (potential multi-key sort)
 		const keys = (typeof order === "string") ? [order] : order.keys;
