@@ -41,6 +41,6 @@
 		}
 	},
 	"errorExpected": false,
-	"expected": [{"rooms_shortname":"SRC","minSeats":897},{"rooms_shortname":"LSC","minSeats":700},
-		{"rooms_shortname":"OSBO","minSeats":442},{"rooms_shortname":"HEBB","minSeats":375},{"rooms_shortname":"ANGU","minSeats":260},{"rooms_shortname":"PHRM","minSeats":236},{"rooms_shortname":"LSK","minSeats":205}]
+	"expected": [{"rooms_shortname":"SRC","sumSeats":897},{"rooms_shortname":"LSC","sumSeats":700},
+		{"rooms_shortname":"OSBO","sumSeats":442},{"rooms_shortname":"HEBB","sumSeats":375},{"rooms_shortname":"ANGU","sumSeats":260},{"rooms_shortname":"PHRM","sumSeats":236},{"rooms_shortname":"LSK","sumSeats":205}]
 }

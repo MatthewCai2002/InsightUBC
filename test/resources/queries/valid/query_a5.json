@@ -41,5 +41,5 @@
 		}
 	},
 	"errorExpected": false,
-	"expected":[{"rooms_shortname":"HEBB","minSeats":1},{"rooms_shortname":"ANGU","minSeats":1},{"rooms_shortname":"LSK","minSeats":1},{"rooms_shortname":"LSC","minSeats":1},{"rooms_shortname":"PHRM","minSeats":1},{"rooms_shortname":"OSBO","minSeats":1},{"rooms_shortname":"SRC","minSeats":1}]
+	"expected":[{"rooms_shortname":"HEBB","countSeats":1},{"rooms_shortname":"ANGU","countSeats":1},{"rooms_shortname":"LSK","countSeats":1},{"rooms_shortname":"LSC","countSeats":1},{"rooms_shortname":"PHRM","countSeats":1},{"rooms_shortname":"OSBO","countSeats":1},{"rooms_shortname":"SRC","countSeats":1}]
 	}

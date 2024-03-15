@@ -82,7 +82,7 @@ export default class GroupAndApply {
 						break;
 					case "COUNT":
 						operationResult = new Set(values).size;
-						groupResult[groupKey] = operationResult;
+						groupResult[resultKey] = Number(operationResult.toFixed(2));
 						break;
 					default:
 						throw new Error(`Unsupported operation: ${correctKey}`);
