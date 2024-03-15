@@ -1,33 +1,44 @@
 {
 	"title": "Sum RoomSeats",
-	"WHERE": {
-		"AND": [{
-			"IS": {
-				"rooms_furniture": "*Tables*"
+	"input": {
+		"WHERE": {
+			"AND": [
+				{
+					"IS": {
+						"rooms_furniture": "*Tables*"
+					}
+				},
+				{
+					"GT": {
+						"rooms_seats": 200
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"rooms_shortname",
+				"sumSeats"
+			],
+			"ORDER": {
+				"dir": "DOWN",
+				"keys": [
+					"sumSeats"
+				]
 			}
-		}, {
-			"GT": {
-				"rooms_seats": 200
-			}
-		}]
-	},
-	"OPTIONS": {
-		"COLUMNS": [
-			"rooms_shortname",
-			"sumSeats"
-		],
-		"ORDER": {
-			"dir": "DOWN",
-			"keys": ["sumSeats"]
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"rooms_shortname"
+			],
+			"APPLY": [
+				{
+					"sumSeats": {
+						"SUM": "rooms_seats"
+					}
+				}
+			]
 		}
-	},
-	"TRANSFORMATIONS": {
-		"GROUP": ["rooms_shortname"],
-		"APPLY": [{
-			"sumSeats": {
-				"SUM": "rooms_seats"
-			}
-		}]
 	},
 	"errorExpected": false,
 	"expected": [{"rooms_shortname":"SRC","minSeats":897},{"rooms_shortname":"LSC","minSeats":700},
