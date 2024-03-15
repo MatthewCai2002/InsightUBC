@@ -1,9 +1,14 @@
 import Room from "./room";
 import Section from "./section";
+import {InsightResult} from "./IInsightFacade";
 type NumericKeysOfRoom = "lat" | "lon" | "seats";
 type KeysOfRoom = keyof Room;
 
 // make this work with sections as well.
+interface QueryOptions {
+	COLUMNS: string[];
+	ORDER?: string; // Optional
+}
 interface IGroupable {
 	[key: string]: string | number;
 }
@@ -52,29 +57,34 @@ export default class GroupAndApply {
 				// for the current operation happening
 				let operationObject = operations[0][Object.keys(operations[0])[0]];
 				let correctKey = Object.keys(operationObject)[0];
+				let resultKey = Object.keys(operations[0])[0];
 				let operationResult: number;
-				let field = Object.values(operationObject)[0];
-				let values = items.map((item) => item[field] as number); //
+				let fullKey: any = Object.values(operationObject)[0];
+				const splitKey = fullKey.split("_");
+				const field = splitKey[1];
+				let values = items.map((item) => item.value[field]);
 				switch (correctKey) {
 					case "MAX":
 						operationResult = Math.max(...values);
+						groupResult[resultKey] = Number(operationResult);
 						break;
 					case "MIN":
 						operationResult = Math.min(...values);
+						groupResult[resultKey] = Number(operationResult);
 						break;
 					case "AVG":
 						operationResult = values.reduce((acc, value) => acc + value, 0) / items.length;
-						groupResult[NewName] = Number(operationResult.toFixed(2));
+						groupResult[resultKey] = Number(operationResult.toFixed(2));
 						// find the average
 						break;
 					case "SUM":
 						operationResult = values.reduce((acc, value) => acc + value, 0);
-						groupResult[NewName] = Number(operationResult.toFixed(2));
+						groupResult[resultKey] = Number(operationResult.toFixed(2));
 						// find the sum
 						break;
 					case "COUNT":
 						operationResult = new Set(values).size;
-						groupResult[NewName] = operationResult;
+						groupResult[groupKey] = operationResult;
 						break;
 					default:
 						throw new Error(`Unsupported operation: ${correctKey}`);
@@ -86,6 +96,21 @@ export default class GroupAndApply {
 
 		// edge case with noNew Name
 		return result;
+	}
+
+	public static convertTransformedResults(transformedResults: Map<string, any>): InsightResult[] {
+		let results: InsightResult[] = [];
+		transformedResults.forEach((value, key) => {
+			let resultEntry: InsightResult = {};
+			const parts = key.split(":");
+			const firstHalf = parts[0];
+			const secondHalf = parts[1];
+			resultEntry[firstHalf] = secondHalf;
+			resultEntry = {...resultEntry, ...value};
+
+			results.push(resultEntry);
+		});
+		return results;
 	}
 }
 

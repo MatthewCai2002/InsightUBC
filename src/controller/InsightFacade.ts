@@ -13,10 +13,8 @@ import Validator from "./validator";
 import Filter from "./filter";
 import RoomProcessor from "./roomProcessor";
 import Writer from "./writer";
-import Decimal from "decimal.js";
 import Room from "./room";
 import GroupandAppy from "./groupandAppy";
-import GroupAndApply from "./groupandAppy";
 
 // Assuming the structure of your options object based on the provided code
 interface QueryOptions {
@@ -253,34 +251,23 @@ export default class InsightFacade  implements IInsightFacade {
 		if (query.TRANSFORMATIONS) {
 			const applyRules = query.TRANSFORMATIONS.APPLY;
 			const groupKeys = query.TRANSFORMATIONS.GROUP;
-			const groups = GroupandAppy.groupData(filteredResults as [], groupKeys);
+			const groups = GroupandAppy.groupData(filteredResults as [], groupKeys, );
 			const transformedResults = GroupandAppy.transform(groups, applyRules);
-			groupedArray = this.convertTransformedResults(transformedResults, options);
+			groupedArray = GroupandAppy.convertTransformedResults(transformedResults);
 		}
 		// replace with GroupedArray
-		let insightResults: InsightResult[] = this.applyOptions(filteredResults, options);
+		let insightResults: InsightResult[];
+		if (groupedArray.length > 0) {
+			insightResults = groupedArray;
+		} else {
+			insightResults = this.applyOptions(filteredResults, options);
+		}
 		if (options.ORDER) {
 			insightResults = this.sortResults(insightResults, options.ORDER);
 		}
 		return insightResults;
 	}
 
-	private convertTransformedResults(transformedResults: Map<string, any>, options: QueryOptions): InsightResult[] {
-		let results: InsightResult[] = [];
-		// transformedResults.forEach((value, key) => {
-		// 	let resultEntry: InsightResult = {};
-		// 	options.COLUMNS.forEach((column) => {
-		// 		if (Object.prototype.hasOwnProperty.call(value, column)) {
-		// 			resultEntry[column] = value[column];
-		// 		} else {
-		// 			return Promise.reject(new InsightError("Invalid dataset ID."));
-		// 		}
-		// 	});
-		//
-		// 	results.push(resultEntry);
-		// });
-		return results;
-	}
 
 	private applyOptions(filteredResults: any[], options: QueryOptions): InsightResult[] {
 		const projectedResults: InsightResult[] = filteredResults.map((item: any) => {
