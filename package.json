@@ -51,5 +51,8 @@
 		"lint": "eslint src test --ext .ts",
 		"fix": "yarn lint --fix",
 		"start": "ts-node src/App.ts"
-	}
+	},
+	"main": "index.js",
+	"repository": "https://github.students.cs.ubc.ca/CPSC310-2023W-T2/project_team175.git",
+	"license": "MIT"
 }
