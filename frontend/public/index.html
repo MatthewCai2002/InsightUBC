@@ -1,13 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
-    <title>310 Frontend</title>
-    <link href="/style.css" rel="stylesheet"/>
+	<meta charset="UTF-8">
+	<title>Add Dataset</title>
+	<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<button id="click-me-button" class="button">Click Me!</button>
+<h1>Add Sections Dataset</h1>
+<form id="datasetForm">
+	<label for="datasetId">Dataset ID:</label>
+	<input type="text" id="datasetId" name="datasetId" required>
+	<label for="datasetFile">Dataset File:</label>
+	<input type="file" id="datasetFile" name="datasetFile" accept=".zip" required>
+	<button type="submit">Upload Dataset</button>
+</form>
+<div id="feedback"></div>
 
-<script type="text/javascript" src="/frontend.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
