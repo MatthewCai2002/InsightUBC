@@ -6,7 +6,6 @@ import Server from "./rest/Server";
 export class App {
 	public initServer(port: number) {
 		console.info(`App::initServer( ${port} ) - start`);
-
 		const server = new Server(port);
 		return server.start().then(() => {
 			console.info("App::initServer() - started");
