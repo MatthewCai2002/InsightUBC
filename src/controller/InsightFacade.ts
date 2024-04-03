@@ -220,6 +220,7 @@ export default class InsightFacade  implements IInsightFacade {
 		try {
 			// Remove the dataset from the internal dictionary
 			delete this.datasets[id];
+			await this.writer.writeDict();
 			// Attempt to delete the dataset file from the disk
 			const datasetPath = `${this.dataDir}/${id}.json`;
 			await fs.remove(datasetPath);
