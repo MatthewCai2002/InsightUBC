@@ -20,7 +20,7 @@
 <script async defer src=
 	"https://maps.googleapis.com/maps/api/js?key=AIzaSyBPtYA8QJj0UNHUVAAkf5eLNA2DEz_JMeU&callback=initMap"></script>
 <!-- Link to your custom JavaScript file -->
-<h1>Add Sections Dataset</h1>
+<h1>Add Dataset</h1>
 <form id="datasetForm">
 	<label for="datasetId">Dataset ID:</label>
 	<input type="text" id="datasetId" name="datasetId" required>
@@ -33,8 +33,20 @@
 	<input type="file" id="datasetFile" name="datasetFile" accept=".zip" required>
 	<button type="submit">Upload Dataset</button>
 </form>
-<div id="datasets"></div>
+<h1>Remove Dataset</h1>
+<form id="removeForm">
+	<label for="rmDatasetId">Dataset ID:</label>
+	<input type="text" id="rmDatasetId" name="rmDatasetId" required>
+	<button type="submit">Remove Dataset</button>
+</form>
+<h1>Datasets</h1>
+<div id="datasets">
+	<ul id="datasetsList">
+	</ul>
+</div>
 <script src="./map.js"></script>
 <script src="./frontend.js"></script>
+<script src="./remove.js"></script>
+<script src="./listDatasets.js"></script>
 </body>
 </html>
