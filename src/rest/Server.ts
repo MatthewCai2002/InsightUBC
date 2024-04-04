@@ -90,7 +90,7 @@ export default class Server {
 			const {id, kind} = req.params;
 			const content = req.body.toString("base64"); // Assuming the body is a Buffer of the zip file
 			try {
-				const result = await this.insightFacade.addDataset(id, content, kind as InsightDatasetKind);
+				const result: string[] = await this.insightFacade.addDataset(id, content, kind as InsightDatasetKind);
 				res.status(200).json({result});
 			} catch (error) {
 				if (error instanceof InsightError) {

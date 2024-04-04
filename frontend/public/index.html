@@ -4,6 +4,8 @@
 	<meta charset="UTF-8">
 	<title>Add Dataset</title>
 	<link rel="stylesheet" href="style.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.9.1/jszip.min.js"></script>
+
 </head>
 <body>
 <!-- Container for the map -->
@@ -18,17 +20,21 @@
 <script async defer src=
 	"https://maps.googleapis.com/maps/api/js?key=AIzaSyBPtYA8QJj0UNHUVAAkf5eLNA2DEz_JMeU&callback=initMap"></script>
 <!-- Link to your custom JavaScript file -->
-<script src="./map.js"></script>
 <h1>Add Sections Dataset</h1>
 <form id="datasetForm">
 	<label for="datasetId">Dataset ID:</label>
 	<input type="text" id="datasetId" name="datasetId" required>
+	<label for="datasetKind">Dataset Kind:</label>
+	<select id="datasetKind" name="datasetKind" required>
+		<option value="sections">sections</option>
+		<option value="rooms">rooms</option>
+	</select>
 	<label for="datasetFile">Dataset File:</label>
 	<input type="file" id="datasetFile" name="datasetFile" accept=".zip" required>
 	<button type="submit">Upload Dataset</button>
 </form>
-<div id="feedback"></div>
-<script src="app.js"></script>
-<script src="map.js"></script>
+<div id="datasets"></div>
+<script src="./map.js"></script>
+<script src="./frontend.js"></script>
 </body>
 </html>
