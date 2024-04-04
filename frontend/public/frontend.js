@@ -1,5 +1,5 @@
-var form = document.getElementById('datasetForm');
-form.addEventListener('submit', function(event) {
+var addDatasetForm = document.getElementById('datasetForm');
+addDatasetForm.addEventListener('submit', function(event) {
 	event.preventDefault(); // Prevent the actual form submission
 	let datasetId = event.target[0].value;
 	let datasetKind = event.target[1].value;
@@ -12,22 +12,18 @@ form.addEventListener('submit', function(event) {
 	}).then((response) => {
 		// THIS IS A STUPID WAY OF GETTING THE ERROR TO PRINT
 		// BUT I DON'T KNOW HOW TO DO IT
+		console.log(response)
 		if (!response.ok) {
-			return response.json().catch((res) => {
-				throw new Error(res)
-			})
+			throw new Error(response.status)
 		}
 		return response.json();
 	}).then((response) => {
-		if (!response.ok) {
-			alert(response.error)
-			return;
-		}
 		alert(`Current Datasets: ${response.result}`)
 	}).catch((error) => {
-		alert(error)
+		alert(`fetch error: ${error}`)
 	});
 });
+
 
 
 

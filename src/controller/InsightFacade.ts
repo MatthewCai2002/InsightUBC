@@ -21,16 +21,6 @@ interface QueryOptions {
 	COLUMNS: string[];
 	ORDER?: string; // Optional
 }
-interface QueryTransformations {
-	GROUP: string[];
-	APPLY: string[]; // Optional
-}
-
-interface GroupedResult {
-	[key: string]: any;
-}
-type NumericKeysOfRoom = "lat" | "lon" | "seats";
-type KeysOfRoom = keyof Room;
 
 export default class InsightFacade  implements IInsightFacade {
 	private fileFields: string[] = [
@@ -57,12 +47,8 @@ export default class InsightFacade  implements IInsightFacade {
 		}
 
 		// check for previous datasets
-		try {
-			await fs.promises.access(this.dataDir + "datasets.json");
-			this.datasets = await fs.readJSON("././data/datasets.json", {throws: false});
-		} catch (e) {
-			// doesn't matter
-		}
+		await this.readDatasets();
+		console.log(Object.keys(this.datasets));
 
 		// init writer
 		this.writer.setDatasets(this.datasets);
@@ -95,6 +81,7 @@ export default class InsightFacade  implements IInsightFacade {
 			this.datasets[id] = dataset;
 
 			// write dataset dict to folder for persistence on crash
+			this.writer.setDatasets(this.datasets);
 			await this.writer.writeDict();
 
 			// return array of all added datasets
@@ -102,6 +89,15 @@ export default class InsightFacade  implements IInsightFacade {
 		} catch (error) {
 			console.log(error);
 			return Promise.reject(new InsightError(`Failed to add dataset: ${error}`));
+		}
+	}
+
+	private async readDatasets() {
+		try {
+			await fs.promises.access(this.dataDir + "datasets.json");
+			this.datasets = await fs.readJSON("././data/datasets.json", {throws: false});
+		} catch (e) {
+			// doesn't matter
 		}
 	}
 
@@ -212,6 +208,9 @@ export default class InsightFacade  implements IInsightFacade {
 		if (!id.trim() || id.includes("_")) {
 			return Promise.reject(new InsightError("Invalid dataset ID."));
 		}
+
+		await this.readDatasets();
+
 		// Check if the dataset exists
 		if (!this.datasets[id]) {
 			return Promise.reject(new NotFoundError("Dataset not found."));
@@ -220,10 +219,11 @@ export default class InsightFacade  implements IInsightFacade {
 		try {
 			// Remove the dataset from the internal dictionary
 			delete this.datasets[id];
-			await this.writer.writeDict();
 			// Attempt to delete the dataset file from the disk
 			const datasetPath = `${this.dataDir}/${id}.json`;
 			await fs.remove(datasetPath);
+			this.writer.setDatasets(this.datasets);
+			await this.writer.writeDict();
 
 			return Promise.resolve(id);
 		} catch (error) {
@@ -375,6 +375,8 @@ export default class InsightFacade  implements IInsightFacade {
 
 	public async listDatasets(): Promise<InsightDataset[]> {
 		// and an object with kind and numRows as the value
+		await this.readDatasets();
+
 		const datasetList: InsightDataset[] = Object.keys(this.datasets).map((id) => {
 			const dataset = this.datasets[id];
 			return {
